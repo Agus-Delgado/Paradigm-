@@ -34,7 +34,7 @@ def load_uploaded_file(uploaded_file) -> tuple[pd.DataFrame | None, str | None]:
     if suffix in (".xlsx", ".xls"):
         return _read_excel_bytes(raw, name)
 
-    return None, f"Formato no soportado: {suffix or 'desconocido'}. Use .csv o .xlsx."
+    return None, f"Formato no soportado: {suffix or 'desconocido'}. Usá archivos .csv o .xlsx."
 
 
 def _csv_candidate_better(ncols: int, sep_idx: int, best_ncols: int, best_sep_idx: int) -> bool:

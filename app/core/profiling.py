@@ -6,7 +6,13 @@ from dataclasses import dataclass, field
 
 import pandas as pd
 
-from core.utils import memory_usage_mb
+from core.utils import (
+    DUPLICATE_ROWS_WARN_PCT,
+    NULL_COLUMNS_MANY_RATIO,
+    NULL_GLOBAL_QUALITY_HIGH_PCT,
+    NULL_GLOBAL_QUALITY_MED_PCT,
+    memory_usage_mb,
+)
 
 
 @dataclass
@@ -139,3 +145,60 @@ def profiles_to_dataframe(profile: DatasetProfile) -> pd.DataFrame:
             }
         )
     return pd.DataFrame(rows)
+
+
+def count_logical_types(profile: DatasetProfile) -> dict[str, int]:
+    """Cuenta columnas por tipo lógico inferido (orden estable: frecuencia desc, luego nombre)."""
+    counts: dict[str, int] = {}
+    for c in profile.columns:
+        counts[c.logical_type] = counts.get(c.logical_type, 0) + 1
+    return dict(sorted(counts.items(), key=lambda x: (-x[1], x[0])))
+
+
+def estimate_dataset_quality(profile: DatasetProfile) -> tuple[str, str]:
+    """
+    Etiqueta de calidad heurística (Alta / Media / Baja) y breve justificación.
+    No es un score estadístico; solo señales agregadas del perfil.
+    """
+    rows_n = profile.row_count
+    cols_n = profile.column_count
+    penalty = 0
+    notes: list[str] = []
+
+    if profile.null_pct > NULL_GLOBAL_QUALITY_MED_PCT:
+        penalty += 2
+        notes.append("muchos nulos a nivel tabla")
+    elif profile.null_pct > NULL_GLOBAL_QUALITY_HIGH_PCT:
+        penalty += 1
+
+    if rows_n > 0:
+        dup_pct = profile.duplicate_rows / rows_n * 100.0
+        if dup_pct > DUPLICATE_ROWS_WARN_PCT * 2:
+            penalty += 2
+            notes.append("duplicados frecuentes")
+        elif dup_pct > DUPLICATE_ROWS_WARN_PCT:
+            penalty += 1
+
+    if cols_n > 0:
+        many_null_cols = sum(1 for c in profile.columns if c.null_pct >= NULL_COLUMNS_MANY_RATIO * 100)
+        if many_null_cols >= max(2, cols_n // 2):
+            penalty += 1
+            notes.append("varias columnas con muchos nulos")
+
+    has_datetime = any(c.logical_type == "datetime" for c in profile.columns)
+    if has_datetime:
+        penalty = max(0, penalty - 1)
+
+    if penalty <= 1:
+        label = "Alta"
+    elif penalty <= 3:
+        label = "Media"
+    else:
+        label = "Baja"
+
+    if not notes:
+        hint = "pocos problemas evidentes en agregados básicos (nulos y duplicados)."
+    else:
+        hint = "; ".join(notes) + "."
+
+    return label, hint

@@ -6,7 +6,7 @@ Aplicación **standalone** en Python para un **análisis inicial automático** s
 
 ## Descripción breve
 
-Paradigm permite subir un dataset, obtener un resumen del volumen y la calidad de los datos (nulos, duplicados, memoria aproximada), revisar un perfil por columna con tipos inferidos y métricas acordes, y una vista previa con gráficos automáticos básicos. El diseño es **agnóstico al dominio** (salud, logística, ventas, deportes, etc.): no asume reglas de negocio de un sector concreto.
+Paradigm permite subir un dataset, obtener un **resumen ejecutivo** (volumen, nulos, duplicados, memoria, distribución de tipos inferidos y una calidad estimada), revisar **hallazgos automáticos** con reglas heurísticas, explorar una **vista filtrada** con filtros en la barra lateral, vista previa flexible y **gráfico exploratorio**, y profundizar en el **perfil por columna** y en un gráfico de **nulos por columna** sobre el archivo completo. El diseño es **agnóstico al dominio** (salud, logística, ventas, deportes, etc.): no asume reglas de negocio de un sector concreto.
 
 ---
 
@@ -19,7 +19,7 @@ Paradigm permite subir un dataset, obtener un resumen del volumen y la calidad d
 
 ## ¿Qué hace este MVP?
 
-Este repositorio contiene una **primera versión funcional**: una app Streamlit que carga archivos, infiere tipos lógicos de columnas, calcula un perfilado básico y muestra KPIs, tablas y dos gráficos Plotly generados de forma automática según los datos disponibles.
+Este repositorio contiene una **primera versión funcional**: una app Streamlit que carga archivos, infiere tipos lógicos de columnas, calcula un perfilado global y por columna, muestra KPIs y gráficos Plotly, y ofrece **exploración interactiva** con filtros sobre columnas elegibles y un gráfico exploratorio acorde al tipo de cada columna.
 
 ---
 
@@ -30,9 +30,12 @@ Este repositorio contiene una **primera versión funcional**: una app Streamlit 
 | **Carga** | Archivos `.csv` y `.xlsx` desde el navegador. |
 | **Excel** | Lectura de la **primera hoja** por defecto. |
 | **CSV** | Intento de lectura con varios **encodings** comunes y separadores **`,`**, **`;`** y tabulador; elegir el mejor resultado según columnas detectadas. |
-| **Inferencia de tipos** | Tipos lógicos: `numeric`, `categorical`, `boolean`, `datetime`, `text`, `id` (heurísticas con límites conocidos). |
-| **Perfilado** | Resumen global (filas, columnas, nulos totales, % global, filas duplicadas, memoria aproximada) y detalle por columna (dtype, nulos, % nulos, únicos, cardinalidad, métricas según tipo). |
-| **Interfaz** | KPIs, vista previa del dataset, tabla de perfilado, gráfico de nulos por columna y un segundo gráfico (histograma o frecuencias según la primera columna útil). |
+| **Inferencia de tipos** | Tipos lógicos internos: `numeric`, `categorical`, `boolean`, `datetime`, `text`, `id` (heurísticas con límites conocidos). En la interfaz se muestran etiquetas en español. |
+| **Resumen ejecutivo** | KPIs globales: filas, columnas, % de nulos global, filas duplicadas, memoria aproximada, calidad estimada y gráfico de **columnas por tipo inferido** (sobre el dataset completo cargado). |
+| **Hallazgos automáticos** | Mensajes priorizados según reglas fijas (p. ej. duplicados, nulos altos, cardinalidad), sin modelos de ML. Se calculan sobre el **archivo completo**. |
+| **Exploración interactiva** | En la barra lateral: **filtros** por columnas categóricas, numéricas, booleanas o fecha (hasta 6 columnas). La **vista previa** y el **gráfico exploratorio** usan solo las filas que cumplen los filtros (**vista filtrada**). |
+| **Perfil por columna** | Tabla detallada (tipos inferidos, nulos, cardinalidad, etc.) en un panel expandible; métricas referidas al dataset completo. |
+| **Gráficos (dataset completo)** | Gráfico de barras de **% de nulos por columna** respecto del archivo cargado completo (independiente de los filtros de exploración). |
 | **Ejemplos** | Datasets de muestra en `data/sample/` para pruebas rápidas. |
 
 ---
@@ -59,6 +62,8 @@ Paradigm/
 │   │   ├── ingestion.py   # Carga CSV/XLSX
 │   │   ├── schema.py      # Inferencia de tipos lógicos
 │   │   ├── profiling.py   # Perfilado global y por columna
+│   │   ├── exploration.py # Filtros, máscaras y tipos de gráfico exploratorio
+│   │   ├── findings.py    # Hallazgos heurísticos
 │   │   └── utils.py       # Utilidades compartidas
 │   └── visualization/
 │       ├── __init__.py
@@ -109,7 +114,7 @@ Streamlit mostrará una URL local (por defecto `http://localhost:8501`). Abrirla
 2. En el panel de carga, seleccionar un archivo desde `data/sample/`:
    - `ventas_ejemplo.csv` — columnas con números, fechas y categorías.
    - `mixto.csv` — mezcla de tipos (incluye texto largo y UUIDs de ejemplo).
-3. Revisar KPIs, tabla de perfilado, vista previa y gráficos.
+3. Revisar el resumen ejecutivo, hallazgos, exploración con filtros (opcional), perfil por columna y gráfico de nulos.
 
 ---
 
@@ -120,14 +125,17 @@ flowchart LR
   A[Subir CSV o XLSX] --> B[Ingestión y lectura]
   B --> C[Inferencia de tipos por columna]
   C --> D[Perfilado global y por columna]
-  D --> E[UI: KPIs, preview, tabla, gráficos]
+  D --> E[Resumen ejecutivo y hallazgos]
+  E --> F[Exploración con filtros]
+  F --> G[Vista previa y gráfico exploratorio]
+  D --> H[Perfil por columna y gráfico de nulos global]
 ```
 
 1. El usuario sube un archivo.
 2. Se lee el contenido en un `DataFrame` (con manejo básico de errores y formatos).
 3. Se asignan tipos lógicos por columna.
-4. Se calculan métricas de perfilado.
-5. Se muestran resumen, tabla detallada y gráficos automáticos.
+4. Se calculan métricas de perfilado y hallazgos automáticos.
+5. Se muestran resumen ejecutivo (global), hallazgos, exploración filtrada (vista previa + gráfico exploratorio), tabla de perfil por columna y gráfico de nulos sobre el dataset completo.
 
 ---
 
@@ -172,7 +180,7 @@ Este proyecto muestra de forma práctica:
 
 - **Comprensión del flujo de datos**: de archivo crudo a tabla estructurada.
 - **Criterio de calidad de datos**: nulos, duplicados, cardinalidad y tipos inferidos.
-- **Comunicación de resultados**: KPIs y visualizaciones en una interfaz accesible.
+- **Comunicación de resultados**: KPIs, hallazgos y visualizaciones en una interfaz accesible.
 - **Stack habitual** en analítica y prototipos (Python, Pandas, visualización).
 
 Es un ejemplo concreto de **herramienta de exploración** que puede explicarse en entrevistas técnicas sin sobredimensionar el alcance.
