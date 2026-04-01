@@ -1,42 +1,46 @@
 # Paradigm
 
-Aplicación **standalone** en Python para un **análisis inicial automático** sobre tablas cargadas desde archivos CSV o Excel (primera hoja). Está orientada a perfiles de **analista de datos / BI**: exploración rápida, inferencia de tipos de columnas, perfilado básico y visualización en una interfaz web sencilla.
+Aplicación **standalone** en Python orientada a una **demo analítica** de operación de un **consultorio médico ambulatorio**: turnos, asistencia, facturación y coberturas, usando un **dataset oficial completamente sintético** incluido en el repositorio. El **motor de exploración** sigue siendo **genérico**: podés subir cualquier CSV o Excel (primera hoja) y obtener perfilado, filtros y gráficos sin depender del caso de consultorio.
+
+---
+
+## Disclaimer — datos ficticios
+
+Este proyecto utiliza datos **completamente ficticios** y generados de forma **sintética** con fines demostrativos. **No contiene** información real de pacientes, profesionales ni operaciones de ninguna institución.
 
 ---
 
 ## Descripción breve
 
-Paradigm permite subir un dataset, obtener un **resumen ejecutivo** (volumen, nulos, duplicados, memoria, distribución de tipos inferidos y una calidad estimada), revisar **hallazgos automáticos** con reglas heurísticas, explorar una **vista filtrada** con filtros en la barra lateral, vista previa flexible y **gráfico exploratorio**, y profundizar en el **perfil por columna** y en un gráfico de **nulos por columna** sobre el archivo completo. El diseño es **agnóstico al dominio** (salud, logística, ventas, deportes, etc.): no asume reglas de negocio de un sector concreto.
+Paradigm permite:
 
----
-
-## Objetivo del proyecto
-
-- Ofrecer una **primera pasada analítica** sobre datos tabulares sin configurar pipelines, bases de datos ni entornos complejos.
-- Servir como **base standalone** que en el futuro podría integrarse en otras aplicaciones o evolucionar con nuevas capacidades, manteniendo el foco en la capa de exploración y perfilado de datos.
+- **Cargar el dataset demo** del consultorio con un clic (tabla plana `medical_clinic_flat.csv`) o **subir un archivo propio**.
+- Obtener un **resumen ejecutivo** (volumen, nulos, duplicados, memoria, tipos inferidos, calidad estimada).
+- Ver **indicadores operativos opcionales** y **hallazgos operativos del consultorio** cuando las columnas coinciden con el esquema del demo (sin afectar el comportamiento con otros datasets).
+- Revisar **hallazgos de calidad de datos** heurísticos (duplicados, nulos altos, cardinalidad, etc.).
+- Explorar una **vista filtrada** con gráfico exploratorio y **perfil por columna**.
 
 ---
 
 ## ¿Qué hace este MVP?
 
-Este repositorio contiene una **primera versión funcional**: una app Streamlit que carga archivos, infiere tipos lógicos de columnas, calcula un perfilado global y por columna, muestra KPIs y gráficos Plotly, y ofrece **exploración interactiva** con filtros sobre columnas elegibles y un gráfico exploratorio acorde al tipo de cada columna.
+Una app **Streamlit** que carga tablas desde el navegador, infiere tipos lógicos, calcula métricas de perfilado y muestra KPIs y visualizaciones en **Plotly**. El caso principal de uso en portfolio es el **seguimiento operativo y administrativo simulado** del consultorio (patrones de turnos, cancelaciones, ingresos); el motor no asume reglas de negocio fijas salvo en la **capa opcional** activada por nombres de columnas del demo.
 
 ---
 
-## Funcionalidades actuales
+## Funcionalidades
 
 | Área | Detalle |
 |------|--------|
-| **Carga** | Archivos `.csv` y `.xlsx` desde el navegador. |
-| **Excel** | Lectura de la **primera hoja** por defecto. |
-| **CSV** | Intento de lectura con varios **encodings** comunes y separadores **`,`**, **`;`** y tabulador; elegir el mejor resultado según columnas detectadas. |
-| **Inferencia de tipos** | Tipos lógicos internos: `numeric`, `categorical`, `boolean`, `datetime`, `text`, `id` (heurísticas con límites conocidos). En la interfaz se muestran etiquetas en español. |
-| **Resumen ejecutivo** | KPIs globales: filas, columnas, % de nulos global, filas duplicadas, memoria aproximada, calidad estimada y gráfico de **columnas por tipo inferido** (sobre el dataset completo cargado). |
-| **Hallazgos automáticos** | Mensajes priorizados según reglas fijas (p. ej. duplicados, nulos altos, cardinalidad), sin modelos de ML. Se calculan sobre el **archivo completo**. |
-| **Exploración interactiva** | En la barra lateral: **filtros** por columnas categóricas, numéricas, booleanas o fecha (hasta 6 columnas). La **vista previa** y el **gráfico exploratorio** usan solo las filas que cumplen los filtros (**vista filtrada**). |
-| **Perfil por columna** | Tabla detallada (tipos inferidos, nulos, cardinalidad, etc.) en un panel expandible; métricas referidas al dataset completo. |
-| **Gráficos (dataset completo)** | Gráfico de barras de **% de nulos por columna** respecto del archivo cargado completo (independiente de los filtros de exploración). |
-| **Ejemplos** | Datasets de muestra en `data/sample/` para pruebas rápidas. |
+| **Carga** | CSV/XLSX por upload, o **botón** para cargar el dataset demo desde `data/sample/medical_clinic/medical_clinic_flat.csv`. |
+| **Demo** | Banner de datos sintéticos cuando usás la carga demo. |
+| **Inferencia de tipos** | Tipos lógicos: numérico, categórico, booleano, fecha/hora, texto, identificador. Etiquetas en español en la UI. |
+| **Resumen ejecutivo** | KPIs globales y gráfico de columnas por tipo inferido. |
+| **Indicadores operativos** | Solo si el archivo tiene las columnas del demo plano (turnos, estados, ingresos, cobertura, medio de pago). |
+| **Hallazgos operativos** | Mensajes de contexto de consultorio (módulo aparte), si el esquema es compatible. |
+| **Hallazgos de calidad** | Reglas genéricas sobre duplicados, nulos, cardinalidad, etc. |
+| **Exploración** | Filtros en sidebar, vista previa, gráfico exploratorio sobre la vista filtrada. |
+| **Perfil y nulos** | Tabla de perfil por columna y gráfico de % de nulos (dataset completo). |
 
 ---
 
@@ -44,7 +48,8 @@ Este repositorio contiene una **primera versión funcional**: una app Streamlit 
 
 - **Python** 3.10+
 - **Streamlit** — interfaz web
-- **Pandas** — manipulación y perfilado tabular
+- **Pandas** — datos tabulares
+- **NumPy** — generación del dataset demo (script)
 - **Plotly** — gráficos interactivos
 - **openpyxl** — lectura de Excel (`.xlsx`)
 
@@ -55,21 +60,26 @@ Este repositorio contiene una **primera versión funcional**: una app Streamlit 
 ```
 Paradigm/
 ├── app/
-│   ├── __init__.py
-│   ├── main.py              # Punto de entrada Streamlit
+│   ├── main.py
 │   ├── core/
-│   │   ├── __init__.py
-│   │   ├── ingestion.py   # Carga CSV/XLSX
-│   │   ├── schema.py      # Inferencia de tipos lógicos
-│   │   ├── profiling.py   # Perfilado global y por columna
-│   │   ├── exploration.py # Filtros, máscaras y tipos de gráfico exploratorio
-│   │   ├── findings.py    # Hallazgos heurísticos
-│   │   └── utils.py       # Utilidades compartidas
+│   │   ├── ingestion.py
+│   │   ├── schema.py
+│   │   ├── profiling.py
+│   │   ├── exploration.py
+│   │   ├── findings.py
+│   │   ├── clinic_operational_kpis.py
+│   │   ├── clinic_operational_insights.py
+│   │   └── utils.py
 │   └── visualization/
-│       ├── __init__.py
-│       └── charts.py      # Figuras Plotly
+│       └── charts.py
 ├── data/
-│   └── sample/            # CSV de ejemplo
+│   └── sample/
+│       ├── medical_clinic/    # Dataset demo (consultorio)
+│       └── ...
+├── docs/
+│   └── images/                # Capturas para README / portfolio (opcional)
+├── scripts/
+│   └── generate_medical_clinic_data.py
 ├── requirements.txt
 └── README.md
 ```
@@ -98,101 +108,103 @@ pip install -r requirements.txt
 
 ## Cómo ejecutar la app
 
-Desde la **raíz del repositorio** (carpeta `Paradigm`):
+Desde la **raíz del repositorio**:
 
 ```powershell
 streamlit run app/main.py
 ```
 
-Streamlit mostrará una URL local (por defecto `http://localhost:8501`). Abrirla en el navegador.
+Abrí la URL local que muestre Streamlit (por defecto `http://localhost:8501`).
 
 ---
 
-## Cómo probarla con los datasets de ejemplo
+## Dataset demo (consultorio médico)
 
-1. Ejecutar la app como arriba.
-2. En el panel de carga, seleccionar un archivo desde `data/sample/`:
-   - `ventas_ejemplo.csv` — columnas con números, fechas y categorías.
-   - `mixto.csv` — mezcla de tipos (incluye texto largo y UUIDs de ejemplo).
-3. Revisar el resumen ejecutivo, hallazgos, exploración con filtros (opcional), perfil por columna y gráfico de nulos.
+- **Tabla principal para la app:** [`data/sample/medical_clinic/medical_clinic_flat.csv`](data/sample/medical_clinic/medical_clinic_flat.csv) (una fila por turno, con datos de paciente, profesional y facturación unidos).
+- **Tablas separadas:** `patients.csv`, `professionals.csv`, `appointments.csv`, `billing.csv` (soporte narrativo y regeneración).
+
+Regenerar datos sintéticos (misma semilla → mismos archivos):
+
+```powershell
+python scripts/generate_medical_clinic_data.py
+```
+
+Convención de columnas: **español**, `snake_case`; identificadores técnicos pueden usar sufijos `_id` en inglés.
 
 ---
 
-## Flujo funcional del MVP
+## Cómo probar
+
+1. Ejecutá la app.
+2. Opción A: pulsá **«Cargar dataset demo (consultorio médico)»**.
+3. Opción B: subí un CSV/XLSX (por ejemplo `data/sample/ventas_ejemplo.csv`).
+4. Revisá resumen ejecutivo, indicadores operativos (si aplica), hallazgos, exploración y gráficos.
+
+---
+
+## Flujo funcional
 
 ```mermaid
 flowchart LR
-  A[Subir CSV o XLSX] --> B[Ingestión y lectura]
-  B --> C[Inferencia de tipos por columna]
+  A[Carga demo o upload] --> B[Ingestión CSV/XLSX]
+  B --> C[Inferencia de tipos]
   C --> D[Perfilado global y por columna]
-  D --> E[Resumen ejecutivo y hallazgos]
-  E --> F[Exploración con filtros]
-  F --> G[Vista previa y gráfico exploratorio]
-  D --> H[Perfil por columna y gráfico de nulos global]
+  D --> E[Resumen ejecutivo]
+  E --> F[Indicadores operativos opcionales]
+  F --> G[Hallazgos operativos y de calidad]
+  G --> H[Exploración filtrada y gráficos]
 ```
 
-1. El usuario sube un archivo.
-2. Se lee el contenido en un `DataFrame` (con manejo básico de errores y formatos).
-3. Se asignan tipos lógicos por columna.
-4. Se calculan métricas de perfilado y hallazgos automáticos.
-5. Se muestran resumen ejecutivo (global), hallazgos, exploración filtrada (vista previa + gráfico exploratorio), tabla de perfil por columna y gráfico de nulos sobre el dataset completo.
+---
+
+## Limitaciones
+
+- Una sola hoja en Excel (la primera).
+- Inferencia heurística de tipos; puede equivocarse en casos límite.
+- Pensado para datos que caben en memoria local.
+- Sin base de datos, autenticación ni ML en esta versión.
 
 ---
 
-## Limitaciones actuales
+## Capturas para portfolio
 
-- **Una sola hoja** en Excel (la primera); no hay selector de hojas.
-- **Inferencia heurística** de tipos: puede equivocarse en columnas ambiguas (p. ej. IDs numéricos, fechas en formatos raros).
-- **Rendimiento**: pensado para datasets que caben en memoria en una máquina local; no hay procesamiento distribuido ni streaming.
-- **Gráficos**: conjunto fijo y automático; no hay editor de dashboards ni personalización avanzada de gráficos.
-- **Sin base de datos**, **sin autenticación** y **sin modelos de Machine Learning** en esta versión.
+Podés guardar capturas en [`docs/images/`](docs/images/) y referenciarlas aquí, por ejemplo:
 
----
+| Archivo sugerido | Contenido |
+|------------------|-----------|
+| `docs/images/01-carga-demo.png` | Botón de dataset demo y/o carga de archivo |
+| `docs/images/02-banner-sintetico.png` | Banner de datos sintéticos |
+| `docs/images/03-resumen-kpis.png` | Resumen ejecutivo e indicadores operativos |
+| `docs/images/04-hallazgos.png` | Hallazgos operativos y de calidad |
+| `docs/images/05-exploracion.png` | Filtros y gráfico exploratorio |
 
-## Próximos pasos (posibles)
-
-Estas líneas son **orientativas** y no forman parte del alcance actual del MVP:
-
-- Refinar heurísticas de tipos y mensajes al usuario.
-- Mejoras de UX (selección de hoja en Excel, límites de tamaño de archivo más explícitos).
-- Tests automatizados sobre módulos de ingestión y perfilado.
-- Evolución futura de la aplicación (p. ej. integración con otros sistemas) sin comprometer el alcance descrito aquí.
-
-No se incluye en el estado actual del repositorio entrenamiento de modelos ni pipelines de ML.
-
----
-
-## Capturas de pantalla
-
-Para enriquecer el README en GitHub o en un portfolio, se pueden añadir capturas en una carpeta `docs/images/` (crearla si hace falta) y enlazarlas aquí, por ejemplo:
+Sustituí las referencias por imágenes reales cuando las tengas:
 
 ```markdown
-![Vista principal](docs/images/paradigm-vista.png)
+![Resumen](docs/images/03-resumen-kpis.png)
 ```
-
-*(Sustituir por capturas reales cuando estén disponibles.)*
 
 ---
 
-## Valor para portfolio (BI / Data Analyst)
+## Valor para portfolio / LinkedIn (ideas de mensaje)
 
-Este proyecto muestra de forma práctica:
+- Análisis operativo de un consultorio ambulatorio con **datos sintéticos** y lógica realista.
+- **Exploración automática**: tipos inferidos, calidad, filtros y gráficos sin configurar pipelines.
+- **Transparencia ética**: datos ficticios explícitos en README y en la app.
+- Combinación de **perfilado técnico** + **contexto de negocio** (turnos, cobertura, ingresos).
 
-- **Comprensión del flujo de datos**: de archivo crudo a tabla estructurada.
-- **Criterio de calidad de datos**: nulos, duplicados, cardinalidad y tipos inferidos.
-- **Comunicación de resultados**: KPIs, hallazgos y visualizaciones en una interfaz accesible.
-- **Stack habitual** en analítica y prototipos (Python, Pandas, visualización).
+Texto corto para publicación (podés adaptarlo):
 
-Es un ejemplo concreto de **herramienta de exploración** que puede explicarse en entrevistas técnicas sin sobredimensionar el alcance.
+> Publicé **Paradigm**, una demo en Python/Streamlit que simula analítica operativa de un consultorio médico: turnos, estados, coberturas e ingresos sobre un **CSV 100 % sintético** versionado en el repo. Incluye perfilado automático, KPIs opcionales alineados al caso y hallazgos de calidad de datos. Los datos son ficticios y solo sirven para demostración.
 
 ---
 
 ## Licencia
 
-**Licencia no especificada aún.** El autor puede definir una licencia abierta (MIT, Apache-2.0, etc.) o restricciones de uso cuando corresponda. Hasta entonces, el uso del código queda bajo la responsabilidad de quien lo clone o modifique.
+**Licencia no especificada aún.** El autor puede definir una licencia abierta o restricciones cuando corresponda.
 
 ---
 
 ## Contacto / repositorio
 
-Ajustar esta sección con el enlace al repositorio público o perfil profesional cuando se publique el proyecto.
+Ajustá con el enlace al repositorio público o perfil profesional cuando publiques el proyecto.

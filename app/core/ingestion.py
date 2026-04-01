@@ -85,6 +85,29 @@ def _read_csv_bytes(raw: bytes) -> tuple[pd.DataFrame | None, str | None]:
     return best_df, None
 
 
+def read_csv_bytes(raw: bytes) -> tuple[pd.DataFrame | None, str | None]:
+    """
+    Lee CSV desde bytes con la misma heurística que la carga por upload (encoding y separador).
+    """
+    if not raw.strip():
+        return None, "El archivo está vacío o solo contiene espacios en blanco."
+    return _read_csv_bytes(raw)
+
+
+def load_csv_path(path: Path | str) -> tuple[pd.DataFrame | None, str | None]:
+    """
+    Carga un CSV desde disco; mismo pipeline lógico que un archivo subido (.csv).
+    """
+    p = Path(path)
+    if not p.is_file():
+        return None, f"No se encontró el archivo: {p}"
+    try:
+        raw = p.read_bytes()
+    except OSError as exc:
+        return None, f"No se pudo leer el archivo: {exc}"
+    return read_csv_bytes(raw)
+
+
 def _read_excel_bytes(raw: bytes, filename: str) -> tuple[pd.DataFrame | None, str | None]:
     buf = io.BytesIO(raw)
     try:

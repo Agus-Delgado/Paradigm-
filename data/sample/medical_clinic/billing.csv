@@ -1,0 +1,1397 @@
+billing_id,appointment_id,monto_consulta,medio_pago,estado_pago,fecha_pago,cobertura,copago,ingreso_neto
+1,2,6350.68,transferencia,pagado,2024-09-09,OSDE,1563.68,4787.0
+2,6,6781.51,transferencia,pagado,2024-08-17,,27.38,6754.13
+3,7,6766.79,tarjeta,pagado,2024-01-20,PAMI,1655.93,5110.86
+4,8,8087.54,tarjeta,pagado,2024-04-22,OSDE,1835.43,6252.11
+5,10,7833.9,tarjeta,pagado,2024-06-24,Galeno,815.98,7017.92
+6,11,6184.38,transferencia,pagado,2024-01-09,Sancor Salud,,6184.38
+7,13,7904.94,efectivo,pagado,2024-05-30,,,7904.94
+8,15,5575.19,tarjeta,pendiente,,OSDE,,5575.19
+9,19,7588.25,tarjeta,pagado,2024-08-27,Galeno,1634.27,5953.98
+10,20,5347.73,tarjeta,pagado,2024-09-13,Particular,,5347.73
+11,21,7416.85,transferencia,pendiente,,Swiss Medical,,7416.85
+12,22,6760.89,tarjeta,pagado,2024-08-21,Swiss Medical,1357.55,5403.34
+13,23,7179.52,tarjeta,pagado,2024-05-07,OSDE,858.67,6320.85
+14,27,9936.87,transferencia,pagado,2024-11-01,OSDE,,9936.87
+15,28,8174.57,tarjeta,pagado,2024-03-09,Swiss Medical,1263.86,6910.71
+16,29,8980.43,transferencia,pagado,2025-01-01,OSDE,2059.06,6921.37
+17,31,6846.87,transferencia,rechazado,,OSDE,1325.59,5521.28
+18,32,5895.85,transferencia,pagado,2024-10-22,OSDE,169.59,5726.26
+19,33,4444.8,transferencia,pagado,2024-09-29,Galeno,584.47,3860.33
+20,34,7172.25,transferencia,pendiente,,Sancor Salud,,7172.25
+21,37,9197.88,tarjeta,rechazado,,Galeno,,9197.88
+22,38,9266.48,tarjeta,pagado,2024-09-30,Galeno,1604.1,7662.38
+23,39,4586.4,tarjeta,pagado,2024-09-24,Swiss Medical,231.55,4354.85
+24,40,5616.53,tarjeta,pagado,2024-12-05,,752.69,4863.84
+25,41,5572.75,efectivo,pagado,2024-06-04,PAMI,1145.96,4426.79
+26,42,6091.94,tarjeta,pagado,2024-06-15,OSDE,1522.89,4569.05
+27,43,5181.05,efectivo,pagado,2024-07-17,OSDE,316.62,4864.43
+28,45,8010.98,transferencia,pagado,2024-08-06,OSECAC,1780.55,6230.43
+29,46,6433.52,efectivo,pagado,2024-08-26,OSDE,1317.55,5115.97
+30,47,6093.51,efectivo,pagado,2024-02-05,Particular,383.33,5710.18
+31,49,6110.18,transferencia,pendiente,,Galeno,585.11,5525.07
+32,50,5296.11,efectivo,pagado,2024-12-24,PAMI,1116.74,4179.37
+33,52,8355.21,tarjeta,pagado,2024-03-19,,587.8,7767.41
+34,53,7006.98,tarjeta,pagado,2024-11-29,OSDE,93.16,6913.82
+35,54,6089.98,tarjeta,pagado,2024-05-07,PAMI,446.47,5643.51
+36,55,5528.44,transferencia,pagado,2024-04-12,Sancor Salud,676.41,4852.03
+37,57,8169.43,transferencia,pagado,2024-10-28,OSDE,1271.33,6898.1
+38,59,10713.16,tarjeta,pendiente,,Particular,638.32,10074.84
+39,61,8633.56,tarjeta,pendiente,,OSDE,230.99,8402.57
+40,62,5117.36,efectivo,pagado,2024-09-24,OSDE,650.43,4466.93
+41,63,5911.46,transferencia,pagado,2024-04-09,OSDE,54.29,5857.17
+42,64,5388.69,tarjeta,pagado,2024-02-08,Galeno,,5388.69
+43,67,6252.97,transferencia,pagado,2024-11-13,Galeno,255.11,5997.86
+44,68,6065.61,tarjeta,pendiente,,Swiss Medical,548.22,5517.39
+45,69,7116.04,efectivo,pagado,2024-12-23,Sancor Salud,,7116.04
+46,71,7148.35,efectivo,pendiente,,OSECAC,,7148.35
+47,73,4634.62,efectivo,pagado,2024-03-19,OSDE,782.88,3851.74
+48,74,6484.65,transferencia,pagado,2024-11-29,OSDE,926.38,5558.27
+49,75,6633.96,efectivo,pagado,2024-07-25,OSDE,1487.43,5146.53
+50,76,4584.6,tarjeta,pendiente,,Sancor Salud,1121.59,3463.01
+51,77,6300.76,efectivo,rechazado,,Particular,980.62,5320.14
+52,78,7038.34,efectivo,pagado,2024-02-26,OSDE,810.01,6228.33
+53,79,7695.46,tarjeta,pagado,2024-12-14,Medifé,1133.76,6561.7
+54,80,10346.08,transferencia,pagado,2024-10-03,OSECAC,,10346.08
+55,81,6726.55,efectivo,pagado,2024-12-15,Particular,809.19,5917.36
+56,82,7721.24,tarjeta,pagado,2024-05-17,Particular,85.59,7635.65
+57,83,5567.03,transferencia,pagado,2024-09-15,Sancor Salud,1155.28,4411.75
+58,84,6040.25,efectivo,pagado,2024-10-03,,1189.62,4850.63
+59,86,7880.79,tarjeta,pagado,2024-10-03,Galeno,937.67,6943.12
+60,87,5900.06,tarjeta,rechazado,,OSDE,,5900.06
+61,89,6653.08,transferencia,pagado,2024-08-06,OSDE,912.56,5740.52
+62,91,8669.27,efectivo,pagado,2024-08-28,OSECAC,143.06,8526.21
+63,93,5010.05,transferencia,pagado,2024-09-25,OSECAC,1172.65,3837.4
+64,94,9798.02,transferencia,pagado,2024-03-14,Medifé,,9798.02
+65,95,7627.36,tarjeta,pagado,2024-11-25,OSDE,548.66,7078.7
+66,97,5295.8,transferencia,pagado,2024-09-05,Galeno,824.4,4471.4
+67,98,8866.5,transferencia,rechazado,,Galeno,448.19,8418.31
+68,99,11052.71,transferencia,pagado,2024-12-03,Galeno,909.13,10143.58
+69,100,8055.51,transferencia,pagado,2024-03-09,Galeno,633.27,7422.24
+70,102,6075.5,transferencia,pagado,2024-09-17,PAMI,906.72,5168.78
+71,105,5150.98,efectivo,pendiente,,PAMI,,5150.98
+72,106,6779.51,tarjeta,pagado,2024-06-19,PAMI,1129.13,5650.38
+73,107,7818.87,efectivo,pagado,2024-12-19,PAMI,1192.16,6626.71
+74,109,4460.98,efectivo,pagado,2024-05-21,Sancor Salud,473.69,3987.29
+75,110,8169.98,tarjeta,pagado,2024-09-19,Galeno,540.87,7629.11
+76,114,9257.55,tarjeta,pagado,2024-11-29,Particular,1105.19,8152.36
+77,115,5732.58,tarjeta,pagado,2024-06-24,Swiss Medical,1108.94,4623.64
+78,116,6762.8,tarjeta,pagado,2024-01-28,Swiss Medical,270.37,6492.43
+79,119,8379.84,efectivo,pendiente,,Swiss Medical,,8379.84
+80,122,8149.1,tarjeta,pendiente,,OSDE,1828.11,6320.99
+81,123,9026.73,tarjeta,pendiente,,Sancor Salud,,9026.73
+82,126,4983.85,efectivo,pagado,2024-03-25,OSECAC,978.35,4005.5
+83,127,4846.37,transferencia,pagado,2024-10-17,OSDE,400.27,4446.1
+84,128,7660.0,transferencia,pagado,2024-11-04,Particular,1363.31,6296.69
+85,129,6735.4,efectivo,pagado,2024-10-10,OSDE,338.5,6396.9
+86,130,7205.55,tarjeta,pagado,2024-10-19,Swiss Medical,571.22,6634.33
+87,132,7081.46,transferencia,pagado,2024-03-22,OSDE,219.81,6861.65
+88,133,5851.46,transferencia,pagado,2024-05-22,OSDE,540.88,5310.58
+89,135,6503.46,transferencia,pagado,2024-10-11,Galeno,1452.46,5051.0
+90,136,8039.82,efectivo,pagado,2024-11-05,OSECAC,1216.76,6823.06
+91,137,5091.41,transferencia,pagado,2024-01-13,OSDE,,5091.41
+92,140,6671.18,tarjeta,pagado,2024-08-23,OSDE,207.25,6463.93
+93,142,4861.43,tarjeta,pagado,2024-02-26,OSDE,278.76,4582.67
+94,143,6703.0,transferencia,pagado,2024-06-06,Swiss Medical,,6703.0
+95,146,5855.16,tarjeta,pagado,2024-02-08,,871.68,4983.48
+96,147,8186.91,transferencia,pagado,2024-03-20,Galeno,30.78,8156.13
+97,148,8114.02,efectivo,pendiente,,Particular,,8114.02
+98,151,6921.98,efectivo,pagado,2024-05-06,PAMI,,6921.98
+99,152,5386.39,tarjeta,pagado,2024-09-16,OSDE,1221.33,4165.06
+100,153,5568.54,transferencia,pagado,2024-11-12,Sancor Salud,1319.18,4249.36
+101,154,7939.73,transferencia,pagado,2025-01-01,OSDE,1885.04,6054.69
+102,155,8865.17,transferencia,pendiente,,OSDE,119.75,8745.42
+103,157,8661.76,efectivo,pendiente,,PAMI,977.55,7684.21
+104,158,7470.82,tarjeta,pagado,2024-02-09,Sancor Salud,1121.95,6348.87
+105,160,5989.52,tarjeta,pagado,2024-11-11,Sancor Salud,1192.17,4797.35
+106,161,5058.61,efectivo,pagado,2024-12-24,OSDE,635.66,4422.95
+107,162,5352.22,transferencia,pendiente,,PAMI,,5352.22
+108,163,5287.49,efectivo,pagado,2024-04-12,Swiss Medical,478.09,4809.4
+109,166,7462.2,tarjeta,pagado,2024-09-28,OSDE,1033.25,6428.95
+110,169,4888.52,transferencia,pagado,2024-02-16,PAMI,1040.32,3848.2
+111,170,4258.83,transferencia,pagado,2024-03-07,Swiss Medical,798.38,3460.45
+112,171,7338.94,transferencia,pendiente,,Medifé,,7338.94
+113,172,5757.62,transferencia,pagado,2024-10-30,PAMI,243.12,5514.5
+114,173,9085.67,tarjeta,pagado,2024-03-11,Swiss Medical,510.34,8575.33
+115,174,4416.26,efectivo,pagado,2024-04-12,OSDE,1027.37,3388.89
+116,175,5499.98,transferencia,pendiente,,OSDE,223.03,5276.95
+117,178,7019.33,transferencia,pendiente,,OSDE,,7019.33
+118,180,5648.84,transferencia,pagado,2024-04-24,OSDE,923.54,4725.3
+119,181,5586.45,tarjeta,pagado,2024-08-20,Particular,1019.52,4566.93
+120,183,7247.7,efectivo,pagado,2024-12-14,OSECAC,755.67,6492.03
+121,184,6516.38,efectivo,pagado,2024-10-26,OSDE,139.48,6376.9
+122,185,6238.08,tarjeta,pagado,2024-02-03,,373.85,5864.23
+123,186,10478.56,tarjeta,pagado,2024-07-06,,1346.7,9131.86
+124,187,9328.18,tarjeta,pagado,2024-07-30,Galeno,1219.78,8108.4
+125,188,6676.91,transferencia,pagado,2024-02-25,PAMI,1335.42,5341.49
+126,189,7857.47,tarjeta,pagado,2024-07-27,Medifé,1686.3,6171.17
+127,192,5453.82,transferencia,pagado,2024-07-22,Particular,523.37,4930.45
+128,193,6898.82,efectivo,pagado,2024-03-30,Particular,925.03,5973.79
+129,194,4923.02,tarjeta,pagado,2024-07-14,PAMI,22.21,4900.81
+130,196,6511.33,tarjeta,pagado,2024-09-24,Particular,1388.9,5122.43
+131,197,6342.09,tarjeta,pagado,2024-09-16,Galeno,389.86,5952.23
+132,198,5039.1,tarjeta,pagado,2024-07-27,Swiss Medical,1173.55,3865.55
+133,199,7614.26,tarjeta,pagado,2024-09-12,PAMI,59.8,7554.46
+134,200,5399.1,transferencia,pagado,2024-08-22,Sancor Salud,378.19,5020.91
+135,201,4767.33,transferencia,rechazado,,Medifé,,4767.33
+136,204,4533.62,tarjeta,pagado,2024-08-17,Particular,,4533.62
+137,205,6558.85,transferencia,pagado,2024-09-22,OSDE,809.4,5749.45
+138,207,6844.84,transferencia,pagado,2024-12-03,Galeno,95.77,6749.07
+139,208,7821.0,tarjeta,pendiente,,Swiss Medical,,7821.0
+140,211,9402.57,tarjeta,pagado,2024-04-12,Medifé,1975.68,7426.89
+141,213,5528.46,tarjeta,pagado,2024-03-31,Galeno,676.93,4851.53
+142,214,6852.82,transferencia,pagado,2024-10-20,Galeno,930.85,5921.97
+143,217,5243.07,transferencia,pagado,2024-04-06,OSDE,,5243.07
+144,218,5666.08,tarjeta,pagado,2024-07-09,Particular,412.89,5253.19
+145,219,6070.26,transferencia,pendiente,,Particular,,6070.26
+146,221,6633.06,transferencia,pagado,2024-04-13,Swiss Medical,703.01,5930.05
+147,222,5240.49,tarjeta,pagado,2024-03-16,OSDE,1282.09,3958.4
+148,223,6068.05,tarjeta,pagado,2024-05-30,Swiss Medical,304.74,5763.31
+149,224,5202.99,transferencia,pagado,2024-05-12,OSDE,286.54,4916.45
+150,226,6231.43,tarjeta,pendiente,,Sancor Salud,,6231.43
+151,227,9277.13,transferencia,pagado,2024-11-21,Galeno,773.39,8503.74
+152,230,6759.67,tarjeta,pagado,2024-04-07,Particular,685.09,6074.58
+153,231,5600.55,efectivo,pagado,2024-12-21,Galeno,262.12,5338.43
+154,232,5552.27,efectivo,pagado,2024-09-21,PAMI,1066.8,4485.47
+155,234,5199.99,tarjeta,pagado,2024-02-07,OSDE,735.94,4464.05
+156,235,5433.37,efectivo,pagado,2024-09-06,Particular,554.17,4879.2
+157,237,6721.47,transferencia,pagado,2024-05-08,OSECAC,1323.38,5398.09
+158,238,7668.51,tarjeta,pagado,2024-08-28,OSDE,1106.38,6562.13
+159,239,6183.38,tarjeta,pagado,2024-03-02,Particular,605.77,5577.61
+160,241,5205.34,transferencia,pendiente,,PAMI,,5205.34
+161,243,5680.33,efectivo,pagado,2024-01-17,PAMI,185.75,5494.58
+162,244,7172.69,transferencia,pagado,2024-08-10,Swiss Medical,,7172.69
+163,245,6758.65,tarjeta,pagado,2024-03-26,Galeno,1431.95,5326.7
+164,246,5082.55,efectivo,pagado,2024-02-15,OSDE,949.52,4133.03
+165,248,5121.35,transferencia,pagado,2024-06-26,Galeno,763.27,4358.08
+166,250,8903.27,efectivo,pagado,2024-05-21,Galeno,2032.1,6871.17
+167,252,9737.55,efectivo,pagado,2024-12-06,OSECAC,1000.63,8736.92
+168,253,8154.97,tarjeta,pagado,2024-12-09,OSDE,1961.15,6193.82
+169,254,6265.31,transferencia,pagado,2024-06-11,Galeno,446.94,5818.37
+170,255,4645.47,efectivo,pagado,2024-05-02,OSDE,978.37,3667.1
+171,256,7046.2,transferencia,pagado,2024-02-25,Galeno,597.07,6449.13
+172,257,5845.93,transferencia,rechazado,,Swiss Medical,,5845.93
+173,258,7128.99,transferencia,pendiente,,OSDE,,7128.99
+174,260,5305.49,tarjeta,pagado,2024-07-20,Galeno,1091.84,4213.65
+175,261,5770.36,transferencia,pagado,2024-07-20,OSDE,1261.21,4509.15
+176,262,8126.05,transferencia,pagado,2024-04-04,OSDE,1275.1,6850.95
+177,263,8637.99,tarjeta,pendiente,,OSDE,,8637.99
+178,264,7655.28,tarjeta,pendiente,,Swiss Medical,,7655.28
+179,267,8437.75,efectivo,pagado,2024-03-12,OSECAC,1826.57,6611.18
+180,268,7397.96,efectivo,pagado,2024-01-24,Sancor Salud,364.91,7033.05
+181,270,5874.69,tarjeta,pagado,2024-03-14,Medifé,496.75,5377.94
+182,273,5246.85,efectivo,pagado,2024-07-26,Sancor Salud,695.89,4550.96
+183,274,9908.8,transferencia,pagado,2024-09-30,OSDE,305.84,9602.96
+184,275,7831.63,tarjeta,pagado,2024-10-21,,954.22,6877.41
+185,276,6507.24,transferencia,pagado,2024-10-14,Galeno,1380.39,5126.85
+186,277,9991.65,transferencia,pagado,2024-09-05,Sancor Salud,1488.4,8503.25
+187,279,9331.73,transferencia,pagado,2024-07-29,Galeno,830.99,8500.74
+188,280,8236.23,efectivo,pagado,2024-10-26,OSDE,1015.01,7221.22
+189,281,6442.35,efectivo,pagado,2024-04-12,Particular,1178.75,5263.6
+190,282,4871.06,transferencia,pagado,2024-01-14,Medifé,300.73,4570.33
+191,283,7648.77,tarjeta,pagado,2024-07-28,Particular,362.0,7286.77
+192,284,4810.31,efectivo,pagado,2024-07-03,PAMI,423.12,4387.19
+193,285,5091.99,tarjeta,pagado,2024-12-27,Medifé,523.41,4568.58
+194,286,6947.83,transferencia,pagado,2024-08-27,Sancor Salud,944.48,6003.35
+195,287,5753.16,efectivo,pendiente,,OSECAC,,5753.16
+196,288,5198.01,transferencia,pagado,2024-07-27,Galeno,676.91,4521.1
+197,290,6830.37,tarjeta,rechazado,,OSDE,1122.6,5707.77
+198,291,6449.29,tarjeta,pagado,2024-11-27,OSDE,1244.59,5204.7
+199,292,9164.3,transferencia,pagado,2024-05-27,OSDE,948.43,8215.87
+200,293,8966.59,tarjeta,pagado,2024-09-27,Galeno,998.91,7967.68
+201,294,4496.8,tarjeta,pagado,2024-04-16,OSECAC,1058.86,3437.94
+202,296,6299.59,tarjeta,pagado,2024-02-12,Swiss Medical,228.48,6071.11
+203,300,7724.18,tarjeta,pagado,2024-02-18,OSDE,224.22,7499.96
+204,301,7802.01,tarjeta,pagado,2024-06-07,Galeno,1701.57,6100.44
+205,305,4420.28,tarjeta,pagado,2024-09-22,OSDE,450.84,3969.44
+206,306,5943.59,transferencia,rechazado,,Swiss Medical,,5943.59
+207,308,5592.26,efectivo,pagado,2024-04-25,OSDE,1382.01,4210.25
+208,309,8975.09,tarjeta,pagado,2024-09-01,PAMI,609.17,8365.92
+209,310,9952.0,tarjeta,pagado,2024-06-05,Swiss Medical,1036.43,8915.57
+210,311,4212.64,tarjeta,pagado,2024-11-28,Medifé,884.55,3328.09
+211,312,7002.13,efectivo,pagado,2024-06-20,Galeno,1581.68,5420.45
+212,313,5249.72,transferencia,pagado,2024-10-08,Galeno,1084.82,4164.9
+213,314,7265.4,tarjeta,pagado,2024-03-27,OSDE,,7265.4
+214,315,9733.53,efectivo,pagado,2024-05-26,Swiss Medical,309.45,9424.08
+215,318,7694.6,transferencia,pagado,2024-07-03,OSECAC,35.69,7658.91
+216,319,9813.75,tarjeta,pendiente,,Swiss Medical,,9813.75
+217,320,4895.12,transferencia,pagado,2024-09-09,Swiss Medical,23.32,4871.8
+218,321,5488.44,tarjeta,pagado,2024-01-07,,268.89,5219.55
+219,322,5257.43,transferencia,pagado,2024-07-30,OSDE,544.5,4712.93
+220,324,6366.67,transferencia,pagado,2024-11-25,PAMI,510.56,5856.11
+221,325,6146.75,transferencia,pagado,2024-05-02,PAMI,1108.17,5038.58
+222,326,7953.2,transferencia,pagado,2024-09-22,OSDE,851.16,7102.04
+223,327,5704.94,tarjeta,pagado,2024-03-20,,237.92,5467.02
+224,328,6299.78,tarjeta,pagado,2024-03-09,Galeno,,6299.78
+225,329,6287.22,tarjeta,pendiente,,Galeno,,6287.22
+226,330,11263.1,transferencia,pagado,2024-03-19,,956.61,10306.49
+227,331,8623.99,transferencia,pagado,2024-06-20,OSDE,957.14,7666.85
+228,332,8120.78,transferencia,pendiente,,,,8120.78
+229,334,7616.08,efectivo,pagado,2024-10-17,OSDE,700.84,6915.24
+230,335,9838.09,tarjeta,pagado,2024-07-18,Galeno,1202.95,8635.14
+231,336,5016.4,tarjeta,pagado,2024-07-05,Medifé,26.53,4989.87
+232,337,5977.53,transferencia,pagado,2024-07-26,OSDE,681.08,5296.45
+233,338,5843.1,transferencia,pagado,2024-04-06,OSDE,495.71,5347.39
+234,339,7688.81,tarjeta,pagado,2024-10-06,Swiss Medical,420.61,7268.2
+235,340,5625.79,transferencia,pagado,2024-05-25,Sancor Salud,852.09,4773.7
+236,342,6058.94,efectivo,pagado,2024-07-17,OSECAC,501.85,5557.09
+237,343,6048.29,efectivo,pagado,2024-06-15,OSDE,1188.8,4859.49
+238,344,8531.87,tarjeta,pagado,2024-03-22,Swiss Medical,1331.33,7200.54
+239,345,6619.49,transferencia,pagado,2024-07-05,Galeno,,6619.49
+240,346,7306.34,tarjeta,pagado,2024-07-29,OSDE,1053.42,6252.92
+241,347,7730.49,efectivo,pendiente,,Particular,565.09,7165.4
+242,348,7292.92,tarjeta,pagado,2025-01-04,Galeno,1779.29,5513.63
+243,349,5076.73,efectivo,pagado,2024-05-29,,319.9,4756.83
+244,352,9414.65,transferencia,pagado,2024-05-03,Swiss Medical,2008.03,7406.62
+245,354,9945.67,transferencia,pagado,2024-07-09,Medifé,1751.48,8194.19
+246,355,5007.81,efectivo,pagado,2024-08-07,,766.6,4241.21
+247,357,6763.07,tarjeta,pagado,2024-07-03,OSDE,958.86,5804.21
+248,358,8486.23,transferencia,pagado,2024-03-27,PAMI,1408.21,7078.02
+249,361,5512.15,efectivo,pagado,2024-08-07,Swiss Medical,1126.68,4385.47
+250,362,6937.58,tarjeta,pagado,2024-08-14,Galeno,,6937.58
+251,363,4726.4,tarjeta,pagado,2024-06-28,Swiss Medical,920.77,3805.63
+252,367,7683.76,transferencia,pendiente,,OSDE,,7683.76
+253,369,6900.5,efectivo,pagado,2024-08-25,Galeno,1481.77,5418.73
+254,370,5235.68,tarjeta,pagado,2024-03-31,Galeno,806.65,4429.03
+255,372,7450.0,tarjeta,pagado,2024-06-06,Galeno,1292.17,6157.83
+256,373,5670.84,transferencia,pagado,2024-12-06,OSDE,58.29,5612.55
+257,374,7742.94,transferencia,pagado,2024-12-12,Galeno,1423.65,6319.29
+258,376,5403.29,tarjeta,pagado,2024-06-05,Swiss Medical,1237.88,4165.41
+259,379,6513.01,transferencia,pagado,2024-12-06,Galeno,1033.19,5479.82
+260,380,8311.24,tarjeta,pagado,2024-08-07,Swiss Medical,414.61,7896.63
+261,381,9746.66,efectivo,pagado,2024-03-26,Swiss Medical,2039.29,7707.37
+262,382,7663.23,tarjeta,pendiente,,Swiss Medical,1854.25,5808.98
+263,383,6980.93,transferencia,pagado,2024-04-17,OSDE,1194.41,5786.52
+264,384,8097.89,transferencia,pendiente,,Galeno,1265.19,6832.7
+265,385,4713.99,transferencia,pagado,2024-08-28,Medifé,636.01,4077.98
+266,386,6811.58,tarjeta,pagado,2024-01-03,OSDE,118.66,6692.92
+267,387,6237.07,efectivo,pagado,2024-09-30,OSDE,236.51,6000.56
+268,388,5364.44,efectivo,pagado,2024-11-19,Particular,823.27,4541.17
+269,389,7018.98,transferencia,pagado,2024-08-27,OSDE,121.1,6897.88
+270,390,8474.53,tarjeta,pagado,2024-06-04,Sancor Salud,869.18,7605.35
+271,392,7026.91,tarjeta,pagado,2024-08-10,Galeno,,7026.91
+272,394,4734.16,efectivo,pagado,2024-01-25,OSECAC,179.99,4554.17
+273,395,5553.97,transferencia,pagado,2024-05-04,OSDE,733.15,4820.82
+274,396,7830.92,transferencia,pagado,2024-08-08,OSDE,847.22,6983.7
+275,397,7832.7,transferencia,pagado,2024-09-27,Galeno,78.2,7754.5
+276,399,5855.3,transferencia,pagado,2024-05-02,OSDE,1296.23,4559.07
+277,400,6218.81,efectivo,pagado,2024-08-25,Galeno,437.92,5780.89
+278,401,7708.96,tarjeta,pagado,2024-02-21,Galeno,856.5,6852.46
+279,402,5672.32,transferencia,pagado,2024-05-12,Sancor Salud,4.32,5668.0
+280,406,6183.57,tarjeta,pendiente,,OSDE,1534.88,4648.69
+281,407,5027.66,transferencia,rechazado,,Galeno,,5027.66
+282,408,5146.86,efectivo,pagado,2024-10-26,OSECAC,530.75,4616.11
+283,409,7290.58,transferencia,pagado,2024-03-21,Galeno,222.29,7068.29
+284,410,7034.32,tarjeta,pagado,2024-04-29,OSDE,1344.59,5689.73
+285,411,6718.4,transferencia,pagado,2024-03-06,Galeno,1231.19,5487.21
+286,412,7317.42,transferencia,pagado,2024-05-03,Swiss Medical,741.35,6576.07
+287,413,7230.73,tarjeta,pagado,2024-01-10,OSDE,289.12,6941.61
+288,415,8955.04,transferencia,pagado,2024-03-04,Galeno,455.0,8500.04
+289,416,4996.77,transferencia,pagado,2024-06-12,Swiss Medical,339.88,4656.89
+290,417,5035.43,transferencia,pagado,2024-01-31,Galeno,,5035.43
+291,418,6485.18,transferencia,pagado,2024-05-21,OSDE,52.13,6433.05
+292,419,7633.75,efectivo,pagado,2024-06-15,,247.03,7386.72
+293,420,8660.48,efectivo,pagado,2024-02-25,Galeno,812.99,7847.49
+294,421,5735.11,tarjeta,rechazado,,Galeno,,5735.11
+295,422,8582.12,tarjeta,pagado,2024-11-14,Particular,1009.89,7572.23
+296,424,5147.25,tarjeta,pendiente,,Galeno,1186.59,3960.66
+297,425,7351.74,tarjeta,pagado,2024-07-10,Particular,377.86,6973.88
+298,426,8869.3,tarjeta,pagado,2024-08-07,Swiss Medical,1559.75,7309.55
+299,428,5464.17,tarjeta,rechazado,,OSDE,,5464.17
+300,430,5907.54,transferencia,pagado,2024-08-12,OSDE,461.64,5445.9
+301,431,5471.92,tarjeta,pagado,2024-09-19,Particular,612.56,4859.36
+302,432,5239.15,tarjeta,pagado,2024-04-01,OSDE,1055.88,4183.27
+303,433,9255.96,transferencia,pendiente,,Swiss Medical,783.12,8472.84
+304,434,5400.02,tarjeta,pendiente,,Galeno,1175.23,4224.79
+305,435,6610.72,transferencia,pagado,2024-08-28,PAMI,498.67,6112.05
+306,439,8028.36,transferencia,pagado,2024-02-18,OSDE,281.64,7746.72
+307,440,10435.49,tarjeta,pagado,2024-08-20,PAMI,,10435.49
+308,441,7665.25,tarjeta,pagado,2024-11-18,OSECAC,604.65,7060.6
+309,443,9447.54,efectivo,pagado,2024-12-21,Swiss Medical,628.52,8819.02
+310,446,8135.18,transferencia,pagado,2024-04-23,OSDE,942.07,7193.11
+311,447,6195.99,efectivo,pagado,2024-04-01,Particular,367.44,5828.55
+312,448,5118.37,efectivo,pagado,2024-01-23,Sancor Salud,1235.6,3882.77
+313,454,5662.25,transferencia,pagado,2024-07-10,PAMI,724.45,4937.8
+314,456,5517.29,transferencia,pagado,2024-05-09,OSDE,615.57,4901.72
+315,459,7798.16,transferencia,pagado,2024-04-03,PAMI,1593.59,6204.57
+316,460,8252.7,efectivo,pagado,2024-02-22,Galeno,604.72,7647.98
+317,463,5708.03,transferencia,pagado,2024-11-11,Swiss Medical,,5708.03
+318,465,5014.81,tarjeta,pagado,2024-04-14,Galeno,754.92,4259.89
+319,466,6952.47,tarjeta,pendiente,,OSDE,,6952.47
+320,467,6165.09,tarjeta,pagado,2024-08-13,Swiss Medical,1436.18,4728.91
+321,468,7472.56,transferencia,pagado,2024-09-12,Medifé,1720.52,5752.04
+322,469,7294.51,tarjeta,pagado,2024-11-29,Sancor Salud,1755.83,5538.68
+323,470,6368.69,tarjeta,pendiente,,OSDE,,6368.69
+324,472,7072.26,efectivo,rechazado,,OSDE,938.0,6134.26
+325,473,6350.07,transferencia,pagado,2024-09-08,OSDE,1324.43,5025.64
+326,478,6886.14,transferencia,pagado,2024-03-11,PAMI,1429.82,5456.32
+327,479,9311.07,efectivo,pendiente,,PAMI,864.11,8446.96
+328,480,7449.76,efectivo,pagado,2024-07-02,OSDE,1517.55,5932.21
+329,481,7093.83,transferencia,pagado,2024-02-16,Particular,641.71,6452.12
+330,482,5423.18,tarjeta,pagado,2024-07-04,PAMI,785.53,4637.65
+331,483,7927.43,transferencia,pagado,2024-08-28,OSECAC,982.4,6945.03
+332,484,7381.98,transferencia,pagado,2024-02-05,PAMI,731.53,6650.45
+333,485,6380.6,tarjeta,pagado,2024-03-08,PAMI,1444.73,4935.87
+334,486,10759.33,tarjeta,pagado,2024-06-06,OSDE,1393.93,9365.4
+335,488,7760.75,transferencia,pendiente,,Sancor Salud,1505.46,6255.29
+336,489,7194.43,tarjeta,rechazado,,OSDE,,7194.43
+337,491,7146.11,tarjeta,pagado,2024-10-21,Galeno,1463.32,5682.79
+338,492,5303.41,transferencia,pagado,2024-09-15,Sancor Salud,477.92,4825.49
+339,494,7648.37,tarjeta,pagado,2024-07-16,Swiss Medical,,7648.37
+340,496,9107.29,efectivo,pagado,2024-12-23,Particular,495.43,8611.86
+341,498,6043.81,transferencia,pagado,2024-03-12,OSDE,87.87,5955.94
+342,499,8878.7,tarjeta,rechazado,,Swiss Medical,,8878.7
+343,501,6507.76,efectivo,pendiente,,Galeno,,6507.76
+344,502,7794.0,transferencia,pagado,2024-11-05,Sancor Salud,27.57,7766.43
+345,503,7459.11,tarjeta,pagado,2024-06-15,Medifé,1456.09,6003.02
+346,504,4590.25,tarjeta,pagado,2024-01-28,Galeno,736.67,3853.58
+347,507,6675.61,tarjeta,pagado,2024-04-16,OSECAC,,6675.61
+348,508,8038.97,tarjeta,pagado,2024-02-01,OSECAC,1821.99,6216.98
+349,509,7661.08,efectivo,pagado,2024-07-07,Galeno,1122.19,6538.89
+350,510,9532.81,tarjeta,pagado,2024-05-20,OSDE,1843.35,7689.46
+351,511,8863.92,tarjeta,pagado,2024-11-07,Galeno,786.64,8077.28
+352,512,9015.16,efectivo,pagado,2024-05-09,Galeno,1291.84,7723.32
+353,513,9636.63,tarjeta,pagado,2024-05-27,Medifé,564.44,9072.19
+354,514,5927.2,tarjeta,pagado,2024-05-13,Galeno,425.97,5501.23
+355,515,8576.41,efectivo,pagado,2024-11-22,PAMI,51.24,8525.17
+356,516,4807.84,tarjeta,pagado,2024-06-22,Medifé,168.75,4639.09
+357,517,6330.68,tarjeta,pagado,2024-03-20,PAMI,1150.35,5180.33
+358,518,5341.29,transferencia,pagado,2024-07-16,OSECAC,1003.96,4337.33
+359,519,5547.88,transferencia,pendiente,,Sancor Salud,195.66,5352.22
+360,520,4845.22,transferencia,pagado,2024-06-14,OSDE,796.84,4048.38
+361,521,5262.49,efectivo,pagado,2024-03-31,Swiss Medical,22.26,5240.23
+362,522,7733.75,transferencia,pagado,2024-08-08,OSECAC,527.4,7206.35
+363,524,5360.72,transferencia,pagado,2024-12-28,,867.3,4493.42
+364,525,4810.15,transferencia,pagado,2024-09-19,Swiss Medical,1031.72,3778.43
+365,526,7628.26,transferencia,pagado,2024-07-31,OSDE,665.62,6962.64
+366,527,8499.38,tarjeta,pagado,2024-10-24,Swiss Medical,975.03,7524.35
+367,528,7409.9,transferencia,pagado,2024-04-03,Galeno,1754.76,5655.14
+368,530,6425.47,transferencia,pagado,2024-03-16,PAMI,1428.96,4996.51
+369,531,5479.14,tarjeta,rechazado,,Swiss Medical,,5479.14
+370,532,6289.48,transferencia,pagado,2024-06-21,OSDE,,6289.48
+371,533,5223.61,efectivo,pagado,2024-07-10,PAMI,947.52,4276.09
+372,535,8895.1,transferencia,pagado,2024-06-19,PAMI,,8895.1
+373,536,8769.0,tarjeta,pagado,2024-09-17,Particular,1775.68,6993.32
+374,537,6443.53,tarjeta,pagado,2024-12-19,,715.26,5728.27
+375,539,5599.31,transferencia,pagado,2024-05-09,OSDE,1042.3,4557.01
+376,540,7146.18,efectivo,pagado,2024-02-04,PAMI,,7146.18
+377,541,4877.08,tarjeta,pagado,2024-03-10,Galeno,102.21,4774.87
+378,542,5635.29,efectivo,pagado,2024-04-12,Galeno,356.67,5278.62
+379,543,6816.84,transferencia,pagado,2024-01-30,Galeno,1224.5,5592.34
+380,544,6793.65,tarjeta,pagado,2024-08-26,Galeno,522.37,6271.28
+381,547,7155.78,transferencia,pagado,2024-09-19,PAMI,1567.58,5588.2
+382,548,6391.4,tarjeta,pagado,2024-01-17,OSDE,91.88,6299.52
+383,549,6873.79,transferencia,rechazado,,OSDE,1533.34,5340.45
+384,550,5676.78,tarjeta,rechazado,,OSDE,,5676.78
+385,551,6500.94,tarjeta,pagado,2024-07-23,Sancor Salud,1192.76,5308.18
+386,552,5985.06,tarjeta,pendiente,,Galeno,,5985.06
+387,553,7595.81,tarjeta,pagado,2024-07-18,Swiss Medical,1231.43,6364.38
+388,555,5293.22,transferencia,pagado,2024-08-13,OSDE,555.23,4737.99
+389,557,7570.45,tarjeta,pagado,2024-02-05,OSDE,739.23,6831.22
+390,559,9625.45,tarjeta,pagado,2024-08-02,Sancor Salud,2174.46,7450.99
+391,560,7838.16,tarjeta,rechazado,,Particular,1059.59,6778.57
+392,563,5795.25,efectivo,pagado,2024-09-10,OSDE,33.48,5761.77
+393,564,5475.67,efectivo,pagado,2024-02-22,OSECAC,122.53,5353.14
+394,565,5162.71,transferencia,pagado,2024-11-12,OSECAC,178.02,4984.69
+395,566,5689.33,transferencia,pagado,2024-04-01,OSDE,1124.79,4564.54
+396,567,5012.09,tarjeta,pagado,2024-03-22,Galeno,1231.3,3780.79
+397,568,4711.64,transferencia,pagado,2024-03-10,OSECAC,294.47,4417.17
+398,569,7750.0,tarjeta,pendiente,,Medifé,390.09,7359.91
+399,571,5382.02,efectivo,pagado,2024-09-28,Particular,276.76,5105.26
+400,572,5152.34,tarjeta,pagado,2024-01-29,Swiss Medical,76.89,5075.45
+401,575,4467.23,tarjeta,rechazado,,Sancor Salud,429.86,4037.37
+402,577,9592.63,transferencia,pagado,2024-07-25,OSDE,,9592.63
+403,579,7870.38,tarjeta,pagado,2024-11-29,Medifé,445.01,7425.37
+404,582,4777.11,transferencia,pagado,2024-12-30,OSDE,1071.72,3705.39
+405,584,8145.59,tarjeta,pendiente,,Galeno,1798.06,6347.53
+406,585,5005.17,efectivo,pagado,2024-12-28,Galeno,756.39,4248.78
+407,587,5345.9,tarjeta,pagado,2024-01-06,Medifé,896.74,4449.16
+408,589,7898.82,transferencia,pagado,2024-04-20,Particular,,7898.82
+409,590,5489.15,efectivo,pagado,2024-08-07,PAMI,,5489.15
+410,591,6030.49,tarjeta,rechazado,,,,6030.49
+411,593,6268.25,tarjeta,pagado,2024-03-11,Particular,,6268.25
+412,594,5541.65,transferencia,pagado,2024-02-02,OSDE,607.87,4933.78
+413,595,7441.52,transferencia,pagado,2024-02-28,Medifé,1246.97,6194.55
+414,597,5475.62,efectivo,pagado,2024-04-28,PAMI,366.49,5109.13
+415,598,4905.93,tarjeta,pagado,2024-06-22,OSDE,,4905.93
+416,599,5290.07,tarjeta,pagado,2024-11-10,Galeno,267.25,5022.82
+417,600,5778.58,transferencia,rechazado,,OSDE,,5778.58
+418,601,6876.96,efectivo,pagado,2024-01-13,Sancor Salud,997.54,5879.42
+419,603,4928.75,transferencia,pagado,2024-05-20,Medifé,720.85,4207.9
+420,605,7181.67,tarjeta,pagado,2024-09-10,Galeno,1091.4,6090.27
+421,606,5600.45,efectivo,pagado,2024-03-09,OSDE,969.72,4630.73
+422,607,7207.24,tarjeta,pagado,2024-09-21,Swiss Medical,397.28,6809.96
+423,609,6723.1,tarjeta,pagado,2024-11-10,Galeno,232.93,6490.17
+424,610,5705.93,efectivo,pagado,2024-11-11,OSECAC,820.43,4885.5
+425,613,4506.62,tarjeta,pagado,2024-01-10,OSDE,863.19,3643.43
+426,614,5048.88,tarjeta,pagado,2024-03-04,Swiss Medical,620.07,4428.81
+427,615,7606.9,efectivo,pagado,2024-03-17,Galeno,120.96,7485.94
+428,616,5627.94,efectivo,pagado,2024-12-04,OSECAC,1332.7,4295.24
+429,617,7786.59,transferencia,pagado,2024-10-14,Particular,1024.89,6761.7
+430,620,9162.1,transferencia,pagado,2024-12-09,Galeno,1045.91,8116.19
+431,621,5007.83,tarjeta,pagado,2024-05-01,OSDE,411.99,4595.84
+432,622,6282.71,tarjeta,pagado,2024-09-15,OSDE,283.96,5998.75
+433,623,7299.98,tarjeta,pagado,2024-07-01,PAMI,358.48,6941.5
+434,625,8391.61,transferencia,pagado,2024-05-10,OSDE,,8391.61
+435,627,7206.41,tarjeta,pagado,2024-07-22,Swiss Medical,1008.65,6197.76
+436,628,7537.46,transferencia,pagado,2024-07-12,Galeno,1505.51,6031.95
+437,629,8516.9,transferencia,pendiente,,Galeno,,8516.9
+438,630,7423.29,transferencia,pagado,2024-07-31,OSDE,,7423.29
+439,631,8122.98,tarjeta,rechazado,,,,8122.98
+440,632,4955.44,tarjeta,pagado,2024-08-14,OSDE,943.9,4011.54
+441,634,7503.45,transferencia,rechazado,,Swiss Medical,,7503.45
+442,637,5461.24,tarjeta,pagado,2024-06-20,Swiss Medical,636.26,4824.98
+443,639,7887.04,transferencia,pagado,2024-09-09,Swiss Medical,150.02,7737.02
+444,640,5217.26,transferencia,pagado,2024-09-14,Particular,1130.63,4086.63
+445,644,5299.05,tarjeta,pagado,2024-02-20,Swiss Medical,599.91,4699.14
+446,645,7506.25,transferencia,pagado,2024-03-25,OSDE,807.85,6698.4
+447,646,8127.61,tarjeta,pagado,2024-04-09,Galeno,451.3,7676.31
+448,647,9003.58,efectivo,pagado,2024-12-04,OSECAC,2225.35,6778.23
+449,650,6138.78,efectivo,pagado,2024-12-20,OSECAC,761.39,5377.39
+450,652,5353.4,tarjeta,pagado,2024-10-16,Galeno,1207.94,4145.46
+451,654,5911.89,transferencia,pagado,2024-10-11,Galeno,1023.63,4888.26
+452,657,8096.93,transferencia,pendiente,,Galeno,,8096.93
+453,658,5256.29,transferencia,pendiente,,OSDE,152.33,5103.96
+454,659,9224.34,transferencia,pagado,2024-10-11,Sancor Salud,454.98,8769.36
+455,660,4555.58,efectivo,pagado,2024-04-11,PAMI,269.16,4286.42
+456,661,8236.15,efectivo,pendiente,,Galeno,,8236.15
+457,662,4827.76,tarjeta,pagado,2024-08-19,Galeno,404.32,4423.44
+458,663,7403.24,transferencia,pagado,2024-07-11,OSDE,1718.2,5685.04
+459,664,7230.27,tarjeta,pagado,2024-10-22,OSDE,339.13,6891.14
+460,665,9679.29,transferencia,pagado,2024-05-10,OSDE,803.29,8876.0
+461,667,5600.48,transferencia,pagado,2024-06-12,Particular,367.43,5233.05
+462,668,6786.63,tarjeta,pagado,2024-09-09,OSDE,721.88,6064.75
+463,670,5189.34,transferencia,pagado,2024-10-04,OSDE,40.01,5149.33
+464,672,10686.02,tarjeta,pagado,2024-04-29,OSDE,165.26,10520.76
+465,673,5512.3,tarjeta,pagado,2024-06-19,Galeno,164.69,5347.61
+466,674,4991.82,tarjeta,rechazado,,Galeno,,4991.82
+467,675,5304.74,tarjeta,pendiente,,OSDE,,5304.74
+468,676,4680.23,efectivo,pagado,2024-03-19,PAMI,608.66,4071.57
+469,677,8632.06,tarjeta,pagado,2024-04-26,Swiss Medical,1657.23,6974.83
+470,679,5196.41,transferencia,pagado,2024-10-03,OSDE,1154.61,4041.8
+471,681,5916.91,tarjeta,pagado,2024-05-30,Swiss Medical,1126.4,4790.51
+472,683,8704.2,tarjeta,rechazado,,Galeno,,8704.2
+473,684,8253.88,tarjeta,pagado,2024-01-03,OSDE,471.31,7782.57
+474,685,5508.11,tarjeta,pagado,2024-01-16,OSECAC,,5508.11
+475,686,4513.59,tarjeta,pendiente,,OSDE,901.6,3611.99
+476,687,5406.66,tarjeta,pagado,2024-12-14,Swiss Medical,738.69,4667.97
+477,688,9413.95,efectivo,pagado,2024-10-26,OSDE,305.07,9108.88
+478,691,5940.14,tarjeta,pagado,2024-03-28,Galeno,887.24,5052.9
+479,692,9356.13,tarjeta,pagado,2024-03-22,Particular,1309.83,8046.3
+480,693,4802.39,transferencia,pagado,2024-01-07,Galeno,692.75,4109.64
+481,695,4241.36,transferencia,pagado,2024-08-01,Particular,140.9,4100.46
+482,697,7312.89,tarjeta,pagado,2024-05-22,OSDE,16.28,7296.61
+483,698,8197.83,tarjeta,pagado,2024-03-04,OSDE,1611.73,6586.1
+484,700,5196.62,tarjeta,pagado,2024-07-11,,492.07,4704.55
+485,701,6048.85,transferencia,pagado,2024-03-18,OSDE,1018.31,5030.54
+486,702,9135.91,efectivo,pendiente,,PAMI,944.28,8191.63
+487,703,5914.94,efectivo,pagado,2024-07-05,OSDE,81.43,5833.51
+488,704,6410.65,transferencia,pagado,2024-12-18,OSECAC,372.89,6037.76
+489,705,9492.45,tarjeta,pagado,2024-12-07,Particular,,9492.45
+490,706,5695.31,tarjeta,pagado,2024-12-02,Swiss Medical,577.93,5117.38
+491,709,5417.94,tarjeta,pagado,2024-03-20,Galeno,966.01,4451.93
+492,711,9092.67,tarjeta,pagado,2024-04-01,Sancor Salud,423.98,8668.69
+493,713,8323.3,transferencia,pagado,2024-07-13,Particular,460.89,7862.41
+494,715,6080.16,transferencia,pagado,2024-10-31,Galeno,,6080.16
+495,717,5046.79,tarjeta,pagado,2024-08-30,Swiss Medical,927.39,4119.4
+496,718,7466.98,efectivo,pagado,2024-10-05,Galeno,1330.9,6136.08
+497,719,4661.92,tarjeta,pagado,2024-07-14,Medifé,990.32,3671.6
+498,722,8193.75,efectivo,pagado,2024-11-07,Galeno,1624.65,6569.1
+499,724,5161.27,efectivo,pendiente,,Sancor Salud,,5161.27
+500,725,7314.78,tarjeta,pagado,2024-12-09,Swiss Medical,1106.26,6208.52
+501,729,6408.79,transferencia,pagado,2024-06-27,PAMI,1027.81,5380.98
+502,731,6607.13,tarjeta,pagado,2024-11-02,OSDE,169.1,6438.03
+503,732,6268.34,tarjeta,pagado,2024-11-17,Medifé,198.76,6069.58
+504,733,5632.44,tarjeta,pagado,2024-06-01,Medifé,,5632.44
+505,734,7018.17,tarjeta,pagado,2024-05-23,,936.37,6081.8
+506,737,7940.38,transferencia,pendiente,,Particular,,7940.38
+507,738,9025.37,transferencia,pagado,2024-07-11,OSDE,1734.65,7290.72
+508,739,5365.33,tarjeta,pagado,2024-01-13,OSDE,1198.98,4166.35
+509,740,5370.11,transferencia,pagado,2024-09-23,Swiss Medical,1088.66,4281.45
+510,742,6582.5,tarjeta,pagado,2024-04-26,Sancor Salud,147.1,6435.4
+511,743,9602.22,tarjeta,pagado,2024-09-02,OSECAC,1970.38,7631.84
+512,745,7087.88,transferencia,pagado,2024-03-07,Sancor Salud,1288.24,5799.64
+513,746,4530.51,transferencia,rechazado,,Sancor Salud,,4530.51
+514,747,5064.7,tarjeta,pagado,2024-07-25,OSDE,605.32,4459.38
+515,750,6413.35,transferencia,pagado,2024-02-25,OSDE,1478.36,4934.99
+516,751,8387.5,tarjeta,pagado,2024-08-24,OSDE,176.04,8211.46
+517,754,9015.45,tarjeta,pagado,2024-11-06,Particular,436.61,8578.84
+518,755,6096.31,efectivo,pagado,2024-07-14,OSECAC,1184.47,4911.84
+519,756,10483.65,transferencia,pagado,2024-07-02,OSDE,2161.27,8322.38
+520,757,4889.49,efectivo,pagado,2024-04-26,PAMI,1127.01,3762.48
+521,758,5871.02,tarjeta,pagado,2024-04-25,Galeno,575.46,5295.56
+522,759,7207.14,transferencia,pagado,2024-08-23,Galeno,483.4,6723.74
+523,760,5891.87,transferencia,pagado,2024-03-11,,1138.36,4753.51
+524,761,9293.21,tarjeta,pagado,2024-05-30,Sancor Salud,238.2,9055.01
+525,762,7337.33,transferencia,pagado,2024-01-05,OSDE,85.51,7251.82
+526,763,6848.08,tarjeta,pendiente,,Particular,,6848.08
+527,765,5897.5,tarjeta,pagado,2024-08-10,OSDE,1043.97,4853.53
+528,767,7048.76,tarjeta,pendiente,,PAMI,,7048.76
+529,768,6709.62,transferencia,pagado,2024-06-29,Sancor Salud,828.98,5880.64
+530,770,5691.09,tarjeta,pendiente,,Swiss Medical,,5691.09
+531,771,9654.74,transferencia,pendiente,,Sancor Salud,,9654.74
+532,774,7610.04,tarjeta,pagado,2024-10-21,Galeno,1156.48,6453.56
+533,775,7913.66,transferencia,pendiente,,Galeno,1394.62,6519.04
+534,776,10048.83,transferencia,pagado,2024-08-17,PAMI,840.88,9207.95
+535,777,8209.09,efectivo,pagado,2024-11-17,Particular,1128.88,7080.21
+536,778,5417.63,tarjeta,pagado,2024-09-03,Medifé,1190.48,4227.15
+537,779,7078.34,transferencia,rechazado,,Sancor Salud,,7078.34
+538,782,5998.54,transferencia,pagado,2024-01-23,OSDE,386.16,5612.38
+539,785,5084.62,efectivo,pagado,2024-08-13,OSDE,552.57,4532.05
+540,786,7890.69,tarjeta,pagado,2024-12-21,Galeno,469.82,7420.87
+541,788,7875.25,efectivo,rechazado,,Sancor Salud,,7875.25
+542,789,7297.75,tarjeta,pagado,2024-10-07,Galeno,952.03,6345.72
+543,790,5339.61,efectivo,pagado,2024-12-01,OSDE,631.45,4708.16
+544,791,6105.38,tarjeta,pagado,2024-11-13,Swiss Medical,365.68,5739.7
+545,792,8490.61,transferencia,pagado,2024-03-28,Galeno,648.71,7841.9
+546,794,6731.57,tarjeta,pendiente,,Particular,,6731.57
+547,796,5500.02,tarjeta,pagado,2024-09-09,Galeno,1007.04,4492.98
+548,797,6867.42,tarjeta,pagado,2024-05-18,Sancor Salud,,6867.42
+549,801,6246.5,tarjeta,pagado,2024-02-22,OSDE,92.57,6153.93
+550,803,7579.99,efectivo,pagado,2024-08-17,PAMI,1159.0,6420.99
+551,805,8482.55,tarjeta,pagado,2024-05-07,OSDE,739.06,7743.49
+552,806,5255.64,transferencia,pagado,2024-04-23,Galeno,823.55,4432.09
+553,808,8409.67,transferencia,pagado,2024-03-14,OSECAC,,8409.67
+554,810,4417.82,tarjeta,pagado,2024-10-24,Swiss Medical,1038.9,3378.92
+555,812,10484.51,tarjeta,pagado,2024-06-18,Sancor Salud,670.43,9814.08
+556,813,6329.09,tarjeta,pagado,2024-03-14,Swiss Medical,484.01,5845.08
+557,814,9392.0,transferencia,pendiente,,OSDE,,9392.0
+558,815,9916.6,transferencia,pagado,2024-11-22,OSDE,,9916.6
+559,816,7379.99,transferencia,pendiente,,OSECAC,663.83,6716.16
+560,817,8347.06,tarjeta,pagado,2024-07-18,OSDE,1470.12,6876.94
+561,818,8843.35,tarjeta,pagado,2024-05-14,OSDE,1499.73,7343.62
+562,819,6016.39,tarjeta,pagado,2024-11-17,OSECAC,569.14,5447.25
+563,822,6583.63,efectivo,pagado,2024-12-27,Particular,,6583.63
+564,823,7525.45,efectivo,pagado,2024-03-25,PAMI,1759.23,5766.22
+565,824,6674.9,tarjeta,pagado,2024-06-12,Swiss Medical,1375.03,5299.87
+566,827,7059.19,transferencia,pagado,2024-05-23,Swiss Medical,553.55,6505.64
+567,828,6415.56,tarjeta,pendiente,,Medifé,,6415.56
+568,829,7480.13,transferencia,pendiente,,,,7480.13
+569,830,8160.22,transferencia,pagado,2024-05-27,Galeno,1498.77,6661.45
+570,831,8592.31,tarjeta,pagado,2024-12-03,Swiss Medical,1007.93,7584.38
+571,832,9251.01,tarjeta,pagado,2024-07-23,OSDE,1396.74,7854.27
+572,833,7900.55,tarjeta,pagado,2024-07-27,,1419.59,6480.96
+573,834,5543.44,tarjeta,pagado,2024-10-19,Galeno,1256.48,4286.96
+574,835,9910.08,tarjeta,pagado,2024-08-25,Medifé,1305.67,8604.41
+575,836,4900.59,efectivo,pagado,2024-12-15,PAMI,53.8,4846.79
+576,838,7691.6,tarjeta,pendiente,,OSDE,,7691.6
+577,839,7517.31,transferencia,pagado,2024-11-07,OSDE,1270.03,6247.28
+578,840,5564.15,tarjeta,pendiente,,Swiss Medical,,5564.15
+579,841,6543.94,tarjeta,pagado,2024-05-30,OSDE,1150.48,5393.46
+580,842,9492.29,tarjeta,rechazado,,OSDE,,9492.29
+581,843,9891.44,efectivo,pendiente,,Particular,322.68,9568.76
+582,845,7445.95,tarjeta,pagado,2024-08-23,Medifé,595.3,6850.65
+583,849,8120.02,transferencia,pendiente,,,298.24,7821.78
+584,850,8069.32,transferencia,pagado,2024-06-24,Medifé,1907.26,6162.06
+585,853,7331.12,transferencia,pagado,2024-09-21,Swiss Medical,213.38,7117.74
+586,854,7211.98,transferencia,pagado,2024-11-29,OSDE,1420.25,5791.73
+587,855,4918.66,transferencia,pendiente,,Galeno,544.06,4374.6
+588,856,7657.23,tarjeta,pagado,2024-08-17,Swiss Medical,217.15,7440.08
+589,858,9103.8,efectivo,pagado,2024-02-04,Galeno,1743.52,7360.28
+590,859,5393.82,efectivo,pagado,2024-01-30,Particular,280.7,5113.12
+591,860,7705.59,transferencia,pagado,2024-08-08,OSDE,961.59,6744.0
+592,861,6306.33,tarjeta,pagado,2024-01-11,Galeno,1188.05,5118.28
+593,862,5240.82,transferencia,pagado,2024-08-31,PAMI,796.23,4444.59
+594,864,6494.84,tarjeta,pagado,2024-10-27,OSDE,468.49,6026.35
+595,865,9141.21,tarjeta,pagado,2024-04-21,Medifé,1745.72,7395.49
+596,866,5418.62,efectivo,pagado,2024-07-16,PAMI,160.03,5258.59
+597,867,9364.12,transferencia,rechazado,,OSECAC,,9364.12
+598,870,8349.33,transferencia,pagado,2024-01-11,Swiss Medical,1927.96,6421.37
+599,873,6750.51,transferencia,pagado,2024-11-06,Galeno,329.11,6421.4
+600,874,9082.93,transferencia,pagado,2024-06-02,Swiss Medical,873.75,8209.18
+601,875,6255.64,efectivo,pagado,2024-12-02,PAMI,19.75,6235.89
+602,876,5364.7,transferencia,pagado,2024-06-12,Galeno,292.69,5072.01
+603,877,7052.68,efectivo,pendiente,,OSDE,1601.07,5451.61
+604,879,5159.0,efectivo,pendiente,,OSECAC,725.86,4433.14
+605,881,9188.8,tarjeta,pagado,2024-08-28,Swiss Medical,145.63,9043.17
+606,882,6874.08,tarjeta,pagado,2024-08-30,OSDE,,6874.08
+607,883,5765.45,tarjeta,pagado,2024-10-24,OSDE,1120.89,4644.56
+608,884,8177.63,transferencia,pagado,2024-12-09,Particular,848.59,7329.04
+609,885,7533.95,efectivo,pagado,2024-05-18,Galeno,,7533.95
+610,886,7333.16,transferencia,pendiente,,OSDE,1470.38,5862.78
+611,887,8567.74,transferencia,rechazado,,Sancor Salud,238.61,8329.13
+612,889,9111.68,tarjeta,pagado,2024-10-22,OSDE,1599.77,7511.91
+613,891,7312.2,transferencia,pendiente,,OSECAC,,7312.2
+614,892,7923.29,transferencia,pagado,2024-12-21,Swiss Medical,1675.48,6247.81
+615,893,7356.76,efectivo,pagado,2024-01-05,OSECAC,1751.1,5605.66
+616,894,7435.65,efectivo,pagado,2024-08-30,PAMI,,7435.65
+617,896,5134.3,tarjeta,pagado,2024-04-07,OSDE,1056.51,4077.79
+618,897,6355.4,tarjeta,pagado,2024-06-06,Galeno,1008.62,5346.78
+619,898,8488.37,tarjeta,pagado,2024-01-07,Sancor Salud,1988.68,6499.69
+620,900,5039.36,efectivo,pendiente,,Particular,,5039.36
+621,902,6663.68,tarjeta,pagado,2024-05-31,Swiss Medical,134.73,6528.95
+622,904,5886.36,transferencia,pagado,2024-06-27,OSDE,992.44,4893.92
+623,905,6164.33,tarjeta,pagado,2024-07-25,Galeno,608.54,5555.79
+624,906,4575.39,tarjeta,pagado,2024-12-30,Galeno,869.88,3705.51
+625,908,5206.16,transferencia,pagado,2024-05-09,OSDE,719.0,4487.16
+626,909,8074.93,transferencia,pagado,2024-05-14,Swiss Medical,515.84,7559.09
+627,911,5058.43,tarjeta,pagado,2024-08-24,Galeno,1212.63,3845.8
+628,912,4657.14,tarjeta,pagado,2024-01-06,Sancor Salud,417.67,4239.47
+629,913,4890.11,tarjeta,pagado,2025-01-07,,552.87,4337.24
+630,915,5203.68,efectivo,pagado,2024-04-26,Particular,349.63,4854.05
+631,917,7406.71,tarjeta,pagado,2024-07-24,Galeno,1465.35,5941.36
+632,918,6844.89,efectivo,pagado,2024-09-20,Galeno,249.05,6595.84
+633,919,8345.16,tarjeta,pendiente,,,51.3,8293.86
+634,920,5276.91,transferencia,pagado,2024-02-28,OSDE,,5276.91
+635,922,5449.11,transferencia,pagado,2024-07-19,OSDE,555.29,4893.82
+636,923,5277.69,efectivo,pagado,2024-04-23,Galeno,612.45,4665.24
+637,924,7704.4,efectivo,pagado,2024-11-11,PAMI,,7704.4
+638,925,4999.13,tarjeta,pendiente,,Swiss Medical,,4999.13
+639,928,4853.44,tarjeta,pagado,2024-07-04,OSDE,652.01,4201.43
+640,929,5687.44,transferencia,pagado,2024-01-21,Galeno,103.31,5584.13
+641,931,8986.79,transferencia,pendiente,,OSDE,,8986.79
+642,932,5122.62,tarjeta,pagado,2024-03-11,Particular,308.39,4814.23
+643,933,5911.83,tarjeta,pagado,2024-09-22,Swiss Medical,349.13,5562.7
+644,936,5258.37,tarjeta,pagado,2024-05-26,Galeno,1242.68,4015.69
+645,937,8985.9,tarjeta,pagado,2024-06-04,OSECAC,8.59,8977.31
+646,938,6981.49,transferencia,pagado,2024-07-15,Galeno,196.77,6784.72
+647,940,4695.02,transferencia,pendiente,,Galeno,,4695.02
+648,941,8667.01,efectivo,pagado,2024-06-20,Sancor Salud,1009.84,7657.17
+649,942,9076.09,tarjeta,pagado,2024-07-08,OSDE,7.06,9069.03
+650,944,7418.4,efectivo,pagado,2024-03-23,Particular,50.56,7367.84
+651,946,8935.1,transferencia,pagado,2024-06-22,Galeno,,8935.1
+652,947,6329.73,tarjeta,pagado,2024-05-21,OSDE,943.09,5386.64
+653,948,8010.41,efectivo,pagado,2024-09-07,,1358.41,6652.0
+654,951,6043.25,efectivo,pagado,2024-08-10,OSECAC,999.26,5043.99
+655,952,6875.22,efectivo,pagado,2024-03-13,PAMI,,6875.22
+656,953,4192.47,efectivo,pagado,2024-08-02,,341.57,3850.9
+657,954,5807.72,tarjeta,pagado,2024-04-28,Swiss Medical,624.92,5182.8
+658,955,7481.01,efectivo,pagado,2024-07-02,Galeno,1796.47,5684.54
+659,956,8181.89,tarjeta,pagado,2024-04-22,,,8181.89
+660,957,6031.48,efectivo,pendiente,,Swiss Medical,596.27,5435.21
+661,958,8647.99,tarjeta,pagado,2024-04-17,OSDE,1790.88,6857.11
+662,959,6495.83,tarjeta,pagado,2024-02-21,OSDE,620.52,5875.31
+663,960,5309.67,efectivo,pagado,2024-04-09,PAMI,,5309.67
+664,961,5094.75,transferencia,pagado,2024-11-26,Swiss Medical,,5094.75
+665,964,4974.91,transferencia,pagado,2024-01-16,OSDE,,4974.91
+666,966,7086.07,transferencia,pagado,2024-12-16,OSECAC,1463.65,5622.42
+667,967,6272.57,transferencia,pagado,2024-07-09,OSDE,864.43,5408.14
+668,968,8079.03,efectivo,rechazado,,Galeno,176.16,7902.87
+669,970,7579.22,transferencia,pagado,2024-11-06,Swiss Medical,,7579.22
+670,971,6540.64,efectivo,pagado,2024-10-16,Galeno,1593.75,4946.89
+671,975,10051.9,tarjeta,pagado,2024-03-13,,,10051.9
+672,976,9138.25,transferencia,pagado,2024-09-16,PAMI,1755.28,7382.97
+673,977,7405.23,transferencia,pagado,2024-08-20,Swiss Medical,112.65,7292.58
+674,979,9112.49,transferencia,pagado,2024-01-05,OSDE,1518.75,7593.74
+675,983,8591.67,tarjeta,pagado,2024-03-16,Sancor Salud,661.21,7930.46
+676,984,7146.4,efectivo,pagado,2024-07-07,Galeno,515.39,6631.01
+677,986,7926.21,transferencia,pendiente,,Galeno,,7926.21
+678,988,7521.31,tarjeta,pagado,2024-04-30,Galeno,775.53,6745.78
+679,989,5453.43,efectivo,pagado,2024-12-11,Galeno,1359.73,4093.7
+680,990,5259.3,transferencia,pendiente,,OSECAC,,5259.3
+681,991,6874.67,transferencia,pagado,2024-12-20,OSDE,1376.43,5498.24
+682,992,8136.83,tarjeta,pagado,2024-03-29,Swiss Medical,249.82,7887.01
+683,994,5028.94,tarjeta,pagado,2024-03-05,Medifé,972.08,4056.86
+684,995,5251.36,tarjeta,pagado,2024-04-16,OSDE,1146.73,4104.63
+685,996,5950.2,efectivo,rechazado,,OSECAC,,5950.2
+686,997,8602.96,tarjeta,pagado,2024-02-14,Swiss Medical,862.31,7740.65
+687,998,7947.1,efectivo,pagado,2024-04-26,OSECAC,1356.01,6591.09
+688,999,5327.02,efectivo,pagado,2024-05-10,Particular,422.96,4904.06
+689,1000,4942.74,tarjeta,pendiente,,Medifé,363.85,4578.89
+690,1001,7358.95,efectivo,pagado,2024-07-14,OSECAC,1759.31,5599.64
+691,1002,5091.66,tarjeta,pagado,2024-05-06,Galeno,1228.81,3862.85
+692,1003,6005.28,transferencia,pagado,2024-07-06,OSECAC,753.95,5251.33
+693,1004,8214.26,transferencia,pagado,2024-02-14,Swiss Medical,26.27,8187.99
+694,1005,6129.32,tarjeta,pagado,2024-04-02,OSDE,1161.06,4968.26
+695,1006,4717.42,transferencia,pagado,2024-12-10,Swiss Medical,989.8,3727.62
+696,1008,6608.66,tarjeta,pagado,2024-07-13,,1139.01,5469.65
+697,1009,7762.19,transferencia,pagado,2024-04-11,Galeno,47.45,7714.74
+698,1013,5996.64,transferencia,pendiente,,OSECAC,,5996.64
+699,1014,9101.73,transferencia,pagado,2024-12-11,Medifé,,9101.73
+700,1015,7089.86,tarjeta,pagado,2024-09-19,Sancor Salud,,7089.86
+701,1017,7830.19,tarjeta,pagado,2024-01-16,OSDE,1010.8,6819.39
+702,1018,8090.29,transferencia,pagado,2024-11-10,Swiss Medical,,8090.29
+703,1019,8293.76,efectivo,pagado,2024-08-05,Particular,145.49,8148.27
+704,1020,8398.73,efectivo,pagado,2024-11-01,Galeno,622.73,7776.0
+705,1021,9733.87,tarjeta,pagado,2024-03-02,Medifé,2057.36,7676.51
+706,1023,6489.78,efectivo,pagado,2024-03-04,Galeno,1422.57,5067.21
+707,1024,5513.82,tarjeta,pagado,2024-04-13,OSDE,1040.47,4473.35
+708,1027,5321.55,transferencia,pagado,2024-12-18,Galeno,1243.34,4078.21
+709,1028,8310.94,tarjeta,pendiente,,OSDE,908.54,7402.4
+710,1029,4524.72,tarjeta,pagado,2024-07-11,Sancor Salud,624.29,3900.43
+711,1032,5545.48,tarjeta,pagado,2024-06-30,OSDE,987.94,4557.54
+712,1034,9553.63,transferencia,pagado,2024-10-22,,1305.28,8248.35
+713,1035,7967.69,tarjeta,pendiente,,Swiss Medical,1779.12,6188.57
+714,1036,6528.79,efectivo,pagado,2024-08-12,PAMI,1247.01,5281.78
+715,1037,5241.73,transferencia,pagado,2024-08-02,Galeno,216.99,5024.74
+716,1038,4950.05,efectivo,pendiente,,PAMI,,4950.05
+717,1040,5128.26,transferencia,pagado,2024-10-12,Galeno,1054.05,4074.21
+718,1043,9041.78,tarjeta,pagado,2024-07-11,Swiss Medical,966.51,8075.27
+719,1045,4931.54,efectivo,pagado,2024-07-25,Particular,267.01,4664.53
+720,1046,4997.58,transferencia,pendiente,,Galeno,553.02,4444.56
+721,1047,6831.7,tarjeta,pagado,2024-09-15,Medifé,41.01,6790.69
+722,1048,4774.81,tarjeta,pagado,2024-12-28,Galeno,570.61,4204.2
+723,1050,6930.53,transferencia,pagado,2024-08-06,OSECAC,332.51,6598.02
+724,1051,6294.17,tarjeta,pagado,2024-08-26,Particular,24.46,6269.71
+725,1052,8381.34,transferencia,pagado,2024-01-23,PAMI,2048.89,6332.45
+726,1053,5352.13,transferencia,pagado,2024-07-15,OSDE,1113.9,4238.23
+727,1054,7811.16,tarjeta,rechazado,,OSDE,,7811.16
+728,1055,6393.33,efectivo,pagado,2024-01-23,Galeno,416.32,5977.01
+729,1056,8604.68,efectivo,pagado,2024-09-06,,,8604.68
+730,1057,5332.18,tarjeta,pagado,2024-11-04,Particular,510.73,4821.45
+731,1058,7313.35,tarjeta,pagado,2024-05-13,OSDE,424.35,6889.0
+732,1061,6255.82,tarjeta,pendiente,,Galeno,,6255.82
+733,1064,4862.06,efectivo,pagado,2024-08-08,OSECAC,1143.2,3718.86
+734,1065,7169.77,transferencia,pagado,2024-07-23,OSDE,572.72,6597.05
+735,1067,7076.92,tarjeta,pagado,2024-06-14,Galeno,178.21,6898.71
+736,1069,5248.34,tarjeta,pagado,2024-07-13,Particular,1079.09,4169.25
+737,1070,8951.15,transferencia,pagado,2024-11-10,OSDE,,8951.15
+738,1072,5989.76,tarjeta,pagado,2024-09-09,Particular,673.61,5316.15
+739,1074,5729.85,tarjeta,pagado,2024-01-24,Swiss Medical,906.33,4823.52
+740,1075,8515.2,transferencia,pagado,2024-05-02,Particular,1118.76,7396.44
+741,1077,5912.64,transferencia,pagado,2024-06-17,Galeno,1295.59,4617.05
+742,1078,5634.19,tarjeta,pagado,2024-03-14,Sancor Salud,438.11,5196.08
+743,1079,6747.68,transferencia,pagado,2024-05-06,Particular,,6747.68
+744,1080,7522.81,transferencia,pagado,2024-03-30,PAMI,654.9,6867.91
+745,1081,6403.44,tarjeta,pagado,2024-12-29,Swiss Medical,,6403.44
+746,1082,5499.48,tarjeta,pagado,2024-09-04,Sancor Salud,500.09,4999.39
+747,1083,4557.73,efectivo,pagado,2024-02-23,OSECAC,,4557.73
+748,1084,5210.98,transferencia,pagado,2024-12-16,Sancor Salud,655.01,4555.97
+749,1085,8578.98,transferencia,rechazado,,Swiss Medical,1429.84,7149.14
+750,1087,7498.37,transferencia,pagado,2024-07-16,Galeno,1420.27,6078.1
+751,1091,7946.36,tarjeta,rechazado,,Sancor Salud,,7946.36
+752,1092,6588.07,tarjeta,pagado,2024-09-27,OSDE,1402.59,5185.48
+753,1093,9222.91,tarjeta,rechazado,,Particular,1482.54,7740.37
+754,1094,7455.7,transferencia,pagado,2024-11-13,OSDE,739.72,6715.98
+755,1095,6464.35,efectivo,pagado,2024-01-20,,1248.48,5215.87
+756,1096,5076.2,transferencia,pagado,2024-07-30,OSDE,1007.04,4069.16
+757,1097,7121.65,efectivo,pagado,2024-07-31,Particular,422.55,6699.1
+758,1098,8080.56,transferencia,pagado,2024-01-07,OSECAC,1438.72,6641.84
+759,1099,5991.2,efectivo,pagado,2024-05-08,OSDE,743.92,5247.28
+760,1100,8308.39,tarjeta,pagado,2024-01-08,Galeno,1393.54,6914.85
+761,1101,4991.39,tarjeta,pagado,2024-01-06,Galeno,381.07,4610.32
+762,1103,6334.24,efectivo,pagado,2024-06-28,,789.61,5544.63
+763,1105,5838.17,transferencia,pagado,2024-01-07,Sancor Salud,759.01,5079.16
+764,1106,7789.5,tarjeta,pagado,2024-09-18,Sancor Salud,1947.2,5842.3
+765,1107,7116.83,tarjeta,pendiente,,Medifé,1396.73,5720.1
+766,1108,9017.23,efectivo,pagado,2024-08-26,PAMI,268.89,8748.34
+767,1109,4589.32,tarjeta,pagado,2024-04-05,Galeno,941.49,3647.83
+768,1110,7477.46,tarjeta,pagado,2024-12-27,Swiss Medical,1660.29,5817.17
+769,1111,4740.3,efectivo,pagado,2024-01-16,PAMI,799.43,3940.87
+770,1112,4344.5,tarjeta,pagado,2024-09-16,Particular,287.44,4057.06
+771,1113,4893.18,transferencia,pagado,2024-02-20,Sancor Salud,1201.11,3692.07
+772,1114,6602.48,tarjeta,pagado,2024-05-26,Galeno,131.61,6470.87
+773,1116,6490.67,transferencia,pagado,2024-10-20,OSDE,1280.36,5210.31
+774,1117,6652.23,transferencia,pagado,2024-07-16,Medifé,727.32,5924.91
+775,1118,7487.66,tarjeta,pagado,2025-01-06,OSDE,470.59,7017.07
+776,1119,6816.46,tarjeta,pagado,2024-06-13,Swiss Medical,105.7,6710.76
+777,1120,6056.01,efectivo,pagado,2024-07-31,Galeno,1476.65,4579.36
+778,1122,5265.7,transferencia,pagado,2024-12-11,OSDE,2.67,5263.03
+779,1123,5079.88,tarjeta,pagado,2024-08-12,Galeno,456.92,4622.96
+780,1124,5985.24,tarjeta,pagado,2024-09-11,OSDE,1060.45,4924.79
+781,1125,7009.36,tarjeta,pagado,2024-12-08,OSDE,0.08,7009.28
+782,1126,7337.01,transferencia,pendiente,,OSDE,247.38,7089.63
+783,1127,8872.35,efectivo,pagado,2025-01-03,PAMI,179.52,8692.83
+784,1128,4998.02,tarjeta,pagado,2024-12-02,Galeno,735.63,4262.39
+785,1129,6143.98,tarjeta,pagado,2024-10-27,OSDE,794.75,5349.23
+786,1130,5700.46,tarjeta,pagado,2024-08-20,,688.85,5011.61
+787,1131,4917.7,tarjeta,pagado,2024-12-05,OSDE,466.57,4451.13
+788,1132,8146.89,tarjeta,pagado,2024-05-21,Galeno,,8146.89
+789,1133,6548.28,tarjeta,pagado,2024-01-22,,1188.54,5359.74
+790,1135,5318.34,tarjeta,pendiente,,OSDE,,5318.34
+791,1137,6075.55,transferencia,pagado,2024-09-30,Swiss Medical,1415.74,4659.81
+792,1138,9525.54,tarjeta,pendiente,,OSDE,,9525.54
+793,1139,8157.49,transferencia,pagado,2024-03-12,PAMI,858.7,7298.79
+794,1140,6700.7,tarjeta,pagado,2024-06-09,OSDE,550.36,6150.34
+795,1141,5467.29,tarjeta,pagado,2024-10-15,Galeno,1172.2,4295.09
+796,1142,8782.66,transferencia,pagado,2024-07-16,Galeno,1482.87,7299.79
+797,1144,5618.66,transferencia,pagado,2024-05-05,OSDE,,5618.66
+798,1145,6028.44,transferencia,pagado,2024-04-13,Medifé,566.22,5462.22
+799,1146,4450.13,tarjeta,pagado,2024-02-29,,698.99,3751.14
+800,1147,5627.56,tarjeta,pagado,2024-06-06,OSDE,,5627.56
+801,1148,7395.12,efectivo,pagado,2024-03-03,Galeno,1631.49,5763.63
+802,1150,5353.84,tarjeta,pagado,2024-08-16,Galeno,595.98,4757.86
+803,1152,8489.69,transferencia,rechazado,,Sancor Salud,,8489.69
+804,1153,4907.76,tarjeta,pagado,2024-03-07,Galeno,701.81,4205.95
+805,1154,7931.16,tarjeta,pagado,2024-02-25,Sancor Salud,795.69,7135.47
+806,1157,4923.44,transferencia,rechazado,,PAMI,424.95,4498.49
+807,1158,8131.98,transferencia,pagado,2024-01-08,Sancor Salud,1334.77,6797.21
+808,1159,7801.64,tarjeta,pagado,2024-02-11,Sancor Salud,1938.59,5863.05
+809,1160,5560.06,transferencia,pagado,2024-04-15,Swiss Medical,368.51,5191.55
+810,1161,8056.57,tarjeta,pagado,2024-08-15,Galeno,1070.3,6986.27
+811,1162,7421.05,efectivo,pagado,2025-01-05,Particular,161.25,7259.8
+812,1163,6573.19,tarjeta,rechazado,,Sancor Salud,434.5,6138.69
+813,1164,9607.12,tarjeta,pagado,2024-03-24,Medifé,779.39,8827.73
+814,1165,4733.74,tarjeta,pagado,2024-03-10,Sancor Salud,1054.59,3679.15
+815,1166,8789.21,tarjeta,pagado,2024-07-08,Particular,1126.93,7662.28
+816,1168,6773.59,tarjeta,pagado,2024-08-28,OSDE,529.71,6243.88
+817,1169,8264.42,transferencia,pagado,2024-09-30,Swiss Medical,1209.35,7055.07
+818,1170,6503.32,tarjeta,pendiente,,Medifé,53.79,6449.53
+819,1171,5567.38,efectivo,pagado,2024-08-07,Galeno,1140.84,4426.54
+820,1172,5468.47,transferencia,pagado,2024-02-11,Swiss Medical,277.2,5191.27
+821,1173,5207.19,tarjeta,pagado,2024-06-18,Swiss Medical,403.0,4804.19
+822,1174,7264.44,transferencia,pagado,2024-10-18,Galeno,1767.15,5497.29
+823,1175,5585.33,transferencia,pagado,2024-02-17,Swiss Medical,180.45,5404.88
+824,1176,8222.33,transferencia,pagado,2024-08-28,PAMI,861.04,7361.29
+825,1177,9252.69,transferencia,pagado,2024-11-26,Galeno,1568.18,7684.51
+826,1178,8869.87,transferencia,pagado,2024-10-17,OSECAC,1638.91,7230.96
+827,1179,6285.98,tarjeta,pagado,2024-02-03,OSDE,,6285.98
+828,1180,5000.05,transferencia,pendiente,,Particular,974.27,4025.78
+829,1181,6331.79,efectivo,pagado,2024-02-12,Galeno,1271.75,5060.04
+830,1182,5519.69,transferencia,pagado,2024-09-01,Swiss Medical,114.35,5405.34
+831,1183,4898.88,tarjeta,pagado,2024-02-16,OSDE,770.02,4128.86
+832,1184,6932.6,tarjeta,pendiente,,OSDE,,6932.6
+833,1185,7820.76,transferencia,pagado,2024-06-21,Galeno,1675.92,6144.84
+834,1187,8112.18,tarjeta,pagado,2024-09-06,OSECAC,388.43,7723.75
+835,1188,9342.26,efectivo,pagado,2024-12-30,OSDE,746.07,8596.19
+836,1190,5981.75,tarjeta,pagado,2024-05-29,Galeno,404.61,5577.14
+837,1193,5220.14,tarjeta,pagado,2024-09-27,OSDE,,5220.14
+838,1194,8401.76,tarjeta,pendiente,,Galeno,,8401.76
+839,1195,7656.72,transferencia,pagado,2024-09-24,,1379.14,6277.58
+840,1196,7941.32,transferencia,pagado,2024-03-14,Galeno,593.25,7348.07
+841,1197,5350.27,transferencia,pagado,2024-09-19,OSDE,715.7,4634.57
+842,1199,5238.11,tarjeta,pagado,2024-02-18,Swiss Medical,432.3,4805.81
+843,1201,6642.9,tarjeta,pendiente,,OSDE,,6642.9
+844,1202,5083.95,efectivo,pagado,2024-03-17,PAMI,275.66,4808.29
+845,1204,8440.2,transferencia,pagado,2024-02-25,PAMI,798.93,7641.27
+846,1205,5705.57,tarjeta,pagado,2024-09-02,OSDE,808.24,4897.33
+847,1207,5655.14,transferencia,pagado,2024-12-09,Medifé,,5655.14
+848,1208,7758.97,efectivo,pendiente,,Particular,,7758.97
+849,1209,8392.89,tarjeta,pagado,2024-04-12,Swiss Medical,626.84,7766.05
+850,1211,4954.26,efectivo,pagado,2024-10-16,PAMI,797.45,4156.81
+851,1212,4837.09,efectivo,pagado,2024-06-28,OSECAC,690.33,4146.76
+852,1213,6756.0,tarjeta,pagado,2024-03-24,Particular,1373.01,5382.99
+853,1214,4760.63,efectivo,pagado,2024-07-24,OSECAC,562.12,4198.51
+854,1215,5702.88,tarjeta,pagado,2024-07-18,OSDE,1327.91,4374.97
+855,1216,4603.96,efectivo,pagado,2024-04-17,OSDE,,4603.96
+856,1217,6766.26,tarjeta,pagado,2024-07-29,OSDE,1210.97,5555.29
+857,1218,6056.48,transferencia,pagado,2024-09-24,OSDE,687.86,5368.62
+858,1219,7956.29,tarjeta,pagado,2024-11-24,Galeno,1711.59,6244.7
+859,1220,5844.51,efectivo,pagado,2024-07-15,Particular,283.76,5560.75
+860,1221,5696.81,efectivo,pagado,2024-06-27,OSDE,544.51,5152.3
+861,1222,6812.36,efectivo,pagado,2024-06-21,Particular,801.06,6011.3
+862,1223,6995.74,tarjeta,pagado,2024-06-01,OSDE,703.46,6292.28
+863,1224,7043.49,transferencia,pagado,2024-10-12,Galeno,932.09,6111.4
+864,1226,6534.57,efectivo,pendiente,,OSDE,,6534.57
+865,1228,8981.88,transferencia,pagado,2024-03-21,Medifé,1956.32,7025.56
+866,1229,7725.52,transferencia,pendiente,,Swiss Medical,242.19,7483.33
+867,1230,6994.05,tarjeta,pagado,2024-10-06,Sancor Salud,57.76,6936.29
+868,1232,6057.5,tarjeta,pagado,2024-09-09,,1381.77,4675.73
+869,1233,7596.74,efectivo,pagado,2024-05-03,Swiss Medical,289.81,7306.93
+870,1235,7988.34,transferencia,pagado,2024-12-08,OSECAC,1332.03,6656.31
+871,1237,5342.36,transferencia,pagado,2024-07-17,OSECAC,1229.68,4112.68
+872,1239,5915.92,efectivo,pagado,2024-12-17,Galeno,672.17,5243.75
+873,1240,5112.02,transferencia,pagado,2024-08-12,Sancor Salud,42.52,5069.5
+874,1242,6015.3,efectivo,pendiente,,OSDE,,6015.3
+875,1243,5713.26,transferencia,pagado,2024-12-05,OSECAC,92.16,5621.1
+876,1244,9051.67,tarjeta,pagado,2024-04-19,OSDE,464.71,8586.96
+877,1246,6997.98,efectivo,pagado,2024-06-28,PAMI,512.67,6485.31
+878,1247,8624.73,transferencia,pagado,2024-07-18,,1363.39,7261.34
+879,1248,5923.65,transferencia,pagado,2025-01-07,OSDE,810.65,5113.0
+880,1249,6420.05,transferencia,pagado,2024-05-10,Galeno,787.63,5632.42
+881,1250,5390.89,tarjeta,pagado,2024-11-12,Swiss Medical,876.47,4514.42
+882,1251,6637.8,tarjeta,pagado,2024-05-15,Particular,1584.48,5053.32
+883,1252,5464.94,transferencia,pendiente,,,,5464.94
+884,1253,6835.53,tarjeta,pagado,2024-02-02,,,6835.53
+885,1255,7836.81,transferencia,pagado,2024-01-10,OSDE,380.88,7455.93
+886,1256,9976.09,tarjeta,pagado,2024-03-09,Galeno,2443.21,7532.88
+887,1258,6949.91,transferencia,pagado,2024-11-30,OSDE,1389.83,5560.08
+888,1259,5479.4,transferencia,pagado,2024-09-01,OSDE,461.83,5017.57
+889,1260,6211.83,efectivo,pagado,2024-07-23,Particular,1327.81,4884.02
+890,1262,8285.01,transferencia,pagado,2024-02-21,OSECAC,1290.68,6994.33
+891,1263,7671.5,transferencia,pagado,2024-03-11,OSDE,1609.97,6061.53
+892,1265,7400.68,tarjeta,pagado,2024-08-18,PAMI,1435.1,5965.58
+893,1266,6718.5,tarjeta,pagado,2024-09-01,Medifé,1672.81,5045.69
+894,1267,5282.35,efectivo,pagado,2024-01-12,PAMI,815.62,4466.73
+895,1269,5360.34,transferencia,pagado,2024-04-20,Galeno,1310.32,4050.02
+896,1270,6072.24,transferencia,pagado,2024-02-14,Galeno,917.7,5154.54
+897,1272,4761.19,tarjeta,pagado,2024-11-19,Medifé,,4761.19
+898,1273,6047.47,transferencia,pagado,2024-01-15,PAMI,659.7,5387.77
+899,1275,8790.84,efectivo,pagado,2024-03-08,PAMI,554.34,8236.5
+900,1277,6267.38,tarjeta,pagado,2024-01-03,Sancor Salud,545.06,5722.32
+901,1278,4789.52,tarjeta,pagado,2024-05-24,OSDE,866.24,3923.28
+902,1280,8133.33,tarjeta,rechazado,,PAMI,,8133.33
+903,1281,7529.61,tarjeta,pagado,2024-09-09,Galeno,160.9,7368.71
+904,1283,6184.41,tarjeta,pagado,2024-08-06,OSDE,1539.88,4644.53
+905,1284,4283.86,efectivo,pagado,2024-11-14,OSDE,745.93,3537.93
+906,1285,5768.2,transferencia,pagado,2024-07-13,Swiss Medical,652.42,5115.78
+907,1288,4892.84,transferencia,pagado,2024-08-02,Medifé,,4892.84
+908,1289,7871.01,efectivo,pagado,2024-05-10,OSDE,,7871.01
+909,1290,6361.91,transferencia,pagado,2024-01-11,Galeno,1136.19,5225.72
+910,1292,9056.05,tarjeta,pagado,2024-07-04,Particular,1815.77,7240.28
+911,1293,6906.21,transferencia,pagado,2024-10-17,Galeno,498.4,6407.81
+912,1294,6253.94,tarjeta,pagado,2024-02-14,Swiss Medical,100.2,6153.74
+913,1296,9770.13,transferencia,pagado,2024-05-09,OSDE,2149.88,7620.25
+914,1298,7838.23,tarjeta,pagado,2024-07-25,Swiss Medical,1282.67,6555.56
+915,1299,5524.12,transferencia,pagado,2024-01-09,Particular,986.46,4537.66
+916,1300,5123.67,tarjeta,pagado,2024-01-31,Swiss Medical,643.97,4479.7
+917,1301,5342.34,tarjeta,pagado,2024-08-18,OSECAC,604.07,4738.27
+918,1302,5487.5,efectivo,pagado,2024-03-24,Swiss Medical,406.11,5081.39
+919,1304,9421.18,transferencia,pagado,2024-03-13,OSDE,,9421.18
+920,1305,8559.41,efectivo,pagado,2024-12-27,Sancor Salud,271.3,8288.11
+921,1306,5903.28,tarjeta,pagado,2024-12-11,OSECAC,445.83,5457.45
+922,1307,5663.25,transferencia,pagado,2024-01-17,OSDE,,5663.25
+923,1308,4671.62,transferencia,pagado,2024-02-24,OSDE,962.99,3708.63
+924,1310,7296.51,tarjeta,pendiente,,OSDE,434.59,6861.92
+925,1311,4812.66,tarjeta,pagado,2024-08-24,OSDE,414.62,4398.04
+926,1312,6106.13,tarjeta,pagado,2024-11-20,OSDE,1056.82,5049.31
+927,1313,8678.11,transferencia,pagado,2024-10-08,OSDE,2119.62,6558.49
+928,1314,9638.21,transferencia,rechazado,,Galeno,2247.55,7390.66
+929,1315,4950.97,tarjeta,pagado,2024-11-25,Swiss Medical,481.18,4469.79
+930,1316,7269.8,transferencia,pagado,2024-12-16,Galeno,1124.7,6145.1
+931,1317,7135.51,transferencia,pendiente,,Galeno,30.71,7104.8
+932,1322,8040.99,transferencia,pagado,2024-09-08,Galeno,1747.9,6293.09
+933,1323,8294.15,tarjeta,pagado,2024-09-09,OSDE,705.0,7589.15
+934,1325,6938.67,transferencia,pagado,2024-11-20,Swiss Medical,,6938.67
+935,1326,8571.37,tarjeta,pendiente,,Galeno,,8571.37
+936,1327,8597.33,tarjeta,pagado,2024-04-30,OSDE,106.83,8490.5
+937,1329,5298.25,efectivo,pagado,2024-08-06,OSECAC,817.17,4481.08
+938,1330,7283.7,transferencia,pendiente,,OSDE,,7283.7
+939,1331,9259.5,efectivo,pagado,2024-06-26,Galeno,1091.7,8167.8
+940,1332,7322.04,tarjeta,pagado,2024-11-22,Medifé,966.68,6355.36
+941,1334,7721.93,transferencia,pagado,2024-08-04,OSDE,,7721.93
+942,1335,7646.55,tarjeta,pagado,2024-07-24,OSDE,1027.28,6619.27
+943,1336,7952.47,tarjeta,pagado,2024-10-15,PAMI,994.03,6958.44
+944,1339,7565.08,transferencia,pagado,2024-12-03,OSDE,1072.75,6492.33
+945,1340,7143.12,transferencia,pagado,2024-08-28,Swiss Medical,710.54,6432.58
+946,1341,8868.69,tarjeta,pendiente,,Galeno,1689.86,7178.83
+947,1342,9991.63,tarjeta,rechazado,,Swiss Medical,,9991.63
+948,1343,7130.08,tarjeta,pagado,2024-10-11,PAMI,1004.03,6126.05
+949,1344,7263.61,tarjeta,pagado,2024-10-01,,1278.36,5985.25
+950,1348,7626.74,tarjeta,pagado,2024-12-21,OSDE,548.39,7078.35
+951,1349,9156.45,tarjeta,pagado,2024-04-10,OSECAC,1833.22,7323.23
+952,1350,6884.05,tarjeta,pagado,2024-06-02,OSDE,873.62,6010.43
+953,1351,5966.01,efectivo,pagado,2024-08-22,Particular,1444.45,4521.56
+954,1352,5988.73,tarjeta,pagado,2024-12-01,OSDE,1333.62,4655.11
+955,1356,6347.44,tarjeta,pagado,2024-01-12,OSDE,165.13,6182.31
+956,1358,7620.65,tarjeta,pagado,2024-11-08,Galeno,1586.69,6033.96
+957,1359,7522.91,efectivo,pagado,2024-07-19,Swiss Medical,224.45,7298.46
+958,1360,5905.21,transferencia,pagado,2024-06-04,Galeno,391.11,5514.1
+959,1363,5441.07,efectivo,pagado,2024-01-18,Galeno,347.06,5094.01
+960,1364,5972.87,transferencia,pendiente,,OSDE,,5972.87
+961,1365,4918.7,transferencia,pagado,2024-10-17,Galeno,567.72,4350.98
+962,1367,6562.96,tarjeta,pendiente,,Sancor Salud,,6562.96
+963,1368,5923.41,efectivo,rechazado,,PAMI,21.32,5902.09
+964,1369,4821.53,transferencia,pagado,2024-06-01,Swiss Medical,,4821.53
+965,1370,7536.83,transferencia,pagado,2024-02-15,Sancor Salud,1569.99,5966.84
+966,1371,4976.1,efectivo,pendiente,,Galeno,,4976.1
+967,1372,7121.72,tarjeta,pagado,2024-06-28,OSDE,445.92,6675.8
+968,1373,8929.56,tarjeta,pagado,2024-07-08,Galeno,1654.06,7275.5
+969,1374,7900.71,transferencia,pagado,2025-01-03,Sancor Salud,890.97,7009.74
+970,1375,6909.44,transferencia,pagado,2024-08-21,OSECAC,753.71,6155.73
+971,1376,5548.82,tarjeta,pendiente,,Galeno,,5548.82
+972,1377,5293.91,efectivo,pagado,2024-06-02,Galeno,1167.16,4126.75
+973,1378,7824.26,tarjeta,pagado,2024-05-24,OSDE,1315.29,6508.97
+974,1379,4827.98,efectivo,pagado,2024-07-13,OSECAC,353.24,4474.74
+975,1380,4608.91,tarjeta,pagado,2024-07-11,Swiss Medical,541.43,4067.48
+976,1381,4938.99,transferencia,pagado,2024-03-24,Swiss Medical,322.14,4616.85
+977,1382,6754.81,transferencia,pagado,2024-06-05,OSDE,1188.87,5565.94
+978,1383,6670.04,tarjeta,pagado,2024-09-10,OSDE,994.86,5675.18
+979,1385,5771.69,transferencia,pagado,2024-03-29,Galeno,1307.02,4464.67
+980,1390,7953.7,transferencia,pagado,2024-02-03,Galeno,1086.37,6867.33
+981,1391,5619.44,transferencia,pagado,2024-04-04,,234.14,5385.3
+982,1393,7625.46,transferencia,pagado,2024-09-23,Galeno,327.23,7298.23
+983,1394,4448.79,tarjeta,pagado,2024-04-28,OSDE,,4448.79
+984,1397,7495.94,transferencia,pagado,2024-04-19,OSECAC,161.92,7334.02
+985,1398,5823.42,transferencia,pagado,2024-08-13,PAMI,1155.69,4667.73
+986,1400,8956.65,tarjeta,pagado,2024-07-02,PAMI,723.32,8233.33
+987,1401,5718.79,tarjeta,pendiente,,OSDE,,5718.79
+988,1403,4802.52,tarjeta,pagado,2024-03-13,Particular,,4802.52
+989,1404,5444.76,efectivo,pendiente,,Swiss Medical,808.62,4636.14
+990,1405,7456.74,efectivo,pagado,2024-09-08,Galeno,353.18,7103.56
+991,1409,5245.91,efectivo,pendiente,,OSECAC,,5245.91
+992,1410,7782.83,transferencia,pagado,2024-12-17,Swiss Medical,1934.69,5848.14
+993,1411,5259.97,efectivo,pagado,2024-03-22,Galeno,910.15,4349.82
+994,1412,7009.7,efectivo,pagado,2024-02-05,Particular,325.87,6683.83
+995,1413,7346.71,transferencia,pagado,2024-03-02,Swiss Medical,1181.83,6164.88
+996,1414,9553.04,efectivo,pendiente,,OSECAC,,9553.04
+997,1415,8568.83,transferencia,pagado,2024-10-15,OSDE,1033.28,7535.55
+998,1416,8623.1,transferencia,pagado,2024-06-28,Galeno,516.92,8106.18
+999,1417,7460.77,transferencia,pagado,2024-06-22,Sancor Salud,776.23,6684.54
+1000,1418,8867.5,transferencia,pagado,2024-09-14,Sancor Salud,579.29,8288.21
+1001,1419,5799.03,efectivo,pendiente,,PAMI,,5799.03
+1002,1420,8708.37,tarjeta,pagado,2024-06-06,,603.75,8104.62
+1003,1424,7191.69,tarjeta,pagado,2024-02-26,Swiss Medical,1141.53,6050.16
+1004,1425,6448.76,transferencia,pagado,2024-05-02,OSDE,,6448.76
+1005,1427,7697.1,efectivo,pagado,2024-07-02,Swiss Medical,1008.44,6688.66
+1006,1428,4907.4,transferencia,rechazado,,OSDE,,4907.4
+1007,1429,4801.97,efectivo,pagado,2024-10-23,Swiss Medical,873.53,3928.44
+1008,1430,8555.43,tarjeta,pagado,2024-06-15,OSDE,998.7,7556.73
+1009,1432,9530.34,tarjeta,pagado,2024-08-12,PAMI,,9530.34
+1010,1434,5643.09,tarjeta,rechazado,,Sancor Salud,,5643.09
+1011,1435,4487.87,transferencia,pagado,2025-01-06,Sancor Salud,115.94,4371.93
+1012,1436,5672.21,transferencia,pagado,2024-06-01,Galeno,586.02,5086.19
+1013,1438,8409.37,efectivo,pagado,2024-07-31,PAMI,614.53,7794.84
+1014,1439,6114.8,tarjeta,pagado,2024-01-30,,173.81,5940.99
+1015,1440,6050.56,tarjeta,pendiente,,Particular,,6050.56
+1016,1442,5136.3,transferencia,pagado,2024-01-09,PAMI,,5136.3
+1017,1443,6724.18,tarjeta,pagado,2024-12-02,PAMI,372.98,6351.2
+1018,1444,6118.51,transferencia,pagado,2024-04-08,Medifé,132.29,5986.22
+1019,1445,6858.13,transferencia,pagado,2024-11-21,Swiss Medical,126.83,6731.3
+1020,1447,10097.84,efectivo,pagado,2024-10-01,Galeno,1157.47,8940.37
+1021,1450,5231.49,efectivo,pagado,2024-08-13,PAMI,585.49,4646.0
+1022,1451,4933.2,tarjeta,pendiente,,Sancor Salud,,4933.2
+1023,1452,7322.9,transferencia,pagado,2024-11-13,OSECAC,1777.03,5545.87
+1024,1453,6042.78,tarjeta,pagado,2024-11-22,Galeno,443.62,5599.16
+1025,1456,7728.1,tarjeta,pagado,2024-04-23,PAMI,543.04,7185.06
+1026,1457,4636.37,tarjeta,pagado,2024-06-15,Medifé,705.64,3930.73
+1027,1459,6234.97,efectivo,pagado,2024-10-15,Swiss Medical,175.3,6059.67
+1028,1460,6381.3,tarjeta,pagado,2024-12-22,OSDE,68.47,6312.83
+1029,1462,5666.49,efectivo,pagado,2024-11-19,,35.22,5631.27
+1030,1463,8607.17,tarjeta,pagado,2024-02-29,Swiss Medical,1232.38,7374.79
+1031,1464,5828.77,transferencia,pagado,2024-07-06,,546.63,5282.14
+1032,1465,7818.04,transferencia,rechazado,,Particular,,7818.04
+1033,1466,5950.26,tarjeta,pagado,2024-06-28,Particular,991.63,4958.63
+1034,1467,7872.24,efectivo,rechazado,,OSECAC,,7872.24
+1035,1471,8760.31,efectivo,pagado,2024-04-13,Sancor Salud,1030.03,7730.28
+1036,1472,4995.93,tarjeta,pendiente,,OSDE,,4995.93
+1037,1473,6986.68,tarjeta,pagado,2024-07-19,OSDE,113.48,6873.2
+1038,1475,5479.04,tarjeta,pagado,2024-12-03,,,5479.04
+1039,1476,5191.74,transferencia,pagado,2024-11-25,Galeno,927.22,4264.52
+1040,1477,8381.71,efectivo,pagado,2024-03-12,Particular,358.1,8023.61
+1041,1478,5348.87,transferencia,pagado,2024-07-01,OSDE,,5348.87
+1042,1480,8980.92,transferencia,pagado,2024-12-24,Galeno,1509.72,7471.2
+1043,1482,4998.01,transferencia,pagado,2024-02-05,Galeno,1174.8,3823.21
+1044,1483,8137.3,efectivo,pendiente,,OSECAC,,8137.3
+1045,1484,8719.76,transferencia,pagado,2024-06-26,Sancor Salud,,8719.76
+1046,1487,6818.92,tarjeta,pagado,2024-10-11,Galeno,188.73,6630.19
+1047,1488,5408.18,transferencia,pagado,2024-08-03,Particular,1205.49,4202.69
+1048,1489,4823.0,transferencia,pagado,2024-12-07,OSECAC,979.34,3843.66
+1049,1490,7826.53,tarjeta,pagado,2024-11-04,Sancor Salud,1630.3,6196.23
+1050,1491,4734.66,efectivo,pagado,2024-11-18,OSDE,429.37,4305.29
+1051,1492,6824.57,tarjeta,pagado,2024-02-17,Galeno,209.69,6614.88
+1052,1493,4684.45,tarjeta,pagado,2024-10-27,OSDE,832.76,3851.69
+1053,1495,5164.44,tarjeta,pagado,2024-06-09,OSDE,521.62,4642.82
+1054,1497,8868.52,efectivo,pagado,2024-02-13,Swiss Medical,920.25,7948.27
+1055,1498,8524.93,tarjeta,pagado,2024-11-28,OSDE,,8524.93
+1056,1499,5304.67,efectivo,pagado,2024-10-01,PAMI,,5304.67
+1057,1500,4891.89,tarjeta,pendiente,,Particular,663.11,4228.78
+1058,1501,9262.96,transferencia,pagado,2024-08-10,OSDE,903.91,8359.05
+1059,1502,5160.5,tarjeta,pagado,2024-02-12,,155.83,5004.67
+1060,1503,8675.74,tarjeta,rechazado,,Galeno,1908.79,6766.95
+1061,1505,6570.76,tarjeta,pagado,2024-12-30,OSECAC,336.55,6234.21
+1062,1506,7828.46,efectivo,pagado,2024-04-01,OSDE,881.48,6946.98
+1063,1508,6820.52,efectivo,pagado,2024-09-30,Galeno,1658.92,5161.6
+1064,1509,4930.17,transferencia,rechazado,,Swiss Medical,451.76,4478.41
+1065,1511,5981.53,transferencia,rechazado,,Sancor Salud,1398.33,4583.2
+1066,1512,4672.46,transferencia,pendiente,,Sancor Salud,196.07,4476.39
+1067,1513,4996.87,efectivo,pagado,2024-02-05,Particular,347.83,4649.04
+1068,1514,6804.7,tarjeta,rechazado,,Galeno,,6804.7
+1069,1516,7249.48,tarjeta,pendiente,,Swiss Medical,1222.02,6027.46
+1070,1519,7156.76,tarjeta,pagado,2024-02-02,Particular,1780.54,5376.22
+1071,1521,6076.14,efectivo,pagado,2024-10-13,Galeno,145.63,5930.51
+1072,1522,6046.93,transferencia,pagado,2024-12-01,OSDE,1228.45,4818.48
+1073,1523,4950.73,transferencia,pagado,2024-10-27,OSDE,446.62,4504.11
+1074,1524,5261.93,efectivo,pendiente,,OSECAC,,5261.93
+1075,1525,11190.43,efectivo,rechazado,,Particular,,11190.43
+1076,1526,5230.2,tarjeta,pagado,2024-03-27,Galeno,818.14,4412.06
+1077,1527,7502.1,transferencia,rechazado,,Sancor Salud,149.78,7352.32
+1078,1528,5705.46,tarjeta,pagado,2024-01-25,OSDE,1219.37,4486.09
+1079,1529,6142.44,tarjeta,pagado,2024-09-06,Swiss Medical,673.25,5469.19
+1080,1531,4395.32,transferencia,pagado,2024-01-29,Galeno,732.93,3662.39
+1081,1532,7007.88,efectivo,pendiente,,OSECAC,,7007.88
+1082,1533,7528.71,tarjeta,pendiente,,Galeno,,7528.71
+1083,1535,6028.44,tarjeta,pagado,2024-05-30,Sancor Salud,43.23,5985.21
+1084,1536,7901.63,transferencia,pagado,2024-05-25,Galeno,1689.56,6212.07
+1085,1537,6233.11,tarjeta,pagado,2024-01-18,Galeno,484.39,5748.72
+1086,1538,7671.92,transferencia,pagado,2024-03-19,Swiss Medical,,7671.92
+1087,1539,7146.32,tarjeta,pagado,2024-09-11,Sancor Salud,1256.81,5889.51
+1088,1540,6832.13,tarjeta,pagado,2024-08-19,Medifé,434.27,6397.86
+1089,1541,5126.52,efectivo,pagado,2024-10-30,Galeno,495.92,4630.6
+1090,1543,6770.97,tarjeta,pagado,2024-03-14,OSDE,772.51,5998.46
+1091,1544,7913.88,tarjeta,pagado,2025-01-01,Sancor Salud,696.23,7217.65
+1092,1546,5068.18,tarjeta,pagado,2024-11-29,OSDE,662.75,4405.43
+1093,1548,7682.68,transferencia,pagado,2024-09-08,OSDE,1825.92,5856.76
+1094,1549,8748.69,tarjeta,pagado,2024-11-25,Medifé,1864.22,6884.47
+1095,1551,4990.49,tarjeta,pagado,2024-09-05,OSDE,212.16,4778.33
+1096,1552,5476.5,tarjeta,pagado,2024-11-13,OSDE,674.49,4802.01
+1097,1556,8959.24,transferencia,pagado,2024-10-28,Particular,1117.54,7841.7
+1098,1557,6615.81,tarjeta,pagado,2024-06-23,Sancor Salud,451.41,6164.4
+1099,1558,6070.64,tarjeta,pagado,2024-11-13,OSDE,803.25,5267.39
+1100,1560,7664.46,tarjeta,pagado,2024-10-06,Galeno,1822.39,5842.07
+1101,1561,6663.75,efectivo,pagado,2024-09-22,OSECAC,675.02,5988.73
+1102,1563,5124.18,efectivo,pagado,2024-01-31,OSECAC,593.44,4530.74
+1103,1564,5508.09,transferencia,pagado,2024-04-01,Swiss Medical,1082.65,4425.44
+1104,1566,5424.77,efectivo,pagado,2024-06-05,Medifé,143.17,5281.6
+1105,1567,8497.54,tarjeta,pagado,2024-09-17,Swiss Medical,1210.25,7287.29
+1106,1568,7081.46,efectivo,pagado,2024-06-06,Particular,1167.18,5914.28
+1107,1569,4772.77,transferencia,pendiente,,Sancor Salud,,4772.77
+1108,1570,5038.67,transferencia,pagado,2024-04-03,Swiss Medical,688.93,4349.74
+1109,1574,6302.48,transferencia,pagado,2024-10-21,Galeno,282.3,6020.18
+1110,1576,4545.88,tarjeta,pagado,2024-05-16,Galeno,285.44,4260.44
+1111,1577,5612.62,transferencia,pagado,2024-07-13,Sancor Salud,,5612.62
+1112,1578,6123.34,tarjeta,pagado,2024-12-02,Medifé,712.54,5410.8
+1113,1579,7411.05,tarjeta,pendiente,,OSDE,1775.0,5636.05
+1114,1580,6952.51,tarjeta,pagado,2024-02-17,Swiss Medical,1718.64,5233.87
+1115,1582,7982.08,transferencia,pagado,2024-06-30,Medifé,1729.28,6252.8
+1116,1583,5600.55,tarjeta,pagado,2024-08-01,Sancor Salud,1221.85,4378.7
+1117,1585,8272.71,tarjeta,pagado,2024-04-02,Sancor Salud,590.51,7682.2
+1118,1587,9263.02,transferencia,pendiente,,PAMI,,9263.02
+1119,1589,4951.86,transferencia,pagado,2024-07-19,OSDE,1048.63,3903.23
+1120,1592,7735.85,tarjeta,pendiente,,Swiss Medical,,7735.85
+1121,1594,5225.12,transferencia,pagado,2024-06-06,Sancor Salud,566.6,4658.52
+1122,1595,5531.63,tarjeta,pagado,2024-12-19,Galeno,872.81,4658.82
+1123,1596,8102.35,transferencia,pagado,2024-01-27,Sancor Salud,1966.66,6135.69
+1124,1598,6024.33,tarjeta,pagado,2024-04-22,OSDE,,6024.33
+1125,1599,6510.97,efectivo,pagado,2024-06-07,OSDE,1538.41,4972.56
+1126,1600,6957.13,transferencia,pagado,2024-06-02,OSDE,1218.45,5738.68
+1127,1602,7832.07,efectivo,pagado,2024-03-06,Particular,286.33,7545.74
+1128,1603,6013.87,tarjeta,pendiente,,OSDE,,6013.87
+1129,1604,6072.84,tarjeta,pagado,2024-04-18,OSDE,862.27,5210.57
+1130,1605,8595.9,tarjeta,pagado,2024-07-25,Particular,2076.48,6519.42
+1131,1608,8391.25,tarjeta,pagado,2024-11-05,Galeno,1403.85,6987.4
+1132,1609,8242.74,transferencia,pendiente,,OSDE,,8242.74
+1133,1614,8278.13,efectivo,pendiente,,OSDE,,8278.13
+1134,1615,6769.87,transferencia,pagado,2024-10-22,Galeno,664.78,6105.09
+1135,1616,7937.35,efectivo,pagado,2024-12-18,OSDE,1663.22,6274.13
+1136,1617,4919.37,transferencia,pagado,2024-02-05,Particular,149.21,4770.16
+1137,1620,8500.49,tarjeta,pagado,2024-03-22,Sancor Salud,1716.33,6784.16
+1138,1622,8408.25,tarjeta,pagado,2024-03-01,OSDE,,8408.25
+1139,1624,5217.83,tarjeta,pagado,2024-10-27,Sancor Salud,957.97,4259.86
+1140,1628,6091.7,tarjeta,pagado,2024-06-24,Galeno,1484.04,4607.66
+1141,1630,7938.46,transferencia,pagado,2024-12-07,PAMI,711.38,7227.08
+1142,1631,5988.94,transferencia,pagado,2024-11-06,OSDE,1485.0,4503.94
+1143,1633,7620.93,tarjeta,pagado,2024-03-30,Particular,796.45,6824.48
+1144,1634,6902.93,tarjeta,pagado,2024-12-02,Swiss Medical,,6902.93
+1145,1635,7181.56,transferencia,pagado,2024-10-19,OSDE,1554.94,5626.62
+1146,1636,4744.55,transferencia,pagado,2024-11-02,,463.53,4281.02
+1147,1637,7197.66,tarjeta,pagado,2024-02-12,OSDE,1474.26,5723.4
+1148,1638,8233.65,efectivo,pagado,2024-07-19,Particular,949.68,7283.97
+1149,1641,7598.6,efectivo,pagado,2024-08-21,OSECAC,961.27,6637.33
+1150,1642,7607.58,efectivo,pagado,2024-07-24,OSECAC,,7607.58
+1151,1643,6643.39,tarjeta,pagado,2024-07-12,Swiss Medical,1603.07,5040.32
+1152,1644,6677.69,tarjeta,pagado,2024-06-09,Sancor Salud,1288.63,5389.06
+1153,1645,6349.97,transferencia,pendiente,,PAMI,,6349.97
+1154,1646,6669.93,tarjeta,pagado,2024-07-27,Swiss Medical,957.87,5712.06
+1155,1647,9211.56,tarjeta,pagado,2024-11-24,,1860.62,7350.94
+1156,1650,6494.07,transferencia,rechazado,,Swiss Medical,,6494.07
+1157,1651,5693.81,efectivo,rechazado,,Galeno,,5693.81
+1158,1654,7779.79,tarjeta,pendiente,,,,7779.79
+1159,1655,5283.61,transferencia,pagado,2024-09-06,Swiss Medical,1187.38,4096.23
+1160,1656,7816.25,tarjeta,pagado,2024-11-21,Galeno,1305.27,6510.98
+1161,1659,7817.91,tarjeta,pagado,2024-05-23,OSECAC,488.03,7329.88
+1162,1661,5451.91,tarjeta,pagado,2024-04-09,OSDE,166.14,5285.77
+1163,1662,8017.32,efectivo,pagado,2024-07-21,Particular,1892.66,6124.66
+1164,1663,10071.21,tarjeta,pagado,2024-03-10,Swiss Medical,2479.28,7591.93
+1165,1664,7073.73,transferencia,pagado,2024-03-08,Medifé,832.59,6241.14
+1166,1665,6616.3,tarjeta,pendiente,,Sancor Salud,885.26,5731.04
+1167,1666,4469.84,tarjeta,pagado,2024-12-02,Galeno,703.24,3766.6
+1168,1667,4723.3,transferencia,pagado,2024-12-19,Galeno,18.37,4704.93
+1169,1668,9703.69,efectivo,pendiente,,PAMI,574.58,9129.11
+1170,1669,5428.37,efectivo,pagado,2024-02-01,OSDE,860.44,4567.93
+1171,1671,7540.43,transferencia,pagado,2024-01-25,Galeno,1662.34,5878.09
+1172,1672,7794.7,tarjeta,pagado,2025-01-04,,,7794.7
+1173,1673,4281.6,tarjeta,pagado,2024-01-25,Swiss Medical,715.2,3566.4
+1174,1674,9962.05,transferencia,pagado,2024-12-10,Swiss Medical,420.25,9541.8
+1175,1675,5539.42,transferencia,pagado,2024-04-30,OSDE,1156.75,4382.67
+1176,1676,6949.95,transferencia,pagado,2024-12-12,Galeno,1520.79,5429.16
+1177,1679,8570.36,transferencia,pagado,2024-09-28,Sancor Salud,262.94,8307.42
+1178,1683,5217.92,tarjeta,pagado,2024-10-30,Galeno,1163.27,4054.65
+1179,1685,6998.66,tarjeta,pagado,2024-06-07,Sancor Salud,983.15,6015.51
+1180,1686,6609.52,tarjeta,pagado,2024-07-06,Swiss Medical,785.0,5824.52
+1181,1687,4913.18,efectivo,pagado,2024-11-12,Sancor Salud,742.54,4170.64
+1182,1688,5843.7,tarjeta,pagado,2024-02-15,OSDE,850.48,4993.22
+1183,1689,7714.55,efectivo,pendiente,,,,7714.55
+1184,1691,8181.78,tarjeta,pagado,2024-04-28,Galeno,833.83,7347.95
+1185,1693,9011.43,tarjeta,pagado,2024-08-10,PAMI,1335.13,7676.3
+1186,1694,5666.64,tarjeta,pagado,2024-01-18,Particular,167.16,5499.48
+1187,1695,6297.73,tarjeta,pagado,2024-12-01,Particular,315.96,5981.77
+1188,1698,5165.53,tarjeta,pagado,2024-07-31,Particular,906.05,4259.48
+1189,1699,5595.46,transferencia,pagado,2024-12-14,Swiss Medical,,5595.46
+1190,1700,6960.95,transferencia,pagado,2024-12-17,Sancor Salud,1081.46,5879.49
+1191,1701,7983.21,efectivo,pagado,2024-12-31,Sancor Salud,1045.33,6937.88
+1192,1702,5603.31,transferencia,rechazado,,Sancor Salud,21.72,5581.59
+1193,1703,6593.5,transferencia,pagado,2024-08-06,OSDE,722.86,5870.64
+1194,1706,5545.86,tarjeta,pagado,2024-08-15,Swiss Medical,644.12,4901.74
+1195,1708,8108.33,tarjeta,pagado,2024-01-19,Swiss Medical,1240.58,6867.75
+1196,1710,5133.6,tarjeta,pagado,2024-01-17,OSDE,436.96,4696.64
+1197,1711,5301.63,efectivo,pendiente,,OSECAC,,5301.63
+1198,1712,5002.32,transferencia,pagado,2024-01-11,OSECAC,1203.95,3798.37
+1199,1713,5252.84,tarjeta,pagado,2024-05-04,Galeno,731.28,4521.56
+1200,1716,6062.35,tarjeta,pagado,2024-08-06,,762.59,5299.76
+1201,1717,7586.57,tarjeta,pagado,2024-05-12,Galeno,969.31,6617.26
+1202,1720,5017.92,tarjeta,pagado,2024-07-12,Galeno,981.74,4036.18
+1203,1721,7499.79,transferencia,pagado,2024-08-17,PAMI,1483.0,6016.79
+1204,1722,8387.28,transferencia,pagado,2024-03-20,PAMI,1658.38,6728.9
+1205,1724,6468.49,tarjeta,pagado,2024-01-04,OSDE,785.38,5683.11
+1206,1726,7046.7,tarjeta,pendiente,,OSDE,748.62,6298.08
+1207,1727,7619.1,efectivo,pagado,2024-09-19,Swiss Medical,800.86,6818.24
+1208,1728,5323.79,efectivo,pendiente,,Galeno,1158.58,4165.21
+1209,1729,8166.86,efectivo,pagado,2024-07-12,Swiss Medical,946.7,7220.16
+1210,1730,4929.26,transferencia,pagado,2024-06-11,Particular,60.27,4868.99
+1211,1731,5376.35,transferencia,pagado,2024-10-02,PAMI,,5376.35
+1212,1732,5337.67,transferencia,pagado,2024-03-31,Swiss Medical,1008.56,4329.11
+1213,1735,7206.34,efectivo,pagado,2024-10-30,Particular,1375.31,5831.03
+1214,1736,6977.21,transferencia,pagado,2024-12-17,Swiss Medical,1037.39,5939.82
+1215,1738,5498.41,transferencia,pagado,2024-05-25,Particular,1298.63,4199.78
+1216,1739,7393.02,efectivo,pagado,2024-06-15,Galeno,684.35,6708.67
+1217,1740,6311.96,tarjeta,pagado,2024-07-12,Galeno,1385.53,4926.43
+1218,1741,7161.85,transferencia,pendiente,,Particular,734.14,6427.71
+1219,1742,6737.08,tarjeta,pagado,2024-10-28,Galeno,369.01,6368.07
+1220,1743,7472.36,transferencia,pagado,2024-05-31,Swiss Medical,496.2,6976.16
+1221,1744,6822.59,tarjeta,pagado,2024-09-06,Galeno,801.69,6020.9
+1222,1745,5690.38,tarjeta,pagado,2024-02-12,OSDE,932.63,4757.75
+1223,1746,7123.78,tarjeta,pagado,2024-01-31,Swiss Medical,347.08,6776.7
+1224,1748,7709.81,efectivo,pagado,2024-05-30,Sancor Salud,1268.16,6441.65
+1225,1749,5797.99,efectivo,pagado,2024-08-14,PAMI,739.46,5058.53
+1226,1750,7111.61,efectivo,pagado,2024-08-27,OSDE,1090.94,6020.67
+1227,1751,6835.54,transferencia,pagado,2024-11-28,Swiss Medical,1354.87,5480.67
+1228,1753,6752.52,transferencia,pagado,2024-01-18,Galeno,700.61,6051.91
+1229,1754,5817.13,transferencia,pendiente,,Galeno,,5817.13
+1230,1755,6086.37,transferencia,pagado,2024-04-04,Swiss Medical,1418.82,4667.55
+1231,1756,10221.55,tarjeta,pagado,2024-07-25,OSDE,1865.55,8356.0
+1232,1758,6548.52,transferencia,pagado,2024-06-13,Swiss Medical,1635.35,4913.17
+1233,1759,5307.03,efectivo,pagado,2024-08-31,Sancor Salud,460.77,4846.26
+1234,1761,6473.69,transferencia,pagado,2024-07-09,Swiss Medical,1344.21,5129.48
+1235,1762,5908.05,transferencia,rechazado,,Swiss Medical,652.92,5255.13
+1236,1763,6943.44,efectivo,pagado,2024-11-13,Swiss Medical,,6943.44
+1237,1766,6065.38,efectivo,pagado,2024-02-03,OSDE,589.78,5475.6
+1238,1768,7294.53,tarjeta,pagado,2024-02-05,Swiss Medical,,7294.53
+1239,1769,7678.8,tarjeta,pagado,2024-03-05,Galeno,1753.58,5925.22
+1240,1770,6484.39,transferencia,pagado,2024-11-18,OSDE,493.79,5990.6
+1241,1773,9754.13,tarjeta,pendiente,,Swiss Medical,1543.02,8211.11
+1242,1774,5714.6,efectivo,pendiente,,Particular,124.84,5589.76
+1243,1776,8597.03,tarjeta,pagado,2024-06-10,OSDE,1359.56,7237.47
+1244,1778,8284.84,transferencia,pagado,2024-01-11,Swiss Medical,235.41,8049.43
+1245,1779,10773.81,transferencia,pagado,2024-06-09,Galeno,515.08,10258.73
+1246,1780,7905.97,transferencia,pagado,2024-05-15,Galeno,689.76,7216.21
+1247,1781,5009.26,efectivo,pagado,2024-12-08,OSDE,840.29,4168.97
+1248,1782,7659.72,transferencia,pendiente,,Galeno,,7659.72
+1249,1783,6607.12,tarjeta,pagado,2024-12-06,Medifé,630.34,5976.78
+1250,1785,7683.5,tarjeta,pagado,2024-06-23,OSDE,1290.69,6392.81
+1251,1786,5357.11,transferencia,pagado,2024-02-19,OSDE,491.22,4865.89
+1252,1788,8156.22,tarjeta,pagado,2024-02-07,Swiss Medical,41.47,8114.75
+1253,1789,9788.46,efectivo,pagado,2024-04-07,PAMI,,9788.46
+1254,1792,7134.87,efectivo,pendiente,,OSDE,347.32,6787.55
+1255,1794,6774.72,transferencia,pagado,2024-08-10,PAMI,35.82,6738.9
+1256,1795,9377.28,tarjeta,pagado,2024-11-11,Galeno,2010.75,7366.53
+1257,1796,8002.76,transferencia,pendiente,,OSDE,549.55,7453.21
+1258,1797,5092.08,transferencia,pagado,2024-12-07,OSDE,619.02,4473.06
+1259,1798,8097.51,transferencia,pagado,2024-01-26,PAMI,1266.66,6830.85
+1260,1801,6093.28,tarjeta,pagado,2024-08-29,Sancor Salud,1519.59,4573.69
+1261,1802,7210.99,tarjeta,rechazado,,Swiss Medical,,7210.99
+1262,1803,7216.79,transferencia,pagado,2024-03-28,OSDE,1556.84,5659.95
+1263,1806,7927.35,efectivo,pendiente,,Galeno,182.84,7744.51
+1264,1807,6028.17,efectivo,pagado,2024-04-30,OSDE,798.04,5230.13
+1265,1808,8009.46,transferencia,pagado,2024-07-08,PAMI,532.37,7477.09
+1266,1809,7104.27,transferencia,pagado,2024-02-28,Sancor Salud,669.36,6434.91
+1267,1810,9082.58,transferencia,pagado,2024-11-23,OSECAC,1982.31,7100.27
+1268,1811,4965.65,efectivo,pendiente,,OSDE,1090.6,3875.05
+1269,1812,6933.73,transferencia,pagado,2024-05-17,Swiss Medical,1507.52,5426.21
+1270,1813,6760.27,transferencia,rechazado,,OSDE,,6760.27
+1271,1814,5006.53,transferencia,pendiente,,Medifé,,5006.53
+1272,1816,8531.09,tarjeta,pendiente,,Sancor Salud,2107.11,6423.98
+1273,1818,5392.37,tarjeta,pagado,2024-03-28,OSDE,578.88,4813.49
+1274,1819,6530.2,tarjeta,pagado,2024-05-14,OSDE,960.1,5570.1
+1275,1820,6690.18,tarjeta,pagado,2024-08-15,OSDE,1513.77,5176.41
+1276,1824,5229.61,efectivo,pagado,2024-06-29,OSECAC,702.88,4526.73
+1277,1825,5597.46,transferencia,pagado,2024-12-24,OSDE,970.85,4626.61
+1278,1826,7787.22,transferencia,pagado,2024-06-21,OSDE,562.04,7225.18
+1279,1827,10412.24,tarjeta,pagado,2024-04-01,OSDE,192.11,10220.13
+1280,1828,6951.28,tarjeta,pagado,2025-01-02,OSDE,845.29,6105.99
+1281,1830,6730.76,tarjeta,pagado,2024-10-03,Swiss Medical,1435.61,5295.15
+1282,1831,7332.6,transferencia,pagado,2024-07-07,Galeno,866.81,6465.79
+1283,1834,7401.19,transferencia,pendiente,,Galeno,291.23,7109.96
+1284,1835,8325.95,tarjeta,pagado,2024-09-26,Particular,2075.99,6249.96
+1285,1838,8875.09,transferencia,pagado,2024-03-25,Galeno,,8875.09
+1286,1839,4899.29,transferencia,rechazado,,,,4899.29
+1287,1840,8276.42,transferencia,pendiente,,Sancor Salud,,8276.42
+1288,1842,4723.95,efectivo,pagado,2024-08-07,OSDE,828.65,3895.3
+1289,1844,7824.84,efectivo,pagado,2024-10-15,Sancor Salud,1920.26,5904.58
+1290,1845,5089.47,tarjeta,pagado,2024-02-17,OSDE,879.84,4209.63
+1291,1846,8410.02,tarjeta,pagado,2024-03-31,OSDE,1467.62,6942.4
+1292,1849,6611.47,transferencia,pagado,2025-01-02,OSDE,1222.12,5389.35
+1293,1850,8001.57,efectivo,pagado,2024-01-19,OSECAC,1968.54,6033.03
+1294,1851,7226.02,efectivo,pagado,2024-05-15,Particular,1667.7,5558.32
+1295,1852,7327.94,tarjeta,pagado,2024-09-23,Sancor Salud,,7327.94
+1296,1854,8421.05,tarjeta,pagado,2024-08-27,,1196.53,7224.52
+1297,1855,6156.04,transferencia,rechazado,,,1447.49,4708.55
+1298,1856,7680.05,tarjeta,pagado,2024-12-15,Galeno,223.11,7456.94
+1299,1857,7508.12,tarjeta,pendiente,,OSDE,,7508.12
+1300,1859,7992.57,tarjeta,pagado,2024-11-20,OSDE,,7992.57
+1301,1860,6644.82,efectivo,pagado,2024-09-04,OSDE,433.16,6211.66
+1302,1862,5994.49,transferencia,pagado,2024-03-06,Particular,833.03,5161.46
+1303,1864,5210.98,transferencia,pendiente,,Medifé,709.76,4501.22
+1304,1865,5831.87,efectivo,pagado,2024-01-25,OSDE,647.09,5184.78
+1305,1866,9327.17,efectivo,pagado,2024-07-29,Galeno,23.74,9303.43
+1306,1867,7115.16,efectivo,pagado,2024-07-17,OSDE,1101.93,6013.23
+1307,1870,5169.09,efectivo,pagado,2024-04-08,PAMI,651.12,4517.97
+1308,1871,5234.54,efectivo,pendiente,,Particular,1111.32,4123.22
+1309,1874,5686.1,transferencia,pagado,2024-04-20,OSECAC,638.2,5047.9
+1310,1875,4545.54,tarjeta,pagado,2024-10-18,OSDE,408.78,4136.76
+1311,1876,7367.28,tarjeta,pagado,2024-12-05,Medifé,1144.37,6222.91
+1312,1878,9704.41,tarjeta,pagado,2024-02-15,OSDE,1184.74,8519.67
+1313,1879,8632.28,transferencia,pagado,2024-09-06,PAMI,699.92,7932.36
+1314,1880,5993.61,transferencia,pendiente,,Galeno,1145.08,4848.53
+1315,1881,6167.67,tarjeta,pagado,2024-10-15,Galeno,1414.95,4752.72
+1316,1882,5161.16,transferencia,pendiente,,OSDE,,5161.16
+1317,1883,6120.47,tarjeta,pagado,2024-06-19,Galeno,1060.85,5059.62
+1318,1885,7655.08,transferencia,pagado,2024-06-02,Swiss Medical,961.11,6693.97
+1319,1886,7845.66,tarjeta,pagado,2024-12-08,Swiss Medical,1918.52,5927.14
+1320,1887,7483.4,transferencia,pagado,2024-03-10,Sancor Salud,1551.68,5931.72
+1321,1889,5033.23,tarjeta,pendiente,,Galeno,822.56,4210.67
+1322,1890,8250.65,tarjeta,pagado,2024-06-24,OSECAC,1872.12,6378.53
+1323,1892,8118.88,transferencia,pagado,2024-01-22,Galeno,1273.52,6845.36
+1324,1893,7548.99,transferencia,pagado,2024-05-22,Galeno,1597.74,5951.25
+1325,1894,6227.48,tarjeta,pagado,2024-11-17,Swiss Medical,339.9,5887.58
+1326,1895,7918.03,transferencia,pagado,2024-06-26,OSECAC,412.92,7505.11
+1327,1896,5217.44,tarjeta,pagado,2024-11-21,Particular,779.99,4437.45
+1328,1898,6924.71,tarjeta,pagado,2024-02-18,PAMI,673.28,6251.43
+1329,1904,6117.74,efectivo,pagado,2024-10-08,OSDE,160.97,5956.77
+1330,1905,6851.13,transferencia,pendiente,,OSECAC,,6851.13
+1331,1906,7098.83,tarjeta,pagado,2024-02-27,OSDE,1335.12,5763.71
+1332,1909,5710.97,transferencia,pagado,2024-05-11,Galeno,,5710.97
+1333,1910,7239.11,tarjeta,pagado,2024-01-24,Galeno,1716.05,5523.06
+1334,1911,6023.08,efectivo,pagado,2024-09-21,OSECAC,1030.54,4992.54
+1335,1912,7696.91,efectivo,pagado,2024-02-12,PAMI,183.13,7513.78
+1336,1913,9332.59,tarjeta,pagado,2024-12-12,Sancor Salud,918.88,8413.71
+1337,1914,5982.76,efectivo,pendiente,,Galeno,,5982.76
+1338,1915,5946.53,transferencia,pagado,2024-03-27,Galeno,606.15,5340.38
+1339,1918,6446.56,transferencia,pagado,2024-12-10,Galeno,1381.86,5064.7
+1340,1919,8879.55,tarjeta,pagado,2024-01-26,OSDE,1162.83,7716.72
+1341,1920,9623.81,transferencia,pagado,2024-06-15,Galeno,2035.58,7588.23
+1342,1922,6465.02,tarjeta,pagado,2024-05-26,OSDE,753.31,5711.71
+1343,1924,5644.2,efectivo,pagado,2024-03-28,OSDE,786.49,4857.71
+1344,1925,10694.7,transferencia,pendiente,,PAMI,,10694.7
+1345,1927,5802.3,tarjeta,pendiente,,Swiss Medical,898.0,4904.3
+1346,1928,8516.42,tarjeta,pagado,2024-06-21,Galeno,1737.76,6778.66
+1347,1932,7142.24,efectivo,pagado,2024-08-26,Swiss Medical,1003.04,6139.2
+1348,1934,4575.69,tarjeta,pagado,2024-08-16,Galeno,377.91,4197.78
+1349,1935,9770.56,transferencia,pagado,2024-09-26,,2111.7,7658.86
+1350,1936,5203.74,tarjeta,pagado,2024-04-01,Swiss Medical,405.15,4798.59
+1351,1937,5605.55,tarjeta,pagado,2024-03-18,Swiss Medical,178.9,5426.65
+1352,1939,11071.9,transferencia,pendiente,,Sancor Salud,,11071.9
+1353,1940,6464.74,transferencia,pendiente,,Galeno,,6464.74
+1354,1941,6135.15,tarjeta,pagado,2024-02-27,OSDE,889.79,5245.36
+1355,1942,4642.73,tarjeta,pagado,2024-08-09,Sancor Salud,803.41,3839.32
+1356,1943,7956.54,transferencia,pendiente,,OSDE,,7956.54
+1357,1944,5462.31,tarjeta,pagado,2024-08-01,Particular,,5462.31
+1358,1947,7421.62,efectivo,pagado,2024-12-30,PAMI,392.76,7028.86
+1359,1948,5493.38,tarjeta,pendiente,,,,5493.38
+1360,1949,5069.6,tarjeta,pagado,2024-06-14,Galeno,1125.29,3944.31
+1361,1951,5673.45,tarjeta,pagado,2024-11-27,Sancor Salud,,5673.45
+1362,1952,5556.45,efectivo,pagado,2024-06-02,OSDE,488.28,5068.17
+1363,1953,6948.46,transferencia,pagado,2024-08-07,Sancor Salud,937.26,6011.2
+1364,1954,7073.23,efectivo,pagado,2024-10-11,,1022.57,6050.66
+1365,1955,6581.25,transferencia,pagado,2024-03-23,Swiss Medical,403.62,6177.63
+1366,1956,8129.86,tarjeta,pendiente,,Medifé,1232.7,6897.16
+1367,1957,7707.79,efectivo,pagado,2024-04-24,,502.07,7205.72
+1368,1958,5648.7,efectivo,pendiente,,Swiss Medical,,5648.7
+1369,1959,6118.8,transferencia,pagado,2024-12-21,Galeno,392.64,5726.16
+1370,1960,6708.76,transferencia,pagado,2024-12-11,Galeno,422.53,6286.23
+1371,1961,4840.74,tarjeta,pagado,2024-10-24,Swiss Medical,1071.14,3769.6
+1372,1963,5200.48,transferencia,pagado,2024-12-30,,621.52,4578.96
+1373,1966,7368.0,tarjeta,pagado,2024-11-21,OSDE,1290.32,6077.68
+1374,1967,6313.9,transferencia,pagado,2024-02-19,PAMI,1058.93,5254.97
+1375,1968,7736.35,tarjeta,pagado,2024-06-07,,1356.6,6379.75
+1376,1969,5368.17,transferencia,pagado,2024-06-05,,346.22,5021.95
+1377,1971,5731.47,transferencia,pagado,2024-08-13,Sancor Salud,1066.01,4665.46
+1378,1972,5000.58,tarjeta,pagado,2024-02-20,OSECAC,,5000.58
+1379,1973,6641.96,transferencia,pendiente,,PAMI,73.0,6568.96
+1380,1974,7664.19,tarjeta,pagado,2024-04-18,Particular,596.87,7067.32
+1381,1976,8097.21,tarjeta,pagado,2024-03-25,OSDE,337.83,7759.38
+1382,1977,4760.03,tarjeta,pagado,2024-03-10,PAMI,,4760.03
+1383,1978,6141.8,transferencia,pagado,2024-10-22,Galeno,571.9,5569.9
+1384,1979,6514.25,transferencia,pagado,2024-02-11,Galeno,845.64,5668.61
+1385,1982,5040.26,efectivo,pagado,2024-04-25,Sancor Salud,842.74,4197.52
+1386,1983,5271.53,transferencia,pagado,2024-12-21,OSDE,1040.1,4231.43
+1387,1984,5956.88,tarjeta,rechazado,,OSDE,620.01,5336.87
+1388,1985,5847.11,tarjeta,pagado,2024-07-16,Particular,11.16,5835.95
+1389,1986,8084.14,transferencia,pagado,2024-05-21,OSDE,1729.2,6354.94
+1390,1990,7203.93,transferencia,pagado,2024-02-29,Swiss Medical,584.32,6619.61
+1391,1991,5617.47,tarjeta,pagado,2024-10-03,Swiss Medical,,5617.47
+1392,1995,4855.36,transferencia,pagado,2024-04-01,Sancor Salud,393.05,4462.31
+1393,1996,6575.86,tarjeta,pagado,2024-10-07,Sancor Salud,1054.4,5521.46
+1394,1997,8246.91,tarjeta,rechazado,,Sancor Salud,,8246.91
+1395,1999,7945.46,tarjeta,pagado,2024-02-29,OSDE,1424.08,6521.38
+1396,2000,4619.17,transferencia,pagado,2024-06-08,Swiss Medical,186.32,4432.85

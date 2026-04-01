@@ -1,0 +1,13 @@
+professional_id,nombre_profesional,especialidad,antiguedad_anios,dias_atencion,turno_habitual
+1,Dra. Ana Martínez,Clínica médica,15,lun_mié_vie,mañana
+2,Dr. Carlos Gómez,Clínica médica,15,mar_jue,tarde
+3,Dra. Laura Fernández,Clínica médica,10,lun_a_vie,mixto
+4,Dr. Pablo Ruiz,Clínica médica,25,lun_a_vie,mañana
+5,Dr. Miguel Sánchez,Cardiología,23,lun_mié_vie,mañana
+6,Dra. Verónica López,Cardiología,2,mar_jue,mañana
+7,Dr. Diego Torres,Cardiología,7,lun_a_vie,tarde
+8,Dra. Julia Castro,Dermatología,6,mar_jue,tarde
+9,Dr. Martín Acosta,Traumatología,23,lun_a_vie,mañana
+10,Dra. Carolina Vega,Ginecología,14,lun_mié_vie,tarde
+11,Dr. Federico Morales,Neurología,19,mar_jue,mañana
+12,Dra. Silvia Romero,Pediatría,21,lun_a_vie,mixto
