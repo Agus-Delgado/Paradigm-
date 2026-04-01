@@ -1,14 +1,16 @@
 # Paradigm
 
+## Descripción breve
+
 Paradigm es una **demo analítica** para explorar y entender **datasets tabulares**. Combina carga de archivos, **perfilado automático**, **hallazgos**, **exploración interactiva** (filtros y vista tabular) y **visualizaciones** para ofrecer una lectura rápida del estado de los datos.
 
 La versión actual incluye un **caso aplicado a un consultorio médico ambulatorio** (datos sintéticos), pensado como narrativa de portfolio cercana a un escenario operativo. El **motor del proyecto sigue siendo reutilizable**: podés analizar cualquier **CSV** o **XLSX** (primera hoja) sin depender del dominio salud.
 
 ---
 
-## Vista previa / demo visual
+## Vista previa
 
-Vista rápida del flujo principal: carga del dataset demo, análisis y exploración por pestañas.
+Preview breve del flujo principal de la demo.
 
 ![Paradigm demo](docs/images/paradigm-demo-loop.gif)
 
