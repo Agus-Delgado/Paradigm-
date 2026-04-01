@@ -1,0 +1,8 @@
+order_id,fecha,producto,categoria,cantidad,precio_unitario,cliente_id
+1,2024-01-15,Teclado,Electrónica,2,45.5,101
+2,2024-01-16,Mouse,Electrónica,1,22.0,102
+3,2024-01-17,Monitor,Electrónica,1,199.99,101
+4,2024-01-18,Escritorio,Muebles,1,120.0,103
+5,2024-01-19,Teclado,Electrónica,3,45.5,104
+6,2024-01-20,Silla,Muebles,2,85.0,102
+7,2024-01-21,Mouse,Electrónica,2,22.0,101
