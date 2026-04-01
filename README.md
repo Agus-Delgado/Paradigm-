@@ -1,92 +1,124 @@
 # Paradigm
 
-Aplicación **standalone** en Python orientada a una **demo analítica** de operación de un **consultorio médico ambulatorio**: turnos, asistencia, facturación y coberturas, usando un **dataset oficial completamente sintético** incluido en el repositorio. El **motor de exploración** sigue siendo **genérico**: podés subir cualquier CSV o Excel (primera hoja) y obtener perfilado, filtros y gráficos sin depender del caso de consultorio.
+Paradigm es una **demo analítica** para explorar y entender **datasets tabulares**. Combina carga de archivos, **perfilado automático**, **hallazgos**, **exploración interactiva** (filtros y vista tabular) y **visualizaciones** para ofrecer una lectura rápida del estado de los datos.
+
+La versión actual incluye un **caso aplicado a un consultorio médico ambulatorio** (datos sintéticos), pensado como narrativa de portfolio cercana a un escenario operativo. El **motor del proyecto sigue siendo reutilizable**: podés analizar cualquier **CSV** o **XLSX** (primera hoja) sin depender del dominio salud.
 
 ---
 
-## Disclaimer — datos ficticios
+## Vista previa / demo visual
 
-Este proyecto utiliza datos **completamente ficticios** y generados de forma **sintética** con fines demostrativos. **No contiene** información real de pacientes, profesionales ni operaciones de ninguna institución.
+Vista rápida del flujo principal: carga del dataset demo, análisis y exploración por pestañas.
 
----
-
-## Descripción breve
-
-Paradigm permite:
-
-- **Cargar el dataset demo** del consultorio con un clic (tabla plana `medical_clinic_flat.csv`) o **subir un archivo propio**.
-- Obtener un **resumen ejecutivo** (volumen, nulos, duplicados, memoria, tipos inferidos, calidad estimada).
-- Ver **indicadores operativos opcionales** y **hallazgos operativos del consultorio** cuando las columnas coinciden con el esquema del demo (sin afectar el comportamiento con otros datasets).
-- Revisar **hallazgos de calidad de datos** heurísticos (duplicados, nulos altos, cardinalidad, etc.).
-- Explorar una **vista filtrada** con gráfico exploratorio y **perfil por columna**.
+![Paradigm demo](docs/images/paradigm-demo-loop.gif)
 
 ---
 
-## ¿Qué hace este MVP?
+## Caso de uso demo: consultorio médico
 
-Una app **Streamlit** que carga tablas desde el navegador, infiere tipos lógicos, calcula métricas de perfilado y muestra KPIs y visualizaciones en **Plotly**. El caso principal de uso en portfolio es el **seguimiento operativo y administrativo simulado** del consultorio (patrones de turnos, cancelaciones, ingresos); el motor no asume reglas de negocio fijas salvo en la **capa opcional** activada por nombres de columnas del demo.
+La demo principal usa un **dataset sintético** de consultorio para simular un entorno de **atención ambulatoria**. Sirve para mostrar cómo Paradigm apoya una lectura operativa del día a día:
 
----
+- **Turnos** y volumen de actividad  
+- **Asistencia**, ausentismo y **cancelaciones**  
+- **Especialidades** y **coberturas médicas**  
+- **Facturación** e **ingresos**  
+- **Exploración rápida** de la tabla y métricas de calidad  
 
-## Funcionalidades
-
-| Área | Detalle |
-|------|--------|
-| **Carga** | CSV/XLSX por upload, o **botón** para cargar el dataset demo desde `data/sample/medical_clinic/medical_clinic_flat.csv`. |
-| **Demo** | Banner de datos sintéticos cuando usás la carga demo. |
-| **Inferencia de tipos** | Tipos lógicos: numérico, categórico, booleano, fecha/hora, texto, identificador. Etiquetas en español en la UI. |
-| **Resumen ejecutivo** | KPIs globales y gráfico de columnas por tipo inferido. |
-| **Indicadores operativos** | Solo si el archivo tiene las columnas del demo plano (turnos, estados, ingresos, cobertura, medio de pago). |
-| **Hallazgos operativos** | Mensajes de contexto de consultorio (módulo aparte), si el esquema es compatible. |
-| **Hallazgos de calidad** | Reglas genéricas sobre duplicados, nulos, cardinalidad, etc. |
-| **Exploración** | Filtros en sidebar, vista previa, gráfico exploratorio sobre la vista filtrada. |
-| **Perfil y nulos** | Tabla de perfil por columna y gráfico de % de nulos (dataset completo). |
+Es un ejemplo de cómo unificar **perfilado técnico** y **contexto de negocio** en una misma interfaz.
 
 ---
 
-## Stack tecnológico
+## Disclaimer — datos sintéticos
 
-- **Python** 3.10+
-- **Streamlit** — interfaz web
-- **Pandas** — datos tabulares
-- **NumPy** — generación del dataset demo (script)
-- **Plotly** — gráficos interactivos
-- **openpyxl** — lectura de Excel (`.xlsx`)
+Los datos del caso médico son **completamente ficticios** y fueron **generados de forma sintética** solo para demostración. **No representan** pacientes, profesionales, instituciones ni operaciones reales. En la app, al cargar el dataset demo, se muestra un **banner** con la misma aclaración.
 
 ---
 
-## Estructura del proyecto
+## Estado actual del proyecto
+
+Paradigm está en **etapa de demo funcional** y **evolución continua**. La base actual permite recorrer el flujo principal del producto con claridad; decisiones técnicas y de experiencia de usuario seguirán refinándose a medida que el proyecto madure. El enfoque es **honesto y orientado a aprendizaje y portfolio**, sin pretender cubrir aún un producto enterprise completo.
+
+---
+
+## Motor genérico (más allá del caso médico)
+
+El **caso del consultorio** es la **demo destacada**, no una limitación del producto. Con un archivo propio, Paradigm aplica el mismo pipeline de **ingestión**, **inferencia de tipos**, **resumen**, **hallazgos de calidad**, **filtros**, **tabla exploratoria** y **gráficos**. Los **indicadores operativos** y los **hallazgos operativos del consultorio** solo se activan cuando el esquema coincide con el del demo plano; el resto del comportamiento **no depende** del dominio médico.
+
+---
+
+## Funcionalidades principales
+
+| Área | Qué incluye |
+|------|-------------|
+| **Carga** | Botón **«Cargar dataset demo (consultorio médico)»** o **upload** CSV/XLSX. |
+| **Navegación** | **Pestañas**: Resumen, Indicadores operativos, Hallazgos, Exploración, Gráficos (menos scroll, recorrido ordenado). |
+| **Resumen ejecutivo** | Métricas globales, calidad estimada, distribución de tipos inferidos y **perfil por columna** (expander). |
+| **Perfilado** | Tipos lógicos (numérico, categórico, booleano, fecha/hora, texto, identificador); etiquetas en español en la UI. |
+| **Indicadores operativos** | KPIs del consultorio **solo si** las columnas coinciden con el esquema del demo plano. |
+| **Hallazgos** | **Operativos** (consultorio, si aplica) y **de calidad de datos** (reglas heurísticas sobre el perfil). |
+| **Exploración** | Filtros en **barra lateral** (afectan vista tabular en **Exploración** y gráfico exploratorio en **Gráficos**). |
+| **Gráficos** | Gráfico exploratorio sobre la vista filtrada y gráfico de **nulos por columna** sobre el dataset completo. |
+| **Demo** | Banner de datos sintéticos al usar la carga demo. |
+
+---
+
+## Flujo de uso
+
+```mermaid
+flowchart LR
+    A[Cargar dataset demo o archivo propio] --> B[Ingestión]
+    B --> C[Perfilado del dataset]
+    C --> D[Resumen ejecutivo]
+    C --> E[Indicadores operativos opcionales]
+    C --> F[Hallazgos automáticos]
+    C --> G[Exploración tabular]
+    C --> H[Gráficos exploratorios]
+```
+
+Tras el perfilado, las áreas **D–H** se consultan por **pestañas** en la app; comparten la misma base analítica y, en exploración, los **filtros** del sidebar.
+
+---
+
+## Estructura del repositorio
 
 ```
 Paradigm/
 ├── app/
-│   ├── main.py
+│   ├── main.py                 # Interfaz Streamlit (tabs, carga, visualización)
 │   ├── core/
-│   │   ├── ingestion.py
-│   │   ├── schema.py
-│   │   ├── profiling.py
+│   │   ├── clinic_operational_insights.py   # Hallazgos operativos (consultorio, opcional)
+│   │   ├── clinic_operational_kpis.py       # KPIs operativos (consultorio, opcional)
 │   │   ├── exploration.py
 │   │   ├── findings.py
-│   │   ├── clinic_operational_kpis.py
-│   │   ├── clinic_operational_insights.py
+│   │   ├── ingestion.py
+│   │   ├── profiling.py
+│   │   ├── schema.py
 │   │   └── utils.py
 │   └── visualization/
 │       └── charts.py
 ├── data/
 │   └── sample/
-│       ├── medical_clinic/    # Dataset demo (consultorio)
-│       └── ...
+│       ├── medical_clinic/
+│       │   ├── medical_clinic_flat.csv   # Tabla plana usada por el botón demo
+│       │   ├── patients.csv
+│       │   ├── professionals.csv
+│       │   ├── appointments.csv
+│       │   └── billing.csv
+│       ├── ventas_ejemplo.csv
+│       └── mixto.csv
 ├── docs/
-│   └── images/                # Capturas para README / portfolio (opcional)
+│   └── images/                 # GIF principal del README y capturas adicionales (opcional)
 ├── scripts/
-│   └── generate_medical_clinic_data.py
+│   └── generate_medical_clinic_data.py   # Regenera el dataset sintético del consultorio
 ├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## Instalación
+## Instalación y ejecución
+
+**Requisitos:** Python 3.10+
 
 ```powershell
 cd ruta\a\Paradigm
@@ -95,7 +127,7 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-En Linux o macOS:
+Linux o macOS:
 
 ```bash
 cd ruta/a/Paradigm
@@ -104,107 +136,67 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
----
-
-## Cómo ejecutar la app
-
 Desde la **raíz del repositorio**:
 
-```powershell
+```bash
 streamlit run app/main.py
 ```
 
-Abrí la URL local que muestre Streamlit (por defecto `http://localhost:8501`).
+Abre la URL que indique Streamlit (por defecto `http://localhost:8501`).
+
+### Stack
+
+- **Streamlit** — interfaz web  
+- **Pandas** — datos tabulares  
+- **Plotly** — gráficos interactivos  
+- **openpyxl** — lectura de Excel (`.xlsx`)  
+- **NumPy** — generación de datos en el script del consultorio  
 
 ---
 
-## Dataset demo (consultorio médico)
+## Cómo usar la demo
 
-- **Tabla principal para la app:** [`data/sample/medical_clinic/medical_clinic_flat.csv`](data/sample/medical_clinic/medical_clinic_flat.csv) (una fila por turno, con datos de paciente, profesional y facturación unidos).
-- **Tablas separadas:** `patients.csv`, `professionals.csv`, `appointments.csv`, `billing.csv` (soporte narrativo y regeneración).
+1. Ejecutá la app con `streamlit run app/main.py`.  
+2. **Opción A:** pulsá **«Cargar dataset demo (consultorio médico)»** para cargar [`data/sample/medical_clinic/medical_clinic_flat.csv`](data/sample/medical_clinic/medical_clinic_flat.csv).  
+3. **Opción B:** subí un **CSV** o **XLSX** propio para usar Paradigm como explorador genérico.  
+4. Navegá las **pestañas** (Resumen → Indicadores → Hallazgos → Exploración → Gráficos) y, si querés filtrar, usá la **barra lateral** (impacta vista tabular y gráfico exploratorio).  
 
-Regenerar datos sintéticos (misma semilla → mismos archivos):
+Si el archivo **no** coincide con el esquema del demo, seguirás viendo resumen, hallazgos de calidad, exploración y gráficos genéricos; los bloques **operativos del consultorio** no se mostrarán.
 
-```powershell
+### Regenerar datos sintéticos del consultorio
+
+Misma semilla → mismos archivos en `data/sample/medical_clinic/`:
+
+```bash
 python scripts/generate_medical_clinic_data.py
 ```
 
-Convención de columnas: **español**, `snake_case`; identificadores técnicos pueden usar sufijos `_id` en inglés.
+Convención de columnas del demo: **español**, `snake_case`; identificadores pueden usar sufijos `_id`.
 
 ---
 
-## Cómo probar
+## Roadmap y próximos pasos
 
-1. Ejecutá la app.
-2. Opción A: pulsá **«Cargar dataset demo (consultorio médico)»**.
-3. Opción B: subí un CSV/XLSX (por ejemplo `data/sample/ventas_ejemplo.csv`).
-4. Revisá resumen ejecutivo, indicadores operativos (si aplica), hallazgos, exploración y gráficos.
+- Refinar UX y presentación (textos de ayuda, capturas complementarias).  
+- Ampliar pruebas con CSV de distintos dominios.  
+- Valorar extensiones puntuales (exportar resumen, más reglas de hallazgos) sin perder el foco en demo clara.  
 
----
-
-## Flujo funcional
-
-```mermaid
-flowchart LR
-  A[Carga demo o upload] --> B[Ingestión CSV/XLSX]
-  B --> C[Inferencia de tipos]
-  C --> D[Perfilado global y por columna]
-  D --> E[Resumen ejecutivo]
-  E --> F[Indicadores operativos opcionales]
-  F --> G[Hallazgos operativos y de calidad]
-  G --> H[Exploración filtrada y gráficos]
-```
+**Limitaciones actuales (esperables en esta etapa):** una sola hoja en Excel; inferencia heurística de tipos; datos en memoria local; sin base de datos, autenticación ni modelos de ML en esta versión.
 
 ---
 
-## Limitaciones
+## Nota final
 
-- Una sola hoja en Excel (la primera).
-- Inferencia heurística de tipos; puede equivocarse en casos límite.
-- Pensado para datos que caben en memoria local.
-- Sin base de datos, autenticación ni ML en esta versión.
-
----
-
-## Capturas para portfolio
-
-Podés guardar capturas en [`docs/images/`](docs/images/) y referenciarlas aquí, por ejemplo:
-
-| Archivo sugerido | Contenido |
-|------------------|-----------|
-| `docs/images/01-carga-demo.png` | Botón de dataset demo y/o carga de archivo |
-| `docs/images/02-banner-sintetico.png` | Banner de datos sintéticos |
-| `docs/images/03-resumen-kpis.png` | Resumen ejecutivo e indicadores operativos |
-| `docs/images/04-hallazgos.png` | Hallazgos operativos y de calidad |
-| `docs/images/05-exploracion.png` | Filtros y gráfico exploratorio |
-
-Sustituí las referencias por imágenes reales cuando las tengas:
-
-```markdown
-![Resumen](docs/images/03-resumen-kpis.png)
-```
-
----
-
-## Valor para portfolio / LinkedIn (ideas de mensaje)
-
-- Análisis operativo de un consultorio ambulatorio con **datos sintéticos** y lógica realista.
-- **Exploración automática**: tipos inferidos, calidad, filtros y gráficos sin configurar pipelines.
-- **Transparencia ética**: datos ficticios explícitos en README y en la app.
-- Combinación de **perfilado técnico** + **contexto de negocio** (turnos, cobertura, ingresos).
-
-Texto corto para publicación (podés adaptarlo):
-
-> Publicé **Paradigm**, una demo en Python/Streamlit que simula analítica operativa de un consultorio médico: turnos, estados, coberturas e ingresos sobre un **CSV 100 % sintético** versionado en el repo. Incluye perfilado automático, KPIs opcionales alineados al caso y hallazgos de calidad de datos. Los datos son ficticios y solo sirven para demostración.
+Paradigm pretende crecer desde una **demo funcional** hacia una experiencia analítica **más sólida, clara y reutilizable**. Esta versión es una **base real de trabajo** sobre la que seguir iterando, con **transparencia** sobre el uso de datos ficticios y sobre el alcance del MVP.
 
 ---
 
 ## Licencia
 
-**Licencia no especificada aún.** El autor puede definir una licencia abierta o restricciones cuando corresponda.
+**Licencia no especificada aún.** Podés definir una licencia abierta o restricciones al publicar el repositorio.
 
 ---
 
 ## Contacto / repositorio
 
-Ajustá con el enlace al repositorio público o perfil profesional cuando publiques el proyecto.
+Sustituí este apartado con el enlace al repositorio público o a tu perfil profesional cuando publiques el proyecto.

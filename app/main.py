@@ -74,7 +74,8 @@ def _chart_kind_label_es(kind: str) -> str:
 
 def _render_operational_findings(findings: list[Finding]) -> None:
     for f in findings:
-        st.info(f.message)
+        with st.container(border=True):
+            st.info(f.message)
 
 
 def _render_findings(findings: list[Finding]) -> None:
@@ -85,10 +86,11 @@ def _render_findings(findings: list[Finding]) -> None:
         )
         return
     for f in findings:
-        if f.severity == "warning":
-            st.warning(f.message)
-        else:
-            st.info(f.message)
+        with st.container(border=True):
+            if f.severity == "warning":
+                st.warning(f.message)
+            else:
+                st.info(f.message)
 
 
 def _reset_exploration_session(uploaded_name: str, nrows: int, ncols: int) -> None:
@@ -201,8 +203,9 @@ def _sidebar_filter_specs(df: pd.DataFrame, logical: dict[str, str]) -> dict[str
 def main() -> None:
     st.set_page_config(page_title="Paradigm", layout="wide", page_icon="📊")
     st.title("Paradigm")
-    st.caption(
-        "Demo analítica de consultorio médico (datos sintéticos) y motor genérico de exploración para cualquier CSV/XLSX."
+    st.markdown(
+        "Explorá datasets tabulares con perfilado automático. Esta demo incluye un caso **sintético** de consultorio médico; "
+        "también podés cargar cualquier CSV o Excel como explorador genérico."
     )
 
     if "paradigm_stored_df" not in st.session_state:
@@ -284,12 +287,16 @@ resume nulos y duplicados, perfila cada campo y genera gráficos automáticos. E
     type_counts = count_logical_types(profile)
     quality_label, quality_hint = estimate_dataset_quality(profile)
     findings = build_findings(df, profile, logical)
+    fig_types = chart_logical_type_distribution(type_counts)
+    null_pcts = [float(x) for x in detail_df["% nulos"].tolist()]
+    names = detail_df["columna"].tolist()
+    fig_nulls = chart_nulls_by_column(names, null_pcts)
 
     with st.sidebar:
         st.header("Exploración")
         st.caption(
-            "Los filtros aplican a la vista previa y al gráfico exploratorio. "
-            "El resumen ejecutivo y los hallazgos se calculan sobre el archivo completo."
+            "Los filtros aplican a la **vista filtrada** (pestaña Exploración) y al **gráfico exploratorio** "
+            "(pestaña Gráficos). Resumen, indicadores operativos (si aplican) y hallazgos usan el archivo completo."
         )
         filter_specs = _sidebar_filter_specs(df, logical)
 
@@ -297,164 +304,170 @@ resume nulos y duplicados, perfila cada campo y genera gráficos automáticos. E
     df_filtrado = df.loc[mask].copy()
     active_filters = count_active_specs(filter_specs) > 0
 
-    st.divider()
-    st.subheader("Resumen ejecutivo")
-    st.caption(
-        "Síntesis del archivo cargado completo: tamaño, nulos, duplicados, memoria, "
-        "distribución de tipos inferidos y calidad estimada."
+    tab_resumen, tab_indicadores, tab_hallazgos, tab_exploracion, tab_graficos = st.tabs(
+        ["Resumen", "Indicadores operativos", "Hallazgos", "Exploración", "Gráficos"]
     )
-    m1, m2, m3, m4, m5 = st.columns(5)
-    m1.metric("Filas", f"{profile.row_count:,}")
-    m2.metric("Columnas", f"{profile.column_count:,}")
-    m3.metric("% nulos (global)", f"{profile.null_pct:.2f}%")
-    m4.metric("Filas duplicadas", f"{profile.duplicate_rows:,}")
-    m5.metric("Memoria (aprox.)", f"{profile.memory_mb:.2f} MiB")
 
-    q1, q2 = st.columns([1, 2])
-    with q1:
-        st.metric("Calidad estimada", quality_label)
-    with q2:
+    with tab_resumen:
+        st.caption(f"**Dataset activo:** {active_name}")
+        st.subheader("Resumen ejecutivo")
         st.caption(
-            f"{quality_hint} "
-            "Es una **estimación heurística** (nulos, duplicados y forma general del perfil), no un índice estadístico."
+            "Síntesis del archivo cargado completo: tamaño, nulos, duplicados, memoria, "
+            "distribución de tipos inferidos y calidad estimada."
         )
+        m1, m2, m3, m4, m5 = st.columns(5)
+        m1.metric("Filas", f"{profile.row_count:,}")
+        m2.metric("Columnas", f"{profile.column_count:,}")
+        m3.metric("% nulos (global)", f"{profile.null_pct:.2f}%")
+        m4.metric("Filas duplicadas", f"{profile.duplicate_rows:,}")
+        m5.metric("Memoria (aprox.)", f"{profile.memory_mb:.2f} MiB")
 
-    fig_types = chart_logical_type_distribution(type_counts)
-    st.plotly_chart(fig_types, use_container_width=True)
-    st.caption("Cantidad de columnas por tipo inferido, sobre el **dataset completo** cargado.")
-
-    if clinic_kpis_available(df):
-        st.divider()
-        st.subheader("Indicadores operativos (consultorio)")
-        st.caption(
-            "Métricas simples cuando el archivo incluye las columnas del dataset demo plano. "
-            "En datasets sin esas columnas, este bloque no se muestra."
-        )
-        k = compute_clinic_kpis(df)
-        r1, r2, r3, r4 = st.columns(4)
-        r1.metric("Turnos (filas)", f"{k['n_turnos']:,}")
-        r2.metric("% asistido", f"{k['pct_asistido']:.1f}%")
-        r3.metric("% cancelado", f"{k['pct_cancelado']:.1f}%")
-        r4.metric("% ausente", f"{k['pct_ausente']:.1f}%")
-        s1, s2, s3, s4 = st.columns(4)
-        s1.metric("% reprogramado", f"{k['pct_reprogramado']:.1f}%")
-        with s2:
-            st.caption("Especialidad con mayor volumen")
-            st.markdown(f"**{k['especialidad_mayor_volumen']}**")
-        s3.metric("Ingreso neto total", f"{k['ingreso_neto_total']:,.2f}")
-        with s4:
-            st.caption("Medio de pago más frecuente")
-            st.markdown(f"**{k['medio_pago_frecuente']}**")
-        u1, _ = st.columns([1, 3])
-        with u1:
-            st.caption("Cobertura médica más frecuente")
-            st.markdown(f"**{k['cobertura_medica_frecuente']}**")
-
-    st.divider()
-    if clinic_operational_insights_available(df):
-        st.subheader("Hallazgos operativos del consultorio")
-        st.caption(
-            "Lecturas automáticas sobre columnas típicas de turnos y facturación; complementan el perfilado genérico."
-        )
-        op_list = build_clinic_operational_insights(df)
-        if op_list:
-            _render_operational_findings(op_list)
-        else:
-            st.info("No hay suficientes datos para generar hallazgos operativos.")
-
-    st.subheader("Hallazgos de calidad de datos")
-    st.caption(
-        "Reglas fijas sobre el perfil del archivo completo; útiles para una primera pasada, sin modelos de ML."
-    )
-    _render_findings(findings)
-
-    st.divider()
-    st.subheader("Exploración (vista filtrada)")
-    explore_caption = (
-        "Vista previa y gráfico exploratorio usan el subconjunto definido en la barra lateral. "
-        f"Filas en vista filtrada: **{len(df_filtrado):,}** de **{len(df):,}**."
-    )
-    if active_filters:
-        explore_caption += (
-            " Con filtros activos, el resumen ejecutivo, los indicadores operativos (si aplican) "
-            "y los hallazgos de arriba siguen calculados sobre el archivo completo."
-        )
-    st.caption(explore_caption)
-
-    if len(df_filtrado) == 0:
-        st.warning("No hay filas que cumplan los filtros; probá ampliar criterios o usar **Limpiar filtros**.")
-    else:
-        cols_prev = st.columns([1, 1, 2])
-        max_rows = len(df_filtrado)
-        with cols_prev[0]:
-            n_show = st.number_input(
-                "Filas a mostrar",
-                min_value=1,
-                max_value=min(PREVIEW_ROWS_MAX, max_rows),
-                value=min(50, max_rows),
-                step=1,
-                key="explore_preview_n",
-            )
-        with cols_prev[1]:
-            preview_mode = st.radio(
-                "Modo",
-                options=["Primeras filas", "Muestra aleatoria"],
-                horizontal=True,
-                key="explore_preview_mode",
+        q1, q2 = st.columns([1, 2])
+        with q1:
+            st.metric("Calidad estimada", quality_label)
+        with q2:
+            st.caption(
+                f"{quality_hint} "
+                "Es una **estimación heurística** (nulos, duplicados y forma general del perfil), no un índice estadístico."
             )
 
-        n = int(min(int(n_show), max_rows))
-        if preview_mode == "Primeras filas":
-            preview_df = df_filtrado.head(n)
-        else:
-            preview_df = df_filtrado.sample(n=n, random_state=PREVIEW_SAMPLE_RANDOM_STATE)
+        st.plotly_chart(fig_types, use_container_width=True)
+        st.caption("Cantidad de columnas por tipo inferido, sobre el **dataset completo** cargado.")
 
-        cap_parts = [f"Mostrando {len(preview_df):,} fila(s)"]
-        if n < max_rows:
-            cap_parts.append(f"de {max_rows:,} en la vista filtrada")
+        st.write("")
+        with st.expander("Perfil por columna", expanded=False):
+            st.caption("Tipos inferidos, nulos, cardinalidad y detalle por campo.")
+            st.dataframe(detail_df, use_container_width=True, hide_index=True)
+
+    with tab_indicadores:
+        if clinic_kpis_available(df):
+            st.subheader("Indicadores operativos (consultorio)")
+            st.caption(
+                "Métricas simples cuando el archivo incluye las columnas del dataset demo plano."
+            )
+            k = compute_clinic_kpis(df)
+            r1, r2, r3, r4 = st.columns(4)
+            r1.metric("Turnos (filas)", f"{k['n_turnos']:,}")
+            r2.metric("% asistido", f"{k['pct_asistido']:.1f}%")
+            r3.metric("% cancelado", f"{k['pct_cancelado']:.1f}%")
+            r4.metric("% ausente", f"{k['pct_ausente']:.1f}%")
+            s1, s2, s3, s4 = st.columns(4)
+            s1.metric("% reprogramado", f"{k['pct_reprogramado']:.1f}%")
+            with s2:
+                st.caption("Especialidad con mayor volumen")
+                st.markdown(f"**{k['especialidad_mayor_volumen']}**")
+            s3.metric("Ingreso neto total", f"{k['ingreso_neto_total']:,.2f}")
+            with s4:
+                st.caption("Medio de pago más frecuente")
+                st.markdown(f"**{k['medio_pago_frecuente']}**")
+            u1, _ = st.columns([1, 3])
+            with u1:
+                st.caption("Cobertura médica más frecuente")
+                st.markdown(f"**{k['cobertura_medica_frecuente']}**")
+        else:
+            st.info(
+                "No hay indicadores operativos disponibles para este dataset. "
+                "Requieren el esquema del consultorio (columnas del dataset demo plano)."
+            )
+
+    with tab_hallazgos:
+        if clinic_operational_insights_available(df):
+            st.subheader("Hallazgos operativos del consultorio")
+            st.caption(
+                "Lecturas automáticas sobre columnas típicas de turnos y facturación; complementan el perfilado genérico."
+            )
+            op_list = build_clinic_operational_insights(df)
+            if op_list:
+                _render_operational_findings(op_list)
+            else:
+                st.info("No hay suficientes datos para generar hallazgos operativos.")
+            st.divider()
+
+        st.subheader("Hallazgos de calidad de datos")
+        st.caption(
+            "Reglas fijas sobre el perfil del archivo completo; útiles para una primera pasada, sin modelos de ML."
+        )
+        _render_findings(findings)
+
+    with tab_exploracion:
+        st.subheader("Exploración (vista filtrada)")
+        explore_caption = (
+            "La tabla usa el subconjunto definido en la barra lateral. "
+            f"Filas en vista filtrada: **{len(df_filtrado):,}** de **{len(df):,}**. "
+            "El gráfico exploratorio está en la pestaña **Gráficos**."
+        )
         if active_filters:
-            cap_parts.append("con filtros activos")
-        st.caption(". ".join(cap_parts) + ".")
-        st.dataframe(preview_df, use_container_width=True)
+            explore_caption += (
+                " Con filtros activos, resumen, indicadores operativos (si aplican) y hallazgos siguen sobre el archivo completo."
+            )
+        st.caption(explore_caption)
 
-    st.subheader("Gráfico exploratorio")
-    explore_col = st.selectbox(
-        "Columna",
-        options=list(df.columns),
-        format_func=lambda c: f"{c} ({_logical_type_label_es(logical.get(c, 'text'))})",
-        key="explore_col_sb",
-    )
-    lt_sel = logical.get(explore_col, "text")
-    kinds = chart_kinds_for_logical_type(lt_sel)
-    default_k = default_chart_kind(lt_sel)
-    kind_idx = kinds.index(default_k) if default_k in kinds else 0
-    chart_kind = st.selectbox(
-        "Tipo de gráfico",
-        options=kinds,
-        index=kind_idx,
-        key=f"explore_kind_{explore_col}",
-        format_func=_chart_kind_label_es,
-    )
-    title = f"{explore_col} — {_chart_kind_label_es(chart_kind)} (vista filtrada)"
-    series_explore = df_filtrado[explore_col] if len(df_filtrado) else df[explore_col].iloc[0:0]
-    fig_explore = build_exploration_chart(series_explore, lt_sel, chart_kind, title)
-    st.plotly_chart(fig_explore, use_container_width=True)
+        if len(df_filtrado) == 0:
+            st.warning("No hay filas que cumplan los filtros; probá ampliar criterios o usar **Limpiar filtros**.")
+        else:
+            cols_prev = st.columns([1, 1, 2])
+            max_rows = len(df_filtrado)
+            with cols_prev[0]:
+                n_show = st.number_input(
+                    "Filas a mostrar",
+                    min_value=1,
+                    max_value=min(PREVIEW_ROWS_MAX, max_rows),
+                    value=min(50, max_rows),
+                    step=1,
+                    key="explore_preview_n",
+                )
+            with cols_prev[1]:
+                preview_mode = st.radio(
+                    "Modo",
+                    options=["Primeras filas", "Muestra aleatoria"],
+                    horizontal=True,
+                    key="explore_preview_mode",
+                )
 
-    st.divider()
-    with st.expander("Perfil por columna", expanded=False):
-        st.caption("Tipos inferidos, nulos, cardinalidad y detalle por campo.")
-        st.dataframe(detail_df, use_container_width=True, hide_index=True)
+            n = int(min(int(n_show), max_rows))
+            if preview_mode == "Primeras filas":
+                preview_df = df_filtrado.head(n)
+            else:
+                preview_df = df_filtrado.sample(n=n, random_state=PREVIEW_SAMPLE_RANDOM_STATE)
 
-    null_pcts = [float(x) for x in detail_df["% nulos"].tolist()]
-    names = detail_df["columna"].tolist()
-    fig_nulls = chart_nulls_by_column(names, null_pcts)
+            cap_parts = [f"Mostrando {len(preview_df):,} fila(s)"]
+            if n < max_rows:
+                cap_parts.append(f"de {max_rows:,} en la vista filtrada")
+            if active_filters:
+                cap_parts.append("con filtros activos")
+            st.caption(". ".join(cap_parts) + ".")
+            st.dataframe(preview_df, use_container_width=True, height=380)
 
-    st.divider()
-    st.subheader("Gráficos (dataset completo)")
-    st.caption(
-        "Nulos por columna (%), respecto del archivo cargado completo. No dependen de los filtros de exploración."
-    )
-    st.plotly_chart(fig_nulls, use_container_width=True)
+    with tab_graficos:
+        st.subheader("Gráfico exploratorio")
+        explore_col = st.selectbox(
+            "Columna",
+            options=list(df.columns),
+            format_func=lambda c: f"{c} ({_logical_type_label_es(logical.get(c, 'text'))})",
+            key="explore_col_sb",
+        )
+        lt_sel = logical.get(explore_col, "text")
+        kinds = chart_kinds_for_logical_type(lt_sel)
+        default_k = default_chart_kind(lt_sel)
+        kind_idx = kinds.index(default_k) if default_k in kinds else 0
+        chart_kind = st.selectbox(
+            "Tipo de gráfico",
+            options=kinds,
+            index=kind_idx,
+            key=f"explore_kind_{explore_col}",
+            format_func=_chart_kind_label_es,
+        )
+        title = f"{explore_col} — {_chart_kind_label_es(chart_kind)} (vista filtrada)"
+        series_explore = df_filtrado[explore_col] if len(df_filtrado) else df[explore_col].iloc[0:0]
+        fig_explore = build_exploration_chart(series_explore, lt_sel, chart_kind, title)
+        st.plotly_chart(fig_explore, use_container_width=True)
+
+        st.divider()
+        st.subheader("Nulos por columna (dataset completo)")
+        st.caption(
+            "Porcentaje de nulos por columna sobre el archivo cargado completo. No dependen de los filtros de exploración."
+        )
+        st.plotly_chart(fig_nulls, use_container_width=True)
 
 
 if __name__ == "__main__":
