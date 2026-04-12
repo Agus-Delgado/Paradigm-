@@ -1,0 +1,4 @@
+appointment_status_id,status_code,status_description
+1,ATTENDED,Atendida
+2,CANCELLED,Cancelada
+3,NO_SHOW,No-show

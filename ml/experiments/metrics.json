@@ -1,0 +1,148 @@
+{
+  "temporal_cutoff_appointment_date": "2024-12-05",
+  "test_ratio_target": 0.2,
+  "n_train": 332,
+  "n_test": 91,
+  "n_positive_train": 44,
+  "n_positive_test": 11,
+  "train_date_min": "2024-01-02",
+  "train_date_max": "2024-12-05",
+  "test_date_min": "2024-12-10",
+  "test_date_max": "2025-02-28",
+  "metrics": {
+    "baseline_logistic": {
+      "roc_auc": 0.40454545454545454,
+      "average_precision": 0.1063737413475076,
+      "brier": 0.46487676754608953,
+      "accuracy": 0.2967032967032967,
+      "top_decile": {
+        "n": 91.0,
+        "k_top": 10.0,
+        "positives_total": 11.0,
+        "positives_in_top_fraction": 1.0,
+        "capture_rate": 0.09090909090909091,
+        "baseline_positive_rate": 0.12087912087912088,
+        "rate_in_top_fraction": 0.1
+      },
+      "model_name": "logistic_regression_baseline"
+    },
+    "random_forest": {
+      "roc_auc": 0.42272727272727273,
+      "average_precision": 0.11370106077427788,
+      "brier": 0.138363292910764,
+      "accuracy": 0.8791208791208791,
+      "top_decile": {
+        "n": 91.0,
+        "k_top": 10.0,
+        "positives_total": 11.0,
+        "positives_in_top_fraction": 1.0,
+        "capture_rate": 0.09090909090909091,
+        "baseline_positive_rate": 0.12087912087912088,
+        "rate_in_top_fraction": 0.1
+      },
+      "model_name": "random_forest",
+      "feature_importances_top": [
+        {
+          "feature": "provider_prior_appt_count",
+          "importance": 0.09412022288158156
+        },
+        {
+          "feature": "provider_prior_no_show_rate",
+          "importance": 0.092043354951886
+        },
+        {
+          "feature": "lead_time_days",
+          "importance": 0.08148001149253058
+        },
+        {
+          "feature": "appointment_month",
+          "importance": 0.07311786087917298
+        },
+        {
+          "feature": "booking_hour",
+          "importance": 0.06941298108652989
+        },
+        {
+          "feature": "appointment_hour",
+          "importance": 0.0661728259743316
+        },
+        {
+          "feature": "appointment_dow",
+          "importance": 0.06495554814322904
+        },
+        {
+          "feature": "provider_prior_no_show_count",
+          "importance": 0.06081902451373519
+        },
+        {
+          "feature": "patient_prior_appt_count",
+          "importance": 0.039382517601101695
+        },
+        {
+          "feature": "age_band_55-69",
+          "importance": 0.02326871555790935
+        },
+        {
+          "feature": "provider_id_3",
+          "importance": 0.02178383694270353
+        },
+        {
+          "feature": "patient_prior_no_show_rate",
+          "importance": 0.01900109053676374
+        },
+        {
+          "feature": "booking_channel_id_3",
+          "importance": 0.017891636712061437
+        },
+        {
+          "feature": "specialty_id_2",
+          "importance": 0.01780618576469489
+        },
+        {
+          "feature": "age_band_35-54",
+          "importance": 0.017329125714677544
+        },
+        {
+          "feature": "provider_id_1",
+          "importance": 0.017256596505281174
+        },
+        {
+          "feature": "coverage_id_3",
+          "importance": 0.015622688997177218
+        },
+        {
+          "feature": "sex_F",
+          "importance": 0.015130512060541246
+        },
+        {
+          "feature": "booking_channel_id_2",
+          "importance": 0.014247610871387423
+        },
+        {
+          "feature": "booking_channel_id_1",
+          "importance": 0.012792373628464583
+        },
+        {
+          "feature": "coverage_id_1",
+          "importance": 0.012295010515089468
+        },
+        {
+          "feature": "sex_M",
+          "importance": 0.01189314338907177
+        },
+        {
+          "feature": "specialty_id_4",
+          "importance": 0.011546563755726854
+        },
+        {
+          "feature": "patient_prior_no_show_count",
+          "importance": 0.010450412066399312
+        },
+        {
+          "feature": "coverage_id_5",
+          "importance": 0.010332969077531961
+        }
+      ]
+    }
+  }
+}

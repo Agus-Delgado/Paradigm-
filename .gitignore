@@ -63,10 +63,16 @@ ehthumbs.db
 *.bak
 *.orig
 
+# Base analítica local (regenerable)
+data/processed/*.db
+
 # Variables de entorno locales
 .env
 .env.local
 .env.*.local
+
+# Artefactos ML locales (regenerables)
+ml/experiments/*.joblib
 
 # Herramientas opcionales
 *.sublime-project

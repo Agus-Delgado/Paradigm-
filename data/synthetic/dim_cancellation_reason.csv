@@ -1,0 +1,5 @@
+cancellation_reason_id,reason_code,reason_description
+1,PATIENT,Paciente solicitó
+2,SCHEDULE,Cambio de agenda del centro
+3,ADMIN,Motivo administrativo
+4,OTHER,Otro / no informado

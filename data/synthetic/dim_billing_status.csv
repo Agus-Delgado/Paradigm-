@@ -1,0 +1,5 @@
+billing_status_id,status_code,status_description
+1,ISSUED,Facturado emitido
+2,PENDING,Pendiente de facturación
+3,VOID,Anulado
+4,PAID,Pagado (proxy MVP)

@@ -1,0 +1,48 @@
+// Paradigm v2 — Medidas del tablero ejecutivo (MVP)
+// Pegar en Power BI Desktop como "Nueva medida" en la tabla indicada.
+// Nombres de tabla esperados: AppointmentBase, BillingLine, DimBillingStatus, RevenueBridge
+// Ver bi/powerbi/BUILD_INSTRUCTIONS.md para relaciones.
+
+// --- Tabla sugerida: AppointmentBase (o tabla vacía "Medidas") ---
+
+Citas Total = COUNTROWS ( AppointmentBase )
+
+Citas Atendidas =
+CALCULATE (
+    COUNTROWS ( AppointmentBase ),
+    AppointmentBase[status_code] = "ATTENDED"
+)
+
+Citas Canceladas =
+CALCULATE (
+    COUNTROWS ( AppointmentBase ),
+    AppointmentBase[status_code] = "CANCELLED"
+)
+
+Citas No Show =
+CALCULATE (
+    COUNTROWS ( AppointmentBase ),
+    AppointmentBase[status_code] = "NO_SHOW"
+)
+
+No Show Rate =
+DIVIDE ( [Citas No Show], [Citas Atendidas] + [Citas No Show], BLANK () )
+
+Tasa Cancelacion =
+DIVIDE ( [Citas Canceladas], [Citas Total], BLANK () )
+
+// --- Facturación: usar con segmentador sobre BillingLine[billing_date]; ver BUILD_INSTRUCTIONS.md ---
+
+Ingreso Facturado =
+CALCULATE (
+    SUM ( BillingLine[line_amount] ),
+    DimBillingStatus[status_code] <> "VOID"
+)
+
+// --- Conciliación (grano cita; respeta filtros de agenda en AppointmentBase) ---
+
+Citas Atendidas Sin Facturacion =
+CALCULATE (
+    COUNTROWS ( RevenueBridge ),
+    RevenueBridge[reconciliation_bucket] = "ATTENDED_NO_BILLING"
+)
