@@ -193,8 +193,13 @@ streamlit run app/main.py
 
 ---
 
-## Licencia y contacto
+## Licencia
 
-**Licencia:** no especificada; definir al publicar el repositorio.
+Todos los derechos reservados.
 
-**Contacto / repo:** sustituir con enlace público o perfil profesional al publicar.
+Este repositorio y su contenido forman parte del proyecto Paradigm. No se autoriza su copia, redistribución, modificación ni uso comercial sin permiso previo y por escrito del autor.
+
+## Contacto
+
+* GitHub: [Agus-Delgado](https://github.com/Agus-Delgado)
+* LinkedIn: [Agustín Delgado](https://www.linkedin.com/in/agustin-delgado-data98615190/)
