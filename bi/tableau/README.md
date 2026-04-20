@@ -8,6 +8,8 @@
 
 **Fuera de alcance de este lienzo:** modelos ML en Tableau (el scoring vive en [`ml/README.md`](../../ml/README.md)); ocupación proxy como KPI numérico; ingreso cobrado como métrica financiera estricta; **cualquier métrica no listada** en el diccionario.
 
+**Preguntas troncales (T1–T6) y trazabilidad a KPIs y artefactos:** [`docs/analytical_questions.md`](../../docs/analytical_questions.md).
+
 ---
 
 ## 1. Alcance del dashboard analítico (vs Power BI ejecutivo)

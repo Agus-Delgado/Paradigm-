@@ -1,8 +1,22 @@
 # Machine Learning — Paradigm v2
 
-**Estado:** **implementado (MVP)** — modelo de **riesgo de no-show** a nivel cita, alineado al diccionario de métricas y al mart SQLite. Complementa BI (priorización operativa / recordatorios); **no** sustituye tableros ejecutivos.
+## Encuadre: capa predictiva complementaria
+
+Este módulo es la **capa predictiva** del proyecto de **inteligencia operativa aplicada**: estima **riesgo de no-show** en el punto de decisión documentado abajo. No reemplaza el análisis descriptivo ni el diagnóstico por cortes en BI; no es un servicio productivo ni una caja negra desconectada del negocio. Usa el **mismo mart** que Tableau y Power BI y se interpreta con las **definiciones de métricas** y las **limitaciones** del dataset sintético.
+
+**Estado:** **implementado (MVP)** — modelo de **riesgo de no-show** a nivel cita, alineado al diccionario de métricas y al mart SQLite.
 
 **Fuentes de verdad:** [`docs/metric_definitions.md`](../docs/metric_definitions.md), mart [`data/processed/paradigm_mart.db`](../data/processed/) vía [`scripts/build_sqlite_mart.py`](../scripts/build_sqlite_mart.py).
+
+### Conexión con decisión operativa
+
+El score apoya decisiones como:
+
+- **Priorización de recordatorios** o contacto previo al turno cuando el riesgo predicho es alto (las políticas concretas quedan fuera del repo).
+- **Revisión de grupos de mayor riesgo** agregado (p. ej. para focalizar análisis o campañas piloto en un entorno real).
+- **Monitoreo preventivo** combinado con cortes en BI: el modelo sugiere *dónde* conviene mirar con más atención, no automatiza acciones.
+
+La **explicabilidad** básica viene de las **importancias** del modelo y de la lectura honesta de `metrics.json`; no se presentan como causalidad.
 
 ---
 
@@ -68,6 +82,10 @@ Sin búsqueda de hiperparámetros agresiva; objetivo = portfolio defendible y re
 - Las **importancias** del bosque indican qué columnas (tras one-hot) más pesan; no son efectos causales.
 - Métricas malas o AUC por debajo de 0.5 en el conjunto de test **son posibles** con datos **sintéticos** y muestras chicas: el valor del entregable es la **metodología** (punto de decisión, leakage, split temporal, métricas de negocio), no el récord predictivo.
 
+### Plantilla de explicabilidad liviana
+
+Para narrar el modelo en portfolio o entrevista, usar el checklist tabular en [`docs/analytical_questions.md`](../docs/analytical_questions.md) (sección 4, *Plantilla de explicabilidad liviana*): **señal**, **universo**, **punto de decisión**, **evidencia técnica** (`metrics.json`), **importancias** (sin confundir con causalidad), **riesgos de uso** y **tipo de acción** sugerida (priorización, no automatización en el repo).
+
 ---
 
 ## 8. Limitaciones del dataset sintético
@@ -122,7 +140,6 @@ No hay notebooks obligatorios; el flujo es script + paquete importable.
 
 ---
 
-## 11. Evidencia sugerida para el README raíz (cuando quieras)
+## 11. Próximos pasos (sin implementar en el repo aún)
 
-- Una línea: “ML: riesgo de no-show (MVP) — ver `ml/README.md`.”
-- Opcional: captura de `metrics.json` o de importancias (sin datos personales).
+Posibles extensiones futuras — **solo como línea de evolución**, no como compromiso de alcance: modelado explícito de **cancelación**, **segmentación** tipo clustering sobre comportamiento, u otras técnicas alineadas al mismo mart y a definiciones de negocio. El MVP actual se centra en **no-show** como caso predictivo documentado.

@@ -55,7 +55,7 @@ Claves foráneas activadas (`PRAGMA foreign_keys = ON` en el script de build).
 
 ### Nota sobre ingreso en vistas por especialidad / proveedor
 
-`revenue_facturado_mes` se calcula con **`strftime('%Y-%m', billing_date)`** y especialidad/proveedor desde la cita. El join con los KPIs operativos (basados en **`appointment_date`**) usa el **mismo etiquetado `year_month`**: en la práica, ingreso y turnos quedan alineados cuando facturación y turno caen en el mismo mes calendario; si una línea se factura en un mes distinto al del turno, el efecto queda repartido entre meses de **billing** (comportamiento esperado para ingreso facturado).
+`revenue_facturado_mes` se calcula con **`strftime('%Y-%m', billing_date)`** y especialidad/proveedor desde la cita. El join con los KPIs operativos (basados en **`appointment_date`**) usa el **mismo etiquetado `year_month`**: en la práctica, ingreso y turnos quedan alineados cuando facturación y turno caen en el mismo mes calendario; si una línea se factura en un mes distinto al del turno, el efecto queda repartido entre meses de **billing** (comportamiento esperado para ingreso facturado).
 
 ## Consultas de ejemplo
 

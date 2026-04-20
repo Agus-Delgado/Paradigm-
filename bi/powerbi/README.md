@@ -6,6 +6,8 @@
 
 **Fuentes de verdad:** [`docs/metric_definitions.md`](../../docs/metric_definitions.md), vistas en [`sql/views/`](../../sql/views/), datos en `data/processed/paradigm_mart.db` tras [`scripts/build_sqlite_mart.py`](../../scripts/build_sqlite_mart.py) y calidad en [`scripts/run_data_quality.py`](../../scripts/run_data_quality.py).
 
+**Preguntas troncales (T1–T6) y trazabilidad a KPIs y artefactos:** [`docs/analytical_questions.md`](../../docs/analytical_questions.md).
+
 ---
 
 ## 1. Alcance exacto del dashboard ejecutivo (MVP)
