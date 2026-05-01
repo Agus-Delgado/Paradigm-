@@ -1,152 +1,152 @@
-# Paradigm v2 — Diccionario de datos (MVP sintético)
+# Paradigm — Data dictionary (synthetic MVP)
 
-**Origen:** archivos en [`data/synthetic/`](../data/synthetic/README.md).  
-**Regeneración:** `python scripts/generate_paradigm_v2_synthetic.py` (semilla fija).
+**Source:** files in [`data/synthetic/`](../data/synthetic/README.md).  
+**Regeneration:** `python scripts/generate_paradigm_v2_synthetic.py` (fixed seed).
 
-Todos los identificadores son **ficticios**. No representan personas reales.
+All identifiers are **fictitious**. They do not represent real people.
 
 ---
 
-## Convenciones
+## Conventions
 
-- **Fechas:** `YYYY-MM-DD` en CSV; timestamps en ISO 8601 (`...T...` hora local ficticia).
-- **Claves:** enteros (`*_id`) salvo `appointment_id` y `billing_line_id` con prefijo textual para trazabilidad en lectura humana.
-- **Moneda:** `ARS` única en líneas de facturación.
+- **Dates:** `YYYY-MM-DD` in CSV; timestamps in ISO 8601 (`...T...`, fictional local time).
+- **Keys:** integers (`*_id`) except `appointment_id` and `billing_line_id`, which use a text prefix for human-readable traceability.
+- **Currency:** `ARS` only on billing lines.
 
 ---
 
 ## dim_date.csv
 
-| Columna | Tipo | Descripción |
-|---------|------|-------------|
-| date_key | int | Entero `YYYYMMDD` (PK lógica). |
-| date | date | Fecha calendario. |
-| year | int | Año. |
-| month | int | Mes (1–12). |
-| iso_week | int | Semana ISO. |
-| day_of_week | int | 1=lunes … 7=domingo. |
+| Column | Type | Description |
+|--------|------|-------------|
+| date_key | int | Integer `YYYYMMDD` (logical PK). |
+| date | date | Calendar date. |
+| year | int | Year. |
+| month | int | Month (1–12). |
+| iso_week | int | ISO week. |
+| day_of_week | int | 1 = Monday … 7 = Sunday. |
 
 ---
 
 ## dim_specialty.csv
 
-| Columna | Tipo | Descripción |
-|---------|------|-------------|
+| Column | Type | Description |
+|--------|------|-------------|
 | specialty_id | int | PK. |
-| specialty_name | str | Nombre de la especialidad del **servicio** (corte operativo). |
+| specialty_name | str | Service specialty name (operational cut). |
 
 ---
 
 ## dim_coverage.csv
 
-| Columna | Tipo | Descripción |
-|---------|------|-------------|
+| Column | Type | Description |
+|--------|------|-------------|
 | coverage_id | int | PK. |
-| coverage_name | str | Obra social / prepaga / particular. |
+| coverage_name | str | Payer / plan label (e.g. insurer, self-pay). |
 
 ---
 
 ## dim_appointment_status.csv
 
-| Columna | Tipo | Descripción |
-|---------|------|-------------|
+| Column | Type | Description |
+|--------|------|-------------|
 | appointment_status_id | int | PK. |
 | status_code | str | `ATTENDED`, `CANCELLED`, `NO_SHOW`. |
-| status_description | str | Texto legible. |
+| status_description | str | Human-readable label. |
 
 ---
 
 ## dim_booking_channel.csv
 
-| Columna | Tipo | Descripción |
-|---------|------|-------------|
+| Column | Type | Description |
+|--------|------|-------------|
 | booking_channel_id | int | PK. |
 | channel_code | str | `WEB`, `PHONE`, `RECEPTION`. |
-| channel_name | str | Etiqueta para BI. |
+| channel_name | str | BI label. |
 
 ---
 
 ## dim_billing_status.csv
 
-| Columna | Tipo | Descripción |
-|---------|------|-------------|
+| Column | Type | Description |
+|--------|------|-------------|
 | billing_status_id | int | PK. |
 | status_code | str | `ISSUED`, `PENDING`, `VOID`, `PAID`. |
-| status_description | str | `PAID` actúa como **proxy** de cobro en MVP (sin fecha de pago). |
+| status_description | str | `PAID` acts as **collection proxy** in MVP (no payment date). |
 
 ---
 
 ## dim_cancellation_reason.csv
 
-| Columna | Tipo | Descripción |
-|---------|------|-------------|
+| Column | Type | Description |
+|--------|------|-------------|
 | cancellation_reason_id | int | PK. |
-| reason_code | str | Código corto. |
-| reason_description | str | Texto para análisis de cancelaciones. |
+| reason_code | str | Short code. |
+| reason_description | str | Text for cancellation analysis. |
 
 ---
 
 ## dim_patient.csv
 
-| Columna | Tipo | Descripción |
-|---------|------|-------------|
-| patient_id | int | PK ficticia. |
-| age_band | str | Banda etaria (agregada). |
-| sex | str | `F`, `M`, `X` (ficticio). |
-| coverage_id | int | FK → `dim_coverage` (perfil base; la cita puede llevar snapshot). |
+| Column | Type | Description |
+|--------|------|-------------|
+| patient_id | int | Fictitious PK. |
+| age_band | str | Aggregated age band. |
+| sex | str | `F`, `M`, `X` (fictional). |
+| coverage_id | int | FK → `dim_coverage` (baseline profile; appointment may carry snapshot). |
 
 ---
 
 ## dim_provider.csv
 
-| Columna | Tipo | Descripción |
-|---------|------|-------------|
-| provider_id | int | PK ficticia. |
-| provider_label | str | Iniciales o etiqueta anonimizada. |
-| primary_specialty_id | int | FK → `dim_specialty` (atributo descriptivo; el **servicio del turno** va en la cita). |
+| Column | Type | Description |
+|--------|------|-------------|
+| provider_id | int | Fictitious PK. |
+| provider_label | str | Initials or anonymized label. |
+| primary_specialty_id | int | FK → `dim_specialty` (descriptive; **booked service** is on the appointment). |
 
 ---
 
 ## fact_appointment.csv
 
-Grano: **una fila por cita**.
+**Grain:** one row per **appointment**.
 
-| Columna | Tipo | Descripción |
-|---------|------|-------------|
-| appointment_id | str | Identificador único (p. ej. `APT-NNNNN`). |
+| Column | Type | Description |
+|--------|------|-------------|
+| appointment_id | str | Unique id (e.g. `APT-NNNNN`). |
 | patient_id | int | FK → `dim_patient`. |
 | provider_id | int | FK → `dim_provider`. |
-| specialty_id | int | FK → `dim_specialty` (**especialidad operativa** del turno). |
-| coverage_id | int | FK → `dim_coverage` (vigente al momento de la reserva). |
+| specialty_id | int | FK → `dim_specialty` (**operational** specialty for the visit). |
+| coverage_id | int | FK → `dim_coverage` (as of booking). |
 | appointment_status_id | int | FK → `dim_appointment_status`. |
 | booking_channel_id | int | FK → `dim_booking_channel`. |
-| appointment_date | date | Día del turno (rol agenda). |
-| appointment_start | str | Inicio programado (ISO datetime). |
-| booking_date | date | Día de la reserva (sin hora). |
-| booking_ts | str | Timestamp de reserva (ISO). |
-| cancellation_ts | str | Nullable; timestamp de cancelación. |
-| cancellation_reason_id | int | Nullable; FK si estado = cancelada. |
+| appointment_date | date | Appointment day (schedule role). |
+| appointment_start | str | Scheduled start (ISO datetime). |
+| booking_date | date | Booking day (no time). |
+| booking_ts | str | Booking timestamp (ISO). |
+| cancellation_ts | str | Nullable; cancellation timestamp. |
+| cancellation_reason_id | int | Nullable; FK when status is cancelled. |
 
-**Reglas:** `booking_date` ≤ `appointment_date`. Si estado = cancelada, `cancellation_ts` no nulo. Si no-show o atendida, `cancellation_ts` nulo.
+**Rules:** `booking_date` ≤ `appointment_date`. If cancelled, `cancellation_ts` is non-null. If attended or no-show, `cancellation_ts` is null.
 
 ---
 
 ## fact_billing_line.csv
 
-Grano: **una fila por línea de cargo**.
+**Grain:** one row per **billing line**.
 
-| Columna | Tipo | Descripción |
-|---------|------|-------------|
-| billing_line_id | str | Identificador único (p. ej. `BLN-NNNNN`). |
-| appointment_id | str | Nullable; FK a cita atendida o pendiente. |
-| billing_date | date | **Anclaje** para ingreso facturado (no confundir con fecha de turno). |
-| line_amount | float | Monto en ARS (sintético). |
+| Column | Type | Description |
+|--------|------|-------------|
+| billing_line_id | str | Unique id (e.g. `BLN-NNNNN`). |
+| appointment_id | str | Nullable; FK to attended/pending appointment. |
+| billing_date | date | **Anchor** for billed revenue (do not confuse with appointment date). |
+| line_amount | float | Amount in ARS (synthetic). |
 | billing_status_id | int | FK → `dim_billing_status`. |
 | currency | str | `ARS`. |
 
 ---
 
-## Relaciones lógicas (integridad referencial)
+## Referential integrity (logical)
 
 - `fact_appointment.patient_id` → `dim_patient.patient_id`
 - `fact_appointment.provider_id` → `dim_provider.provider_id`
@@ -154,7 +154,7 @@ Grano: **una fila por línea de cargo**.
 - `fact_appointment.coverage_id` → `dim_coverage.coverage_id`
 - `fact_appointment.appointment_status_id` → `dim_appointment_status.appointment_status_id`
 - `fact_appointment.booking_channel_id` → `dim_booking_channel.booking_channel_id`
-- `fact_billing_line.appointment_id` → `fact_appointment.appointment_id` (cuando no nulo)
+- `fact_billing_line.appointment_id` → `fact_appointment.appointment_id` (when non-null)
 - `fact_billing_line.billing_status_id` → `dim_billing_status.billing_status_id`
 
-Las fechas de hechos (`appointment_date`, `billing_date`) enlazan semánticamente con `dim_date.date` / `date_key` en la capa SQL (próxima fase).
+Fact dates (`appointment_date`, `billing_date`) join semantically to `dim_date.date` / `date_key` in the SQL layer.

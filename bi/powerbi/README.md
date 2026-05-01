@@ -1,217 +1,217 @@
-# Power BI — tablero ejecutivo (diseño v2)
+# Power BI — Executive dashboard (v2 design)
 
-**Estado:** **implementación asistida** — CSV exportados + DAX + instrucciones de lienzo; el archivo `.pbix` se construye en **Power BI Desktop** (binario no versionado por defecto).
+**Status:** **assisted implementation** — exported CSV + DAX + canvas instructions; the `.pbix` file is built in **Power BI Desktop** (binary not versioned by default).
 
-**Rol:** seguimiento para **dirección / operación** — “qué pasó en el periodo” y “dónde mirar primero”, sin sustituir el análisis profundo (reservado a Tableau: [`bi/tableau/README.md`](../tableau/README.md)).
+**Role:** monitoring for **leadership / operations** — “what happened in the period” and “what to look at first,” without replacing deep analysis (reserved for Tableau: [`bi/tableau/README.md`](../tableau/README.md)).
 
-**Fuentes de verdad:** [`docs/metric_definitions.md`](../../docs/metric_definitions.md), vistas en [`sql/views/`](../../sql/views/), datos en `data/processed/paradigm_mart.db` tras [`scripts/build_sqlite_mart.py`](../../scripts/build_sqlite_mart.py) y calidad en [`scripts/run_data_quality.py`](../../scripts/run_data_quality.py).
+**Sources of truth:** [`docs/metrics.md`](../../docs/metrics.md), views in [`sql/views/`](../../sql/views/), data in `data/processed/paradigm_mart.db` after [`scripts/build_sqlite_mart.py`](../../scripts/build_sqlite_mart.py) and quality via [`scripts/run_data_quality.py`](../../scripts/run_data_quality.py).
 
-**Preguntas troncales (T1–T6) y trazabilidad a KPIs y artefactos:** [`docs/analytical_questions.md`](../../docs/analytical_questions.md).
-
----
-
-## 1. Alcance exacto del dashboard ejecutivo (MVP)
-
-| Incluido | Excluido (fuera de este tablero / fase posterior) |
-|----------|---------------------------------------------------|
-| KPIs operativos con **fecha del turno** como eje principal | **Ocupación proxy** (sin vista SQL dedicada; no forzar card engañosa) |
-| Tasas **no-show** y **cancelación** alineadas al diccionario | **Late cancellation rate** (requiere lógica temporal fina; mejor en Tableau o vista futura) |
-| Volumen **citas atendidas** | **Ingreso cobrado** real (no hay fecha de cobro en MVP) |
-| **Ingreso facturado** con anclaje **`billing_date`** (separado del operativo) | Cualquier KPI no listado en `metric_definitions.md` |
-| Indicador de **brecha** atención–facturación (conteo / alerta suave) | **ML / scoring** en este lienzo (modelo aparte: [`ml/README.md`](../../ml/README.md)) |
-
-**Un archivo PBIX, una página principal** (“Ejecutivo”) en el MVP; una segunda página opcional (“Referencia”) solo si hace falta leyendas largas — priorizar **una pantalla** legible en 30–60 s.
+**Trunk questions (T1–T6) and traceability:** [`docs/analytical_questions.md`](../../docs/analytical_questions.md).
 
 ---
 
-## 2. Estructura del tablero — páginas y secciones
+## 1. Exact executive dashboard scope (MVP)
 
-### Página única recomendada: **Ejecutivo**
+| Included | Excluded (out of this canvas / later phase) |
+|----------|-----------------------------------------------|
+| Operational KPIs with **appointment date** as main axis | **Occupancy proxy** (no dedicated SQL view; avoid misleading cards) |
+| **No-show** and **cancellation** rates aligned to dictionary | **Late cancellation rate** (fine time logic; better in Tableau or a future view) |
+| **Attended appointment** volume | **Cash collected** as real finance (no payment date in MVP) |
+| **Billed revenue** with **`billing_date`** anchor (separate from operations) | Any KPI not listed in [`docs/metrics.md`](../../docs/metrics.md) |
+| **Attendance–billing gap** indicator (count / soft alert) | **ML / scoring** on this canvas (see [`ml/README.md`](../../ml/README.md)) |
 
-| Sección | Objetivo | Lectura esperada |
-|---------|----------|-------------------|
-| **A — Barra de filtros** | Acotar periodo y cortes de negocio | Misma interpretación que en el diccionario de métricas |
-| **B — KPIs (tarjetas)** | Números clave del periodo seleccionado | 4–6 tarjetas máximo |
-| **C — Tendencia temporal** | Evolución de volumen o tasas (agenda) | Una línea o área; granularidad semanal o mensual |
-| **D — Desglose** | Comparar **especialidad** o **proveedor** (uno a la vez o dos visuales pequeños) | Barras horizontales ordenadas |
-| **E — Alerta operativa** | Brechas de facturación en citas atendidas | Una tarjeta o tabla corta |
-
-**Objetivo de cada bloque:** B responde “cuánto”; C “cómo viene en el tiempo” (solo **agenda**); D “dónde”; E “qué revisar en administración”.
+**One PBIX file, one main page (“Executive”)** in MVP; optional second page (“Reference”) only if long legends are needed — prioritize **one screen** readable in 30–60 s.
 
 ---
 
-## 3. KPIs, visuales y fuentes SQL
+## 2. Canvas structure — pages and sections
 
-### 3.1 Principio de modelado en Power BI
+### Recommended single page: **Executive**
 
-- **Operación (agenda):** anclaje **`appointment_date`** (y columnas derivadas en `vw_appointment_base`).
-- **Facturación:** anclaje **`billing_date`** en `fact_billing_line` — **no** mezclar con `appointment_date` en el mismo visual salvo que el diseño lo diga explícitamente (ver §5).
+| Section | Goal | Expected read |
+|---------|------|-----------------|
+| **A — Filter bar** | Narrow period and business cuts | Same interpretation as metrics dictionary |
+| **B — KPI cards** | Key numbers for selected period | Maximum 4–6 cards |
+| **C — Time trend** | Volume or rate evolution (schedule) | One line or area; weekly or monthly grain |
+| **D — Breakdown** | Compare **specialty** or **provider** | Horizontal bars, sorted |
+| **E — Operational alert** | Billing gaps on attended visits | Short table or card |
 
-**Tabla principal recomendada para filtros y medidas operativas:** **`vw_appointment_base`** (grano cita; ya incluye `specialty_name`, `provider_label`, `channel_code`, `status_code`, fechas de rol).
-
-**Tabla de hecho facturación:** **`fact_billing_line`** relacionada con `vw_appointment_base` por `appointment_id` (relación 1:N desde cita a líneas).
-
-**Vistas preagregadas:** usar como apoyo para **reducir DAX** en gráficos mensuales, no como única fuente si los filtros no aplican (ver §3.3).
-
-### 3.2 Matriz KPI → visual → fuente → anclaje temporal
-
-| KPI (diccionario) | Visual sugerido | Fuente preferida | Anclaje temporal |
-|---------------------|-----------------|-------------------|------------------|
-| Citas totales (denominador operativo) | Tarjeta | `vw_appointment_base` — `COUNTROWS` / conteo filas | **Fecha del turno** `appointment_date` |
-| Citas atendidas | Tarjeta | `vw_appointment_base` — filtro `status_code = "ATTENDED"` | **Fecha del turno** |
-| No-show rate | Tarjeta (%) | Medida sobre `vw_appointment_base`: no-show / (atendidas + no-show) | **Fecha del turno** |
-| Tasa de cancelación (sobre agenda del periodo) | Tarjeta (%) | Misma base: canceladas / todas las citas con turno en periodo | **Fecha del turno** |
-| Ingreso facturado | Tarjeta (importe) | `fact_billing_line` — suma `line_amount` donde estado ≠ VOID | **`billing_date`** |
-| Brechas conciliación (conteo atendidas sin facturación) | Tarjeta o tabla corta | `vw_revenue_bridge` — filtrar `reconciliation_bucket = "ATTENDED_NO_BILLING"` | Cita / bucket (operativo); montos vienen de líneas si existieran |
-| Tendencia volumen (atendidas o citas totales) | Línea o área | **`vw_daily_kpis`** (solo si el eje es tiempo **sin** necesidad de filtrar por especialidad en el mismo gráfico) **o** medida en `vw_appointment_base` agrupada por `appointment_date` | **Fecha del turno** |
-| Desglose por especialidad | Barras horizontales | **`vw_kpis_by_specialty`** para columnas predefinidas **o** medidas en `vw_appointment_base` agrupadas por `specialty_name` | Operativo: **mes del turno** (`year_month` en la vista); ingreso en esa vista usa mes alineado según [`sql/README.md`](../../sql/README.md) |
-| Desglose por proveedor | Barras horizontales | **`vw_kpis_by_provider`** o medidas sobre `vw_appointment_base` por `provider_label` | Igual que especialidad |
-
-### 3.3 Limitaciones de las vistas actuales (importante)
-
-| Vista | Uso en ejecutivo | Limitación |
-|-------|------------------|------------|
-| `vw_daily_kpis` | Tendencia diaria de tasas y conteos | **No tiene** especialidad, proveedor ni canal. Si el usuario filtra por especialidad en la barra, este gráfico **no** debe seguir mostrando la serie global sin aclaración: **preferir** tendencia calculada desde `vw_appointment_base` con los mismos filtros, o ocultar la tendencia cuando hay filtros de dimensión. |
-| `vw_kpis_by_specialty` / `vw_kpis_by_provider` | Barras mensuales | Pre-agregadas por `year_month` + dimensión. El **ingreso** en la vista sigue el **mes de facturación** unido al mismo `year_month` del mes del turno (ver `sql/README.md`); puede haber **desalineación** mes turno vs mes factura. Etiquetar el visual de ingreso. |
-| `vw_revenue_bridge` | Alerta brecha | Grano cita; adecuado para **conteos** por `reconciliation_bucket`. |
-| Ocupación proxy | — | **No hay vista SQL**; no mostrar como KPI numérico en MVP o mostrar texto “no disponible en mart”. |
-
-**No se requieren nuevas vistas SQL** para el ejecutivo MVP si se importan `vw_appointment_base` + `fact_billing_line` y se aceptan las notas anteriores. Si se quisiera **una sola** tendencia filtrable por especialidad sin DAX complejo, una **vista futura** opcional sería `vw_daily_kpis_by_specialty` — **fuera del alcance de esta iteración de diseño**.
+**Per block:** B answers “how much”; C “how it trends” (**schedule only**); D “where”; E “what billing should review.”
 
 ---
 
-## 4. Medidas conceptuales (lógica de negocio, sin DAX)
+## 3. KPIs, visuals, and SQL sources
 
-Power BI debería definir medidas con estos **nombres y significados** (implementación en DAX en una fase posterior):
+### 3.1 Power BI modeling principles
 
-| Medida conceptual | Dependencias / lógica | Notas |
-|-------------------|------------------------|-------|
-| `Citas Total` | Filas en `vw_appointment_base` en contexto de filtro | Anclaje: `appointment_date` |
-| `Citas Atendidas` | `status_code = "ATTENDED"` | Idem |
-| `Citas Canceladas` | `status_code = "CANCELLED"` | Idem |
-| `Citas No Show` | `status_code = "NO_SHOW"` | Idem |
-| `No Show Rate` | `[Citas No Show] / ([Citas Atendidas] + [Citas No Show])` | Denominador cero → en blanco |
-| `Tasa Cancelación` | `[Citas Canceladas] / [Citas Total]` | Sobre citas con turno en periodo |
-| `Ingreso Facturado` | Suma `line_amount` en `fact_billing_line` con `billing_status` ≠ VOID | Filtrar por **`billing_date`** en el periodo (tabla de fechas de facturación o medida con `USERELATIONSHIP` si se modelan dos roles de fecha) |
-| `Citas Atendidas Sin Facturación` | `COUNTROWS` en `vw_revenue_bridge` donde bucket = `ATTENDED_NO_BILLING` | Solo lectura operativa |
+- **Operations (schedule):** anchor **`appointment_date`** (and derivatives on `vw_appointment_base`).
+- **Billing:** anchor **`billing_date`** on `fact_billing_line` — **do not** mix with `appointment_date` in one visual unless the design states it (see §5).
 
-**Relaciones de fecha:** se recomienda **calendario** (`dim_date`) con relación activa a `vw_appointment_base[appointment_date]` y relación **inactiva** o calendario duplicado “Billing” a `fact_billing_line[billing_date]` para no mezclar anclajes en un mismo eje por error.
+**Recommended primary table for filters and operational measures:** **`vw_appointment_base`** (appointment grain; includes `specialty_name`, `provider_label`, `channel_code`, `status_code`, role dates).
 
----
+**Billing fact:** **`fact_billing_line`** related to `vw_appointment_base` on `appointment_id` (1:N from appointment to lines).
 
-## 5. Filtros y navegación
+**Pre-aggregated views:** use to **reduce DAX** on monthly charts, not as the only source when slicers do not apply (see §3.3).
 
-### Filtros globales (segmentadores / slicers)
+### 3.2 KPI → visual → source → time anchor
 
-| Filtro | Campo sugerido | Origen |
-|--------|----------------|--------|
-| Periodo (agenda) | `appointment_date` o `dim_date` | Rango de fechas del **turno** |
-| Especialidad | `specialty_name` | `vw_appointment_base` |
-| Proveedor | `provider_label` | `vw_appointment_base` |
-| Canal de reserva | `channel_code` o `booking_channel_name` | `vw_appointment_base` |
-| Estado de cita | `status_code` | **Opcional** en ejecutivo (al filtrar “solo atendidas” se alteran tasas); usar con tooltip de ayuda |
+| KPI (dictionary) | Suggested visual | Preferred source | Time anchor |
+|------------------|------------------|-------------------|-------------|
+| Total appointments (operational denominator) | Card | `vw_appointment_base` — row count | **Appointment date** |
+| Attended appointments | Card | `vw_appointment_base` — filter `status_code = "ATTENDED"` | **Appointment date** |
+| No-show rate | Card (%) | Measure on `vw_appointment_base`: no-show / (attended + no-show) | **Appointment date** |
+| Cancellation rate (on agenda in period) | Card (%) | Same base: cancelled / all appointments with date in period | **Appointment date** |
+| Billed revenue | Card (amount) | `fact_billing_line` — sum `line_amount` where status ≠ VOID | **`billing_date`** |
+| Reconciliation gaps (attended without billing count) | Card or short table | `vw_revenue_bridge` — filter `reconciliation_bucket = "ATTENDED_NO_BILLING"` | Appointment / bucket (operational); amounts from lines if present |
+| Volume trend | Line or area | **`vw_daily_kpis`** only if axis is time **without** needing specialty filters on the same chart **or** measure on `vw_appointment_base` by `appointment_date` | **Appointment date** |
+| Breakdown by specialty | Horizontal bars | **`vw_kpis_by_specialty`** or measures on `vw_appointment_base` by `specialty_name` | Operations: **appointment month** (`year_month` in view); revenue in that view follows billing alignment per [`sql/README.md`](../../sql/README.md) |
+| Breakdown by provider | Horizontal bars | **`vw_kpis_by_provider`** or measures on `vw_appointment_base` by `provider_label` | Same as specialty |
 
-**Periodo de facturación:** si se muestra ingreso facturado, usar **slicer separado** sobre `billing_date` o un conmutador claro “Agenda vs Facturación” para evitar confusiones.
+### 3.3 Current view limitations (important)
 
-**Navegación:** MVP sin botones de bookmarks; un solo lienzo.
+| View | Executive use | Limitation |
+|------|----------------|------------|
+| `vw_daily_kpis` | Daily trend of rates and counts | **No** specialty, provider, or channel. If the user filters by specialty in the bar, this chart **must not** keep showing the global series without clarification: **prefer** trend from `vw_appointment_base` with the same filters, or hide trend when dimension filters apply. |
+| `vw_kpis_by_specialty` / `vw_kpis_by_provider` | Monthly bars | Pre-aggregated by `year_month` + dimension. **Revenue** in the view follows **billing month** joined to the same `year_month` as appointment month (see `sql/README.md`); **misalignment** can occur between appointment month and billing month. Label the revenue visual. |
+| `vw_revenue_bridge` | Gap alert | Appointment grain; good for **counts** by `reconciliation_bucket`. |
+| Occupancy proxy | — | **No SQL view**; do not show as numeric KPI in MVP or show text “not available in mart.” |
 
----
-
-## 6. Riesgos y notas metodológicas
-
-| Tema | Acción en el tablero |
-|------|----------------------|
-| Operativo vs facturación | Etiquetar tarjetas: “Agenda (fecha turno)” vs “Facturación (fecha emisión)” |
-| `revenue_facturado_mes` en vistas mensuales | Texto corto en tooltip: posible desfase turno vs factura |
-| Calidad de datos | Tras `run_data_quality.py`, un **WARN** por atendidas sin línea es **esperado**; la tarjeta de brecha lo refuerza |
-| Rankings por proveedor | Recordatorio en pie de página: métricas **operativas**, no calidad clínica ([`docs/business_case.md`](../../docs/business_case.md)) |
-| SQLite local | Conector actualizado; rutas relativas si se mueve el repo |
+**No new SQL views** are required for executive MVP if you import `vw_appointment_base` + `fact_billing_line` and accept the notes above. A future optional view `vw_daily_kpis_by_specialty` would simplify filtered trends — **out of scope for this design iteration**.
 
 ---
 
-## 7. Fuente de datos implementada (MVP)
+## 4. Conceptual measures (business logic, no DAX)
 
-**Decisión:** export **CSV** desde el mismo mart SQLite que las vistas SQL, para máxima portabilidad y sin depender del conector SQLite en el equipo donde se diseña el informe.
+Power BI should define measures with these **names and meanings** (DAX implementation later):
 
-| Origen en el mart | Archivo CSV en `source_csv/` | Uso en Power BI |
-|-------------------|-------------------------------|-----------------|
-| `vw_appointment_base` | `AppointmentBase.csv` | Hecho operativo, filtros, tendencia, desglose |
-| `fact_billing_line` + `dim_billing_status` | `BillingLine.csv`, `DimBillingStatus.csv` | Ingreso facturado (excluye VOID vía relación + medida) |
-| `dim_date` | `DimDate.csv` | Eje temporal de agenda (opcional) |
-| `vw_revenue_bridge` | `RevenueBridge.csv` | Medida de brecha (`ATTENDED_NO_BILLING`) |
-| `vw_daily_kpis`, `vw_kpis_by_specialty` | `DailyKpis.csv`, `KpiBySpecialty.csv` | Opcional / referencia (el lienzo MVP prioriza medidas sobre `AppointmentBase`) |
+| Conceptual measure | Dependencies / logic | Notes |
+|--------------------|----------------------|-------|
+| `Citas Total` | Rows in `vw_appointment_base` in filter context | Anchor: `appointment_date` |
+| `Citas Atendidas` | `status_code = "ATTENDED"` | Same |
+| `Citas Canceladas` | `status_code = "CANCELLED"` | Same |
+| `Citas No Show` | `status_code = "NO_SHOW"` | Same |
+| `No Show Rate` | `[Citas No Show] / ([Citas Atendidas] + [Citas No Show])` | Blank if denominator zero |
+| `Tasa Cancelacion` | `[Citas Canceladas] / [Citas Total]` | Appointments with date in period |
+| `Ingreso Facturado` | Sum `line_amount` on `fact_billing_line` with billing status ≠ VOID | Filter by **`billing_date`** in period (billing date table or measure with `USERELATIONSHIP` if using two date roles) |
+| `Citas Atendidas Sin Facturacion` | `COUNTROWS` on `vw_revenue_bridge` where bucket = `ATTENDED_NO_BILLING` | Operational read only |
 
-**Generación:**
+**Date relationships:** use **`dim_date`** with active relationship to `vw_appointment_base[appointment_date]` and **inactive** relationship or duplicate “Billing” calendar to `fact_billing_line[billing_date]` to avoid mixing anchors on one axis by mistake.
+
+---
+
+## 5. Filters and navigation
+
+### Global filters (slicers)
+
+| Filter | Suggested field | Source |
+|--------|-----------------|--------|
+| Period (schedule) | `appointment_date` or `dim_date` | Appointment date range |
+| Specialty | `specialty_name` | `vw_appointment_base` |
+| Provider | `provider_label` | `vw_appointment_base` |
+| Booking channel | `channel_code` or `booking_channel_name` | `vw_appointment_base` |
+| Appointment status | `status_code` | **Optional** on executive (filtering “attended only” changes rates); use with tooltip help |
+
+**Billing period:** if showing billed revenue, use a **separate slicer** on `billing_date` or a clear “Schedule vs Billing” toggle to avoid confusion.
+
+**Navigation:** MVP without bookmark buttons; single canvas.
+
+---
+
+## 6. Risks and methodology notes
+
+| Topic | Action on canvas |
+|-------|-------------------|
+| Schedule vs billing | Label cards: “Schedule (appointment date)” vs “Billing (issue date)” |
+| `revenue_facturado_mes` on monthly views | Short tooltip: possible appointment vs billing month mismatch |
+| Data quality | After `run_data_quality.py`, **WARN** on attended-without-line is **expected**; gap card reinforces |
+| Provider rankings | Footer note: metrics are **operational**, not clinical quality ([`docs/problem.md`](../../docs/problem.md)) |
+| Local SQLite | Keep connector updated; use relative paths if the repo moves |
+
+---
+
+## 7. Implemented data source (MVP)
+
+**Decision:** export **CSV** from the same SQLite mart as SQL views for maximum portability without relying on SQLite connectors on every machine.
+
+| Mart source | CSV in `source_csv/` | Use in Power BI |
+|-------------|----------------------|-----------------|
+| `vw_appointment_base` | `AppointmentBase.csv` | Operational fact, filters, trend, breakdown |
+| `fact_billing_line` + `dim_billing_status` | `BillingLine.csv`, `DimBillingStatus.csv` | Billed revenue (exclude VOID via relationship + measure) |
+| `dim_date` | `DimDate.csv` | Schedule date axis (optional) |
+| `vw_revenue_bridge` | `RevenueBridge.csv` | Gap measure (`ATTENDED_NO_BILLING`) |
+| `vw_daily_kpis`, `vw_kpis_by_specialty` | `DailyKpis.csv`, `KpiBySpecialty.csv` | Optional / reference (MVP canvas prefers measures on `AppointmentBase`) |
+
+**Generation:**
 
 ```bash
 python scripts/build_sqlite_mart.py
 python scripts/export_powerbi_source.py
 ```
 
-Salida: [`source_csv/`](source_csv/).
+Output: [`source_csv/`](source_csv/).
 
 ---
 
-## 8. Qué quedó construido en el repo (vs manual en Power BI)
+## 8. What the repo contains vs manual Power BI work
 
-| Artefacto | Ubicación |
-|-----------|-----------|
-| CSV listos para importar | `bi/powerbi/source_csv/*.csv` |
-| Medidas DAX | [`dax/executive_measures.dax`](dax/executive_measures.dax) |
-| Pasos de modelo y lienzo | [`BUILD_INSTRUCTIONS.md`](BUILD_INSTRUCTIONS.md) |
-| Referencia numérica (validación) | `python scripts/validate_executive_kpis.py` |
+| Artifact | Location |
+|----------|----------|
+| Ready-to-import CSV | `bi/powerbi/source_csv/*.csv` |
+| DAX measures | [`dax/executive_measures.dax`](dax/executive_measures.dax) |
+| Model and canvas steps | [`BUILD_INSTRUCTIONS.md`](BUILD_INSTRUCTIONS.md) |
+| Numeric validation | `python scripts/validate_executive_kpis.py` |
 
-**Manual obligatorio:** crear el archivo `.pbix` en Power BI Desktop importando los CSV, relaciones, medidas y visuales según `BUILD_INSTRUCTIONS.md`.
-
----
-
-## 9. KPIs incluidos en las medidas (MVP)
-
-Alineados a [`docs/metric_definitions.md`](../../docs/metric_definitions.md):
-
-| Medida | Tipo |
-|--------|------|
-| `Citas Total` | Operativo (fecha turno) |
-| `Citas Atendidas` / `Citas Canceladas` / `Citas No Show` | Operativo |
-| `No Show Rate` | Operativo |
-| `Tasa Cancelacion` | Operativo |
-| `Ingreso Facturado` | Facturación (`billing_date` en segmentador; ver interacciones en BUILD_INSTRUCTIONS) |
-| `Citas Atendidas Sin Facturacion` | Conciliación (coherente con `vw_revenue_bridge`) |
-
-**Fuera de alcance:** ocupación proxy, late cancel, ingreso cobrado real, ML.
+**Manual step:** create `.pbix` in Power BI Desktop importing CSV, relationships, measures, and visuals per `BUILD_INSTRUCTIONS.md`.
 
 ---
 
-## 10. Validación frente al mart y al quality report
+## 9. KPIs covered by measures (MVP)
 
-Ejecutar:
+Aligned to [`docs/metrics.md`](../../docs/metrics.md):
+
+| Measure | Type |
+|---------|------|
+| `Citas Total` | Operational (appointment date) |
+| `Citas Atendidas` / `Citas Canceladas` / `Citas No Show` | Operational |
+| `No Show Rate` | Operational |
+| `Tasa Cancelacion` | Operational |
+| `Ingreso Facturado` | Billing (`billing_date` on slicer; see BUILD_INSTRUCTIONS interactions) |
+| `Citas Atendidas Sin Facturacion` | Reconciliation (consistent with `vw_revenue_bridge`) |
+
+**Out of scope:** occupancy proxy, late cancel, real cash collected, ML.
+
+---
+
+## 10. Validation against mart and quality report
+
+Run:
 
 ```bash
 python scripts/validate_executive_kpis.py
 ```
 
-**Referencia actual (dataset sintético sin filtros de fecha):** citas totales **520**, atendidas **368**, no-show rate **0,1300**, tasa cancelación **0,1865**, ingreso facturado total **6.904.253,48** ARS, brechas **31** (coincide con WARN del reporte de calidad y con `vw_revenue_bridge`).
+**Current reference (full synthetic mart, no date filters):** total appointments **520**, attended **368**, no-show rate **0.1300**, cancellation rate **0.1865**, total billed revenue **6,904,253.48** ARS, gap count **31** (matches quality WARN and `vw_revenue_bridge`).
 
-**Inconsistencias conocidas (no expandir alcance sin decisión):**
+**Known inconsistencies (do not expand scope without decision):**
 
-- Si los segmentadores de **agenda** filtran la tarjeta de **Ingreso facturado**, el total puede diferir del SQL global — por eso se recomienda **editar interacciones** o un segmentador dedicado a `billing_date` (§4 de `BUILD_INSTRUCTIONS.md`).
-- `DailyKpis` importada no se usa obligatoriamente en el MVP; la tendencia se basa en `AppointmentBase` para respetar filtros de especialidad.
-
----
-
-## 11. Limitaciones que mantiene esta fase
-
-- Sin archivo `.pbix` en el repositorio (opcional añadirlo localmente; puede ignorarse en Git por tamaño).
-- Conexión **directa** al `.db` no es obligatoria si se usan CSV regenerables.
-- Tableau y ML: fuera de alcance.
+- If **schedule** slicers filter the **billed revenue** card, totals may differ from global SQL — use **edit interactions** or a dedicated `billing_date` slicer (§4 of `BUILD_INSTRUCTIONS.md`).
+- Imported `DailyKpis` is not mandatory for MVP; trend can be built from `AppointmentBase` to respect specialty filters.
 
 ---
 
-## 12. Evidencia para el README raíz
+## 11. Limitations of this phase
 
-Cuando el `.pbix` esté armado:
+- No `.pbix` in the repository (optional locally; may be gitignored by size).
+- **Direct** `.db` connection not required if regenerable CSVs are used.
+- Tableau and ML: out of scope here.
 
-1. Captura del lienzo **Ejecutivo** → guardar como [`assets/powerbi-executive.png`](../../assets/) (nombre sugerido).
-2. En el README raíz (sección v2), una línea: *Tablero ejecutivo implementado en Power BI Desktop; fuente CSV + medidas en `bi/powerbi/`.*
+---
 
-**No incluir** aún capturas Tableau ni ML.
+## 12. Evidence for the root README
+
+When the `.pbix` is built:
+
+1. Capture the **Executive** page → save as e.g. [`assets/powerbi-executive.png`](../../assets/) (suggested name).
+2. In the root README, one line: *Executive dashboard built in Power BI Desktop; CSV source + measures in `bi/powerbi/`.*
+
+**Do not** require Tableau or ML screenshots here yet.

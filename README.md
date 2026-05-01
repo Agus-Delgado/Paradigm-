@@ -117,7 +117,7 @@ Full column-level documentation: [`docs/data_dictionary.md`](docs/data_dictionar
 
 ## Governed KPIs
 
-Definitions live in [`docs/metric_definitions.md`](docs/metric_definitions.md). At a glance, the mart supports (among others):
+Definitions live in [`docs/metrics.md`](docs/metrics.md). At a glance, the mart supports (among others):
 
 | Theme | Examples |
 |-------|----------|

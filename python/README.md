@@ -1,15 +1,15 @@
 # Python — Paradigm v2
 
-## Rol en el proyecto
+## Role in the project
 
-- **`src/paradigm/io/`** — rutas al repositorio y al mart SQLite (`paths.py`).
-- **`src/paradigm/quality/`** — checks de calidad sobre la base cargada, generación del reporte Markdown.
+- **`src/paradigm/io/`** — Repository paths and SQLite mart paths (`paths.py`).
+- **`src/paradigm/quality/`** — Quality checks on the loaded database and Markdown report generation.
 
-No hay transformación pesada `raw → processed` en esta fase: la **fuente analítica** para BI es el SQLite construido desde `data/synthetic/`. La calidad valida ese mart antes de conectar herramientas de visualización.
+There is no heavy **raw → processed** transform in this phase: the **analytic source** for BI is SQLite built from `data/synthetic/`. Quality validates that mart before visualization tools connect.
 
-## Flujo recomendado (reproducible)
+## Recommended flow (reproducible)
 
-Desde la **raíz del repositorio**:
+From the **repository root**:
 
 ```bash
 python scripts/generate_paradigm_v2_synthetic.py
@@ -20,55 +20,55 @@ python scripts/validate_executive_kpis.py
 python scripts/train_no_show.py
 ```
 
-Para Power BI: importar CSV desde `bi/powerbi/source_csv/` (ver [`bi/powerbi/README.md`](../bi/powerbi/README.md)). Modelo de no-show (opcional): artefactos en `ml/experiments/` — ver [`../ml/README.md`](../ml/README.md).
+For Power BI: import CSV from `bi/powerbi/source_csv/` (see [`bi/powerbi/README.md`](../bi/powerbi/README.md)). Optional no-show model artifacts in `ml/experiments/` — see [`../ml/README.md`](../ml/README.md).
 
-1. **Sintético** — CSV en `data/synthetic/`.
-2. **Mart** — `data/processed/paradigm_mart.db` (DDL + carga + vistas SQL).
-3. **Calidad** — ejecuta checks en Python y escribe **`reports/quality_report.md`**.
+1. **Synthetic** — CSV in `data/synthetic/`.
+2. **Mart** — `data/processed/paradigm_mart.db` (DDL + load + SQL views).
+3. **Quality** — Python checks and **`reports/quality_report.md`**.
 
-### Cómo se ejecuta la calidad
+### Running quality
 
 ```bash
 python scripts/run_data_quality.py
 ```
 
-**PYTHONPATH:** el script añade `python/src` al path; no hace falta `pip install -e .` para desarrollo local.
+**PYTHONPATH:** the script adds `python/src` to the path; local development does not require `pip install -e .`.
 
-**Código de salida:** `0` si no hay checks con severidad **fail**; `1` si alguno falla. Los **warn** (p. ej. atendidas sin facturación en datos sintéticos) **no** cambian el código de salida.
+**Exit code:** `0` if no checks with severity **fail**; `1` if any fail. **Warn** (e.g. attended-without-billing in synthetic data) **does not** change exit code.
 
-### Qué valida
+### What it validates
 
-Resumen (detalle en código: `paradigm/quality/checks.py`):
+Summary (detail in code: `paradigm/quality/checks.py`):
 
-| Tema | Comportamiento |
-|------|----------------|
-| Integridad | `PRAGMA integrity_check`, `PRAGMA foreign_key_check` |
-| Unicidad | `appointment_id`, `billing_line_id` sin duplicados |
-| Nulos | Columnas obligatorias en hechos |
-| Fechas | `booking_date` ≤ `appointment_date` |
-| Estados | Cancelada ↔ `cancellation_ts`; motivo solo si cancelada |
-| Montos | `line_amount` ≥ 0; moneda `ARS` |
-| Referencias | Líneas de facturación con `appointment_id` existente |
-| `dim_date` | Toda `appointment_date` existe en calendario |
-| Atención vs facturación | **WARN** si hay atendidas sin líneas (esperado en el sintético para demo de conciliación) |
+| Topic | Behavior |
+|-------|----------|
+| Integrity | `PRAGMA integrity_check`, `PRAGMA foreign_key_check` |
+| Uniqueness | No duplicate `appointment_id`, `billing_line_id` |
+| Nulls | Required columns on facts |
+| Dates | `booking_date` ≤ `appointment_date` |
+| Status | Cancelled ↔ `cancellation_ts`; reason only if cancelled |
+| Amounts | `line_amount` ≥ 0; currency `ARS` |
+| References | Billing lines reference existing appointments |
+| `dim_date` | Every `appointment_date` exists on calendar |
+| Care vs billing | **WARN** if attended rows lack billing lines (expected in synthetic demo for reconciliation) |
 
-### Artefacto
+### Artifact
 
-| Archivo | Descripción |
-|---------|-------------|
-| `reports/quality_report.md` | Tabla de resultados + leyenda; apto para portfolio o CI. |
+| File | Description |
+|------|-------------|
+| `reports/quality_report.md` | Results table + legend; suitable for portfolio or CI. |
 
-### Límites de esta fase
+### Limits of this phase
 
-- No valida CSV **antes** del load (la verdad operativa es el SQLite post-`build_sqlite_mart.py`).
-- No sustituye tests unitarios exhaustivos ni reglas de negocio clínicas.
-- Un **WARN** no bloquea el pipeline; revisar el detalle antes de publicar dashboards.
+- Does not validate CSV **before** load (operational truth is SQLite after `build_sqlite_mart.py`).
+- Does not replace exhaustive unit tests or clinical business rules.
+- A **WARN** does not block the pipeline; review detail before publishing dashboards.
 
-## Otros
+## Other
 
-- `notebooks/` — EDA opcional.
+- `notebooks/` — optional EDA.
 
-## Ver también
+## See also
 
-- [`sql/README.md`](../sql/README.md) — DDL, vistas, muestras SQL.
-- [`docs/data_dictionary.md`](../docs/data_dictionary.md) — contrato de datos.
+- [`sql/README.md`](../sql/README.md) — DDL, views, sample SQL.
+- [`docs/data_dictionary.md`](../docs/data_dictionary.md) — data contract.

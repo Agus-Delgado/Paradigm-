@@ -1,146 +1,191 @@
-# Paradigm v2 — Preguntas analíticas troncales y trazabilidad
+# Paradigm — Trunk analytical questions and traceability
 
-Este documento es el **eje conceptual** del marco analítico: define **preguntas troncales**, la **matriz** hacia KPIs, SQL, consumo BI y posibles acciones, **casos de decisión** concretos, una **plantilla de explicabilidad liviana** para la capa predictiva, y la **frontera** entre lo documentado hoy y el trabajo técnico futuro.
+This document is the **conceptual backbone** of the analytic framework: **trunk questions** (T1–T6), the **matrix** to KPIs, SQL, BI consumption and illustrative actions, **decision use cases**, a **lightweight explainability checklist** for the predictive layer, and the boundary between documented scope and future technical work.
 
-Los datos del repo son **sintéticos**; las respuestas numéricas son **ilustrativas**. El valor está en **definiciones, trazabilidad y narrativa defendible**.
+Repository data are **synthetic**; numeric answers are **illustrative**. Value lies in **definitions, traceability, and defensible narrative**.
 
-**Relación con otros documentos:** las definiciones normativas de KPIs están en [`metric_definitions.md`](metric_definitions.md); el modelo dimensional y el flujo técnico en [`architecture.md`](architecture.md); el relato de negocio en [`business_case.md`](business_case.md); el modelo de no-show en [`ml/README.md`](../ml/README.md).
-
----
-
-## 1. Preguntas diagnósticas troncales
-
-Cada troncal tiene un **id** (T1–T6) usado en el resto del documento y en [`business_case.md`](business_case.md).
-
-| Id | Pregunta troncal | Lectura de decisión (si se observa el patrón) |
-|----|-------------------|-----------------------------------------------|
-| **T1** | ¿Cómo evolucionan en el tiempo **no-show**, **cancelación**, **citas atendidas** y el volumen operativo agregado? | Si empeoran tasas o cae volumen atendido, **revisar políticas de agenda** y **comunicación** antes de optimizar franjas puntuales. |
-| **T2** | ¿**Dónde** se concentra la fricción operativa por **especialidad**, **canal de reserva** y **tiempo** (día, franja)? | Si un corte sistemáticamente dispara tasas o caída de asistencia, **profundizar reglas de oferta**, **canales** o **capacidad percibida** en ese segmento. |
-| **T3** | ¿Dónde se concentran las **cancelaciones tardías** (menos de 24 h antes del turno) y en qué combinaciones canal–servicio? | Si la cancelación tardía es alta, **ajustar ventanas de reprogramación**, **recordatorios** o **reglas de liberación de cupo** (siempre como decisión de negocio; aquí solo señal). |
-| **T4** | ¿Cómo evoluciona el **ingreso facturado** y cómo se relaciona con citas **atendidas** en la ventana analizada? | Si divergen ingreso y actividad atendida, **revisar ciclo de facturación** o **lag** entre turno y emisión, no solo “vender más turnos”. |
-| **T5** | ¿Qué **brechas** hay entre **citas atendidas** y **líneas de facturación** (conciliación)? | Si crece lo pendiente o “atendido sin facturación”, **revisar proceso administrativo** y reglas de emisión, no solo KPIs de sala. |
-| **T6** | Ante el **riesgo de no-show** en el punto de decisión documentado, **qué citas** conviene priorizar para contacto o seguimiento? | Si se usa el score como apoyo, **ordenar esfuerzo operativo** (p. ej. recordatorios) sin sustituir criterio humano ni políticas internas. |
-
-**Nota (T1 y ocupación):** la **ocupación (proxy)** está definida en [`metric_definitions.md`](metric_definitions.md) pero **no está materializada en una vista SQL** en el estado actual del repo (ver [`sql/README.md`](../sql/README.md)). La lectura de utilización puede apoyarse en **KPIs de volumen y tasas** en vistas existentes y, si se implementa, en **BI** con la regla proxy documentada.
+**Related docs:** KPI definitions in [`metrics.md`](metrics.md); dimensional layout and flow in [`architecture.md`](architecture.md); business framing in [`problem.md`](problem.md); no-show modeling in [`ml/README.md`](../ml/README.md).
 
 ---
 
-## 2. Matriz pregunta → KPI / vista SQL / visual / posible acción
+## 1. Trunk diagnostic questions (T1–T6)
 
-**Convenciones:** “KPI” remite al diccionario [`metric_definitions.md`](metric_definitions.md) (apartados numerados bajo cada métrica). Las vistas son las de [`sql/README.md`](../sql/README.md). Los CSV de exportación nombran el **rol** del consumo; el detalle de columnas está en cada carpeta `bi/`.
+Each trunk id (**T1–T6**) is used throughout this document and in [`problem.md`](problem.md).
 
-| Id | KPIs principales (referencia) | Vista SQL y/o muestra | Power BI (ejecutivo) | Tableau (diagnóstico) | Posible acción operativa (ilustrativa) |
-|----|------------------------------|------------------------|------------------------|-------------------------|----------------------------------------|
-| **T1** | No-show rate; cancelación; citas atendidas; tendencia diaria (diccionario: apartados 2, 3 y 5) | `vw_daily_kpis`; `sql/samples/03_attended_by_month.sql` | `DailyKpis.csv`: tendencia KPIs periodo; lectura “¿qué pasa?” | `DailyKpis.csv` / cortes en historias: tendencia y comparación | Reunión de seguimiento; revisar metas de tasa si persisten desvíos |
-| **T2** | No-show, cancelación, productividad por especialidad/canal (apartados 2, 3, 11 y 12) | `vw_kpis_by_specialty`; `sql/samples/01_no_show_by_specialty.sql`; `sql/samples/02_cancellation_by_channel.sql` | `KpiBySpecialty.csv`: ranking/agregado mensual por especialidad | `KpiBySpecialty.csv`, `AppointmentBase.csv`: ranking, canal, especialidad, exploración | Focalizar canal o especialidad con peor desempeño; revisar cupos o comunicación |
-| **T3** | Cancelación tardía; cancelación (apartados 4 y 3) | `vw_appointment_base` (fechas/horas para regla **menos de 24 h** antes del turno); `sql/samples/02_cancellation_by_channel.sql` donde aplique | **Power BI (MVP):** cancelación tardía **fuera** del lienzo ejecutivo — ver [`bi/powerbi/README.md`](../bi/powerbi/README.md) | **Tableau:** `AppointmentBase.csv` y guía en [`bi/tableau/README.md`](../bi/tableau/README.md) (cancelación tardía) | Ajustar recordatorios o políticas de cancelación en segmentos críticos |
-| **T4** | Ingreso facturado; ingreso por cita atendida (apartados 6 y 8) | `vw_kpis_by_specialty` / `vw_kpis_by_provider` (`revenue_facturado_mes`); `sql/samples/04_billing_by_month.sql` | Tendencia ingreso vs actividad si el diseño ejecutivo lo muestra (`RevenueBridge.csv`, KPIs) | `RevenueBridge.csv`, series por tiempo | Revisar desfases entre actividad y facturación mensual |
-| **T5** | Conciliación atención vs facturación (apartado 9) | `vw_revenue_bridge`; `sql/samples/05_reconciliation_attendance_vs_billing.sql` | Puente / buckets vía `RevenueBridge.csv` en medidas DAX | Misma fuente: exploración de `reconciliation_bucket` | Priorizar corrección de emisiones pendientes o inconsistencias |
-| **T6** | No-show rate (contexto); **score** ML no es KPI de negocio sino **priorización** | Mismo mart que BI: features desde tablas del mart (ver [`ml/README.md`](../ml/README.md)); sin vista dedicada al score en SQL | No sustituye KPIs: el tablero ejecutivo sigue siendo histórico | Análisis combinado posible en demo (score exportado offline si se implementa en futuro) | Lista priorizada para **recordatorios** o revisión manual; **no** automatización en el repo |
+### T1 — Trends over time
 
----
+| | |
+|--|--|
+| **Business question** | How do **no-show**, **cancellation**, **attended appointments**, and aggregate operational volume evolve over time? |
+| **Metrics / methods** | No-show rate, cancellation rate, attended count, daily/monthly trends — see [`metrics.md`](metrics.md) §2–3, §5; operational volume from appointment facts. |
+| **BI / SQL direction** | `vw_daily_kpis`; `sql/samples/03_attended_by_month.sql`; exports `DailyKpis.csv` for trend. |
+| **Why it matters** | Detect sustained deterioration before optimizing isolated slots; aligns leadership on whether the period is stable or drifting. |
 
-## 3. Casos de decisión concretos
+### T2 — Where friction concentrates
 
-Formato fijo: **disparador** → **rol** → **artefacto** → **decisión típica** → **límite honesto**.
+| | |
+|--|--|
+| **Business question** | **Where** does operational friction concentrate by **specialty**, **booking channel**, and **time** (day, slot)? |
+| **Metrics / methods** | No-show and cancellation rates by segment; productivity cuts — [`metrics.md`](metrics.md) §2–3, §10–12. |
+| **BI / SQL direction** | `vw_kpis_by_specialty`; `sql/samples/01_no_show_by_specialty.sql`; `sql/samples/02_cancellation_by_channel.sql`; `KpiBySpecialty.csv`, `AppointmentBase.csv`. |
+| **Why it matters** | Targets remediation (channels, capacity perception, communication) where the signal repeats, not random one-off spikes. |
 
-### UC1 — Seguimiento ejecutivo de tasas
+### T3 — Late cancellations
 
-| Campo | Contenido |
-|-------|-----------|
-| **Disparador** | Suba sostenida de la **tasa de no-show** o de la **tasa de cancelación** en `vw_daily_kpis` / `DailyKpis.csv` respecto al periodo anterior. |
-| **Rol** | Dirección / operaciones. |
-| **Artefacto** | Power BI ejecutivo (`bi/powerbi/`); validación alineada a [`metric_definitions.md`](metric_definitions.md). |
-| **Decisión típica** | Acordar **revisión focalizada** (canal, especialidad) y seguimiento en la siguiente ventana. |
-| **Límite** | Datos sintéticos; sin umbral “óptimo” universal; el repo no define políticas. |
+| | |
+|--|--|
+| **Business question** | Where do **late cancellations** (fewer than 24 hours before start) concentrate, and in which channel–service combinations? |
+| **Metrics / methods** | Late cancellation rate — [`metrics.md`](metrics.md) §4; cancellation context §3. |
+| **BI / SQL direction** | `vw_appointment_base` (timestamps for the under-24-hours rule); `sql/samples/02_cancellation_by_channel.sql` where relevant; Tableau per [`bi/tableau/README.md`](../bi/tableau/README.md). Executive MVP may omit late cancel — see [`bi/powerbi/README.md`](../bi/powerbi/README.md). |
+| **Why it matters** | Late cancels block refill; operational levers (reminders, windows) differ from generic cancel rates. |
 
-### UC2 — Diagnóstico por especialidad y canal
+### T4 — Billed revenue vs attended activity
 
-| Campo | Contenido |
-|-------|-----------|
-| **Disparador** | Una **especialidad** o **canal** aparece como outlier en `vw_kpis_by_specialty` o muestras `01` / `02`. |
-| **Rol** | Jefatura de servicio / recepción (operativo). |
-| **Artefacto** | Tableau analítico (`bi/tableau/`); `KpiBySpecialty.csv`, `AppointmentBase.csv`. |
-| **Decisión típica** | **Profundizar** causa operativa (franja, motivo de cancelación si está en el análisis) antes de cambiar cupos. |
-| **Límite** | Asociación observacional; no implica causalidad estadística formal. |
+| | |
+|--|--|
+| **Business question** | How does **billed revenue** evolve and how does it relate to **attended** appointments in the analyzed window? |
+| **Metrics / methods** | Billed revenue by `billing_date`; revenue per attended appointment — [`metrics.md`](metrics.md) §6, §8. |
+| **BI / SQL direction** | `vw_kpis_by_specialty` / `vw_kpis_by_provider` (`revenue_facturado_mes`); `sql/samples/04_billing_by_month.sql`; `RevenueBridge.csv`. |
+| **Why it matters** | Misalignment flags billing lag or process gaps, not just “book more visits.” |
 
-### UC3 — Cancelación tardía
+### T5 — Reconciliation gaps
 
-| Campo | Contenido |
-|-------|-----------|
-| **Disparador** | **Tasa de cancelación tardía** alta en el segmento de interés (regla **menos de 24 h** antes del inicio del turno; ver [`metric_definitions.md`](metric_definitions.md)). |
-| **Rol** | Recepción / agenda. |
-| **Artefacto** | Consultas sobre `vw_appointment_base` + visualizaciones de hora/canal en Tableau. |
-| **Decisión típica** | Proponer **ajuste de recordatorios** o ventanas de cancelación (negocio); el repo solo documenta la señal. |
-| **Límite** | Sintético; calibración real requeriría datos productivos. |
+| | |
+|--|--|
+| **Business question** | What **gaps** exist between **attended appointments** and **billing lines**? |
+| **Metrics / methods** | Reconciliation buckets — [`metrics.md`](metrics.md) §9. |
+| **BI / SQL direction** | `vw_revenue_bridge`; `sql/samples/05_reconciliation_attendance_vs_billing.sql`; `RevenueBridge.csv` in BI. |
+| **Why it matters** | Surfaces administrative follow-up (missing charges, pending lines) without conflating clinical and billing workflows. |
 
-### UC4 — Conciliación atención–facturación
+### T6 — Prioritization under no-show risk
 
-| Campo | Contenido |
-|-------|-----------|
-| **Disparador** | Crecimiento de filas en buckets tipo **atendido sin facturación** o pendiente en `vw_revenue_bridge`. |
-| **Rol** | Facturación / administración. |
-| **Artefacto** | `sql/samples/05_reconciliation_attendance_vs_billing.sql`; `RevenueBridge.csv` en BI. |
-| **Decisión típica** | **Priorizar** corrección de emisiones o revisión de casos; no automatizar cobranza desde el repo. |
-| **Límite** | Sin **ingreso cobrado** estricto en MVP; ver [`metric_definitions.md`](metric_definitions.md). |
+| | |
+|--|--|
+| **Business question** | At the documented decision point, **which appointments** merit prioritized outreach before the visit? |
+| **Metrics / methods** | ML score is **not** a business KPI; it supports **ranking** — see [`ml/README.md`](../ml/README.md). No-show **rate** provides context from [`metrics.md`](metrics.md) §2. |
+| **BI / SQL direction** | Same mart as BI; features from mart tables; no dedicated SQL view for score in MVP. |
+| **Why it matters** | Converts analytic output into **ordered operational effort** (e.g. reminders) without automating actions in-repo. |
 
-### UC5 — Priorización ante riesgo de no-show (ML)
-
-| Campo | Contenido |
-|-------|-----------|
-| **Disparador** | Necesidad de **ordenar** contactos previos al turno con criterio explícito (demo/portfolio). |
-| **Rol** | Operaciones / agenda (con supervisión). |
-| **Artefacto** | `scripts/train_no_show.py` → `ml/experiments/metrics.json`; importancias en el mismo archivo; [`ml/README.md`](../ml/README.md). |
-| **Decisión típica** | Usar **probabilidad** o ranking para **ordenar** recordatorios; el umbral lo define negocio. |
-| **Límite** | No es servicio en producción; desempeño puede ser débil en sintético; **no** usar para evaluar personas. |
+**Note (T1 and occupancy):** **Occupancy (proxy)** is defined in [`metrics.md`](metrics.md) §1 but **not materialized in a dedicated SQL view** today (see [`sql/README.md`](../sql/README.md)). Utilization reads can use volume and rate KPIs in existing views; BI may implement the proxy rule if needed.
 
 ---
 
-## 4. Plantilla de explicabilidad liviana (capa predictiva no-show)
+## 2. Matrix — Question → KPI / SQL / BI / illustrative action
 
-Usar como checklist al narrar resultados del modelo (entrevista, portfolio o nota interna). Completar con lo publicado en `ml/experiments/metrics.json` y [`ml/README.md`](../ml/README.md).
+**Conventions:** “KPI” refers to [`metrics.md`](metrics.md) (numbered sections per metric). Views are listed in [`sql/README.md`](../sql/README.md). Export CSVs name consumption **roles**; column detail is in each `bi/` README.
 
-| Campo | Qué escribir |
+| Id | Primary KPIs (reference) | SQL view / sample | Power BI (executive) | Tableau (diagnostic) | Illustrative operational action |
+|----|--------------------------|---------------------|----------------------|-------------------------|--------------------------------|
+| **T1** | No-show rate; cancellation; attended; daily trend ([`metrics.md`](metrics.md) §2–3, §5) | `vw_daily_kpis`; `sql/samples/03_attended_by_month.sql` | `DailyKpis.csv`: period trend | `DailyKpis.csv` / stories: trend & comparison | Review meeting; revisit targets if deviation persists |
+| **T2** | No-show, cancel, productivity by specialty/channel ([`metrics.md`](metrics.md) §2–3, §11–12) | `vw_kpis_by_specialty`; samples `01`, `02` | `KpiBySpecialty.csv` | `KpiBySpecialty.csv`, `AppointmentBase.csv` | Focus channel/specialty underperforming; adjust capacity messaging |
+| **T3** | Late cancel; cancel rate ([`metrics.md`](metrics.md) §4, §3) | `vw_appointment_base` (under-24-hours rule); sample `02` where applicable | Late cancel **out of** executive MVP canvas — [`bi/powerbi/README.md`](../bi/powerbi/README.md) | `AppointmentBase.csv`; [`bi/tableau/README.md`](../bi/tableau/README.md) | Tune reminders or cancel windows in critical segments |
+| **T4** | Billed revenue; revenue per attended ([`metrics.md`](metrics.md) §6, §8) | `vw_kpis_by_specialty` / `vw_kpis_by_provider`; `sql/samples/04_billing_by_month.sql` | Revenue vs activity if designed (`RevenueBridge.csv`, KPIs) | `RevenueBridge.csv`, time series | Investigate billing lag vs activity |
+| **T5** | Reconciliation ([`metrics.md`](metrics.md) §9) | `vw_revenue_bridge`; `sql/samples/05_reconciliation_attendance_vs_billing.sql` | Bridge / buckets via `RevenueBridge.csv` | Same: explore `reconciliation_bucket` | Prioritize issuance fixes or case review |
+| **T6** | No-show rate (context); ML score = **prioritization** only | Mart tables per [`ml/README.md`](../ml/README.md); no score view in SQL | Does not replace KPIs; executive stays historical | Combined analysis possible offline | Rank list for **reminders** or manual review; **no** in-repo automation |
+
+---
+
+## 3. Decision use cases
+
+Fixed pattern: **trigger** → **role** → **artifact** → **typical decision** → **honest limit**.
+
+### UC1 — Executive rate monitoring
+
+| Field | Content |
+|-------|---------|
+| **Trigger** | Sustained increase in **no-show rate** or **cancellation rate** in `vw_daily_kpis` / `DailyKpis.csv` vs prior period. |
+| **Role** | Leadership / operations. |
+| **Artifact** | Power BI executive (`bi/powerbi/`); validation aligned to [`metrics.md`](metrics.md). |
+| **Typical decision** | Agree **focused review** (channel, specialty) and monitor next window. |
+| **Limit** | Synthetic data; no universal “optimal” threshold; repo does not set policy. |
+
+### UC2 — Specialty and channel diagnosis
+
+| Field | Content |
+|-------|---------|
+| **Trigger** | Specialty or channel appears as outlier in `vw_kpis_by_specialty` or samples `01` / `02`. |
+| **Role** | Service lead / front desk (operations). |
+| **Artifact** | Tableau (`bi/tableau/`); `KpiBySpecialty.csv`, `AppointmentBase.csv`. |
+| **Typical decision** | **Dig into** operational cause (slot, cancel reason) before changing capacity. |
+| **Limit** | Observational association; not formal causal inference. |
+
+### UC3 — Late cancellation
+
+| Field | Content |
+|-------|---------|
+| **Trigger** | High **late cancellation rate** in segment (fewer than 24 hours before start; [`metrics.md`](metrics.md) §4). |
+| **Role** | Reception / scheduling. |
+| **Artifact** | Queries on `vw_appointment_base` + Tableau time/channel visuals. |
+| **Typical decision** | Propose **reminder or window** adjustments (business decision); repo documents signal only. |
+| **Limit** | Synthetic; real calibration needs production-like data. |
+
+### UC4 — Care vs billing reconciliation
+
+| Field | Content |
+|-------|---------|
+| **Trigger** | Growth in rows like **attended without billing** or pending in `vw_revenue_bridge`. |
+| **Role** | Billing / administration. |
+| **Artifact** | `sql/samples/05_reconciliation_attendance_vs_billing.sql`; `RevenueBridge.csv`. |
+| **Typical decision** | **Prioritize** issuance fixes or case review; no automated collections from repo. |
+| **Limit** | Strict **cash collected** not in MVP; see [`metrics.md`](metrics.md) §7. |
+
+### UC5 — Prioritization under no-show risk (ML)
+
+| Field | Content |
+|-------|---------|
+| **Trigger** | Need to **rank** pre-visit contacts with explicit criteria (demo/portfolio). |
+| **Role** | Operations / scheduling (supervised). |
+| **Artifact** | `scripts/train_no_show.py` → `ml/experiments/metrics.json`; [`ml/README.md`](../ml/README.md). |
+| **Typical decision** | Use probability or rank to **order** reminders; threshold is business-owned. |
+| **Limit** | Not a production service; weak performance possible on synthetic data; **do not** use for staff evaluation. |
+
+---
+
+## 4. Lightweight explainability checklist (no-show layer)
+
+Use when presenting model results (interview, portfolio, internal note). Fill from `ml/experiments/metrics.json` and [`ml/README.md`](../ml/README.md).
+
+| Field | What to state |
 |-------|----------------|
-| **Señal** | Probabilidad de no-show (o ranking) y unidad de análisis: **una cita** al momento de la reserva. |
-| **Universo** | Citas con estado final **ATTENDED** o **NO_SHOW**; canceladas **fuera** del target del modelo. |
-| **Punto de decisión** | Inmediatamente después de **reservar**; lista de features permitidas vs leakage en [`ml/README.md`](../ml/README.md). |
-| **Evidencia técnica** | ROC-AUC, PR-AUC, Brier; **captura en top decil** (`top_decile` en `metrics.json`) como lectura operativa conceptual. |
-| **Explicación local/global** | **Importancias** del Random Forest en `metrics.json`: qué columnas pesan más **en el modelo** (no causalidad). |
-| **Riesgos de uso** | Confundir correlación con causa; aplicar score a **evaluación de personas**; confiar en cifras **sintéticas** como si fueran reales. |
-| **Acción sugerida (tipo)** | Priorización de **recordatorios** o revisión de lista; **no** ejecución automática en el repo. |
+| **Signal** | No-show probability (or rank); unit = **one appointment** at booking decision time. |
+| **Universe** | Final status **ATTENDED** or **NO_SHOW**; cancel excluded from target. |
+| **Decision point** | Immediately after **booking**; allowed vs leakage features in [`ml/README.md`](../ml/README.md). |
+| **Technical evidence** | ROC-AUC, PR-AUC, Brier; **top-decile capture** (`top_decile` in `metrics.json`) as conceptual ops read. |
+| **Local/global explanation** | Random Forest **importances** in `metrics.json`: column weight **in the model** (not causality). |
+| **Use risks** | Confusing correlation with cause; scoring **people**; treating synthetic numbers as real. |
+| **Suggested action type** | Prioritized **reminders** or list review; **no** automated execution in-repo. |
 
 ---
 
-## 5. Documentación actual vs trabajo técnico futuro
+## 5. Documented today vs future technical work
 
-### 5.1 Queda documentado en el repo (estado actual)
+### 5.1 In scope (current repo)
 
-- Definiciones de KPIs y anclajes en [`metric_definitions.md`](metric_definitions.md).
-- Mart SQLite, vistas `vw_*` y muestras en `sql/samples/` según [`sql/README.md`](../sql/README.md).
-- Exportes CSV y guías de lienzo en `bi/powerbi/` y `bi/tableau/`.
-- Pipeline de calidad, validación de KPIs ejecutivos y **un** modelo de no-show reproducible con artefactos en `ml/experiments/`.
-- Este documento y enlaces desde [`architecture.md`](architecture.md), [`business_case.md`](business_case.md) y [`README.md`](../README.md).
+- KPI definitions and anchors in [`metrics.md`](metrics.md).
+- SQLite mart, `vw_*` views, and samples per [`sql/README.md`](../sql/README.md).
+- CSV exports and canvas guides in `bi/powerbi/` and `bi/tableau/`.
+- Quality pipeline, executive KPI validation, **one** reproducible no-show experiment under `ml/experiments/`.
+- This document and links from [`architecture.md`](architecture.md), [`problem.md`](problem.md), and [`README.md`](../README.md).
 
-### 5.2 Posible implementación o profundización posterior (fuera del alcance documental actual)
+### 5.2 Possible future extensions (not committed)
 
-| Tema | Notas |
-|------|--------|
-| **Ocupación (proxy) en SQL o medida única** | Hoy definida en métricas; vista dedicada o regla única en BI pendiente de decisión técnica. |
-| **Ingreso cobrado** / tesorería | Fuera del MVP; requiere nuevos hechos o fechas de pago. |
-| **Multi-sede, slots finos, reprogramaciones encadenadas** | Fuera del MVP; ver [`business_case.md`](business_case.md). |
-| **Servicio de inferencia** (API, batch productivo), **automatización** de campañas | Explícitamente fuera; el repo es demo reproducible. |
-| **Otros modelos** (p. ej. cancelación) | Línea de evolución mencionada en [`ml/README.md`](../ml/README.md); no comprometido. |
-| **Tableros binarios** (`.pbix` / `.twbx`) | Material de demo local; no son el contrato del repo. |
+| Topic | Notes |
+|-------|--------|
+| **Occupancy (proxy) in SQL or single measure** | Defined in metrics; dedicated view or unified BI measure pending. |
+| **Cash collected** / treasury | Outside MVP; needs new facts or payment dates. |
+| **Multi-site, fine slots, chained reschedules** | Outside MVP; see [`problem.md`](problem.md). |
+| **Inference service**, **campaign automation** | Explicitly out; repo is reproducible demo. |
+| **Other models** (e.g. cancellation) | Mentioned in [`ml/README.md`](../ml/README.md); not committed. |
+| **Desktop workbooks** (`.pbix` / `.twbx`) | Local demo assets; not the contract of the repo. |
 
 ---
 
-## 6. Referencia rápida vista ↔ tema
+## 6. Quick reference — view ↔ trunk theme
 
-| Vista | Uso principal en troncales |
-|-------|----------------------------|
-| `vw_daily_kpis` | T1 — tendencia diaria por fecha de turno |
-| `vw_kpis_by_specialty` | T2, T4 — cortes por especialidad; ingreso facturado por mes |
-| `vw_kpis_by_provider` | T2, T4 — mismo espíritu por profesional (métrica operativa) |
-| `vw_appointment_base` | T2, T3 — enriquecido para cortes y lógica temporal |
-| `vw_revenue_bridge` | T4, T5 — conciliación y puente de ingreso por cita |
+| View | Primary trunk themes |
+|------|----------------------|
+| `vw_daily_kpis` | T1 — daily trend by appointment date |
+| `vw_kpis_by_specialty` | T2, T4 — specialty cuts; billed revenue by month |
+| `vw_kpis_by_provider` | T2, T4 — same by provider (operational) |
+| `vw_appointment_base` | T2, T3 — enriched for cuts and temporal logic |
+| `vw_revenue_bridge` | T4, T5 — reconciliation and revenue bridge per appointment |

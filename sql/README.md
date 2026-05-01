@@ -1,85 +1,85 @@
-# SQL — Paradigm v2 (SQLite local)
+# SQL — Paradigm v2 (local SQLite)
 
-## Por qué SQLite
+## Why SQLite
 
-- **Portabilidad:** un solo archivo (`data/processed/paradigm_mart.db`) clonable sin servidor.
-- **Portfolio:** demuestra DDL, vistas y consultas reproducibles en cualquier máquina con Python.
-- **Alcance:** capa analítica **local** alineada al modelo del plan; Power BI / Tableau pueden conectar al `.db` o exportar CSV desde vistas.
+- **Portability:** a single file (`data/processed/paradigm_mart.db`) cloneable without a server.
+- **Portfolio:** demonstrates DDL, views, and reproducible queries on any machine with Python.
+- **Scope:** local analytical layer aligned to the dimensional model; Power BI / Tableau can connect to the `.db` or consume CSV exports from views.
 
-**Limitación:** no es un motor para producción concurrente; basta para MVP y demos.
+**Limitation:** not a concurrent production engine; sufficient for MVP and demos.
 
-## Cómo crear la base y cargar datos
+## Building and loading the database
 
-1. Tener generados los CSV en [`data/synthetic/`](../data/synthetic/README.md):
+1. Generate CSVs under [`data/synthetic/`](../data/synthetic/README.md):
 
    ```bash
    python scripts/generate_paradigm_v2_synthetic.py
    ```
 
-2. Ejecutar el build (DDL + carga + vistas):
+2. Run the build (DDL + load + views):
 
    ```bash
    python scripts/build_sqlite_mart.py
    ```
 
-3. (Recomendado) Validar calidad del mart y generar reporte:
+3. (Recommended) Validate mart quality and write the report:
 
    ```bash
    python scripts/run_data_quality.py
    ```
 
-   Salida: `reports/quality_report.md` — ver [`python/README.md`](../python/README.md).
+   Output: `reports/quality_report.md` — see [`python/README.md`](../python/README.md).
 
-Salida del paso 2: **`data/processed/paradigm_mart.db`** (regenera el archivo si ya existía).
+Step 2 produces **`data/processed/paradigm_mart.db`** (overwrites if it already existed).
 
-Requisitos: Python 3.10+ con `pandas` (ver [`requirements.txt`](../requirements.txt)).
+Requirements: Python 3.10+ with `pandas` (see [`requirements.txt`](../requirements.txt)).
 
-## Esquema (DDL)
+## Schema (DDL)
 
-Definido en [`ddl/01_create_tables.sql`](ddl/01_create_tables.sql):
+Defined in [`ddl/01_create_tables.sql`](ddl/01_create_tables.sql):
 
-- Dimensiones: `dim_date`, `dim_specialty`, `dim_coverage`, `dim_appointment_status`, `dim_booking_channel`, `dim_billing_status`, `dim_cancellation_reason`, `dim_patient`, `dim_provider`.
-- Hechos: `fact_appointment`, `fact_billing_line`.
+- Dimensions: `dim_date`, `dim_specialty`, `dim_coverage`, `dim_appointment_status`, `dim_booking_channel`, `dim_billing_status`, `dim_cancellation_reason`, `dim_patient`, `dim_provider`.
+- Facts: `fact_appointment`, `fact_billing_line`.
 
-Claves foráneas activadas (`PRAGMA foreign_keys = ON` en el script de build).
+Foreign keys enabled (`PRAGMA foreign_keys = ON` in the build script).
 
-## Vistas analíticas
+## Analytic views
 
-| Vista | Propósito |
-|-------|-----------|
-| `vw_appointment_base` | Citas enriquecidas con dimensiones y `appointment_date_key` / `booking_date_key` / `cancellation_date_key`. |
-| `vw_daily_kpis` | KPIs por **fecha del turno**: totales, atendidas, canceladas, no-shows, tasas (definiciones en `docs/metric_definitions.md`). |
-| `vw_kpis_by_specialty` | Agregado **mensual** por especialidad operativa; incluye `revenue_facturado_mes` con **mes de facturación** (`billing_date`) alineado al mismo `year_month` que el mes del turno (ver nota abajo). |
-| `vw_kpis_by_provider` | Igual por proveedor. |
-| `vw_revenue_bridge` | Por **cita**: montos por tipo de estado de facturación y `reconciliation_bucket` (p. ej. `ATTENDED_NO_BILLING`). |
+| View | Purpose |
+|------|---------|
+| `vw_appointment_base` | Appointments enriched with dimensions and `appointment_date_key` / `booking_date_key` / `cancellation_date_key`. |
+| `vw_daily_kpis` | KPIs by **appointment date**: totals, attended, cancelled, no-shows, rates (definitions in [`docs/metrics.md`](../docs/metrics.md)). |
+| `vw_kpis_by_specialty` | **Monthly** aggregation by operational specialty; includes `revenue_facturado_mes` with **billing month** (`billing_date`) aligned to the same `year_month` as the appointment month (see note below). |
+| `vw_kpis_by_provider` | Same by provider. |
+| `vw_revenue_bridge` | Per **appointment**: amounts by billing status type and `reconciliation_bucket` (e.g. `ATTENDED_NO_BILLING`). |
 
-### Nota sobre ingreso en vistas por especialidad / proveedor
+### Revenue note on specialty / provider views
 
-`revenue_facturado_mes` se calcula con **`strftime('%Y-%m', billing_date)`** y especialidad/proveedor desde la cita. El join con los KPIs operativos (basados en **`appointment_date`**) usa el **mismo etiquetado `year_month`**: en la práctica, ingreso y turnos quedan alineados cuando facturación y turno caen en el mismo mes calendario; si una línea se factura en un mes distinto al del turno, el efecto queda repartido entre meses de **billing** (comportamiento esperado para ingreso facturado).
+`revenue_facturado_mes` uses **`strftime('%Y-%m', billing_date)`** with specialty/provider from the appointment. The join with operational KPIs (based on **`appointment_date`**) uses the same **`year_month` labeling**: in practice revenue and appointments align when billing and appointment fall in the same calendar month; if a line bills in a different month than the visit, effects split across **billing** months (expected for billed revenue).
 
-## Consultas de ejemplo
+## Sample queries
 
-En [`samples/`](samples/):
+In [`samples/`](samples/):
 
-| Archivo | Tema |
-|---------|------|
-| `01_no_show_by_specialty.sql` | No-show por especialidad |
-| `02_cancellation_by_channel.sql` | Cancelación por canal |
-| `03_attended_by_month.sql` | Citas atendidas por mes |
-| `04_billing_by_month.sql` | Facturación por mes (`billing_date`) |
-| `05_reconciliation_attendance_vs_billing.sql` | Conciliación vía `vw_revenue_bridge` |
+| File | Topic |
+|------|--------|
+| `01_no_show_by_specialty.sql` | No-show by specialty |
+| `02_cancellation_by_channel.sql` | Cancellation by channel |
+| `03_attended_by_month.sql` | Attended appointments by month |
+| `04_billing_by_month.sql` | Billing by month (`billing_date`) |
+| `05_reconciliation_attendance_vs_billing.sql` | Reconciliation via `vw_revenue_bridge` |
 
-Ejecutar con la CLI de SQLite (si está instalada):
+Run with the SQLite CLI if installed:
 
 ```bash
 sqlite3 data/processed/paradigm_mart.db < sql/samples/01_no_show_by_specialty.sql
 ```
 
-O desde cualquier cliente SQL apuntando al archivo `.db`.
+Or use any SQL client pointed at the `.db` file.
 
-## Limitaciones de esta fase
+## Limitations of this phase
 
-- Sin **stored procedures** ni jobs: la “carga” es el script Python.
-- **Ingreso cobrado** real no modelado (solo estados de línea; `PAID` es proxy según diccionario).
-- **Ocupación proxy** no materializada en vista aún (pendiente regla de capacidad por proveedor/día en SQL o BI).
-- Vistas **no** sustituyen el diccionario de métricas: siempre validar definiciones en [`docs/metric_definitions.md`](../docs/metric_definitions.md).
+- No stored procedures or jobs: **load** is the Python script.
+- **Cash collected** not modeled as real finance (line statuses only; `PAID` is a proxy per dictionary).
+- **Occupancy proxy** not materialized in a view yet (capacity rule per provider/day in SQL or BI pending).
+- Views **do not** replace the metrics dictionary: always validate definitions in [`docs/metrics.md`](../docs/metrics.md).

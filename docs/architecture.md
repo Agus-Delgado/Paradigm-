@@ -1,58 +1,58 @@
-# Paradigm v2 — Arquitectura
+# Paradigm — Architecture
 
-## Visión general
+## Overview
 
-Flujo técnico del proyecto:
+Technical flow:
 
 ```text
-data/synthetic  →  [Python: build mart + calidad]  →  SQL mart (DDL + vistas)
-                                                      →  Power BI (ejecutivo)
-                                                      →  Tableau (analítico)
-                                                      →  ML no-show (priorización, mismo mart)
+data/synthetic  →  [Python: build mart + quality]  →  SQL mart (DDL + views)
+                                                      →  Power BI (executive)
+                                                      →  Tableau (diagnostic)
+                                                      →  ML no-show (prioritization, same mart)
 ```
 
-Existen **documentación**, **datos sintéticos** en `data/synthetic/` y una **capa SQL local** en SQLite (`data/processed/paradigm_mart.db`, generada con `scripts/build_sqlite_mart.py`, no versionada). El DDL y las vistas viven en `sql/ddl` y `sql/views`.
+The repository ships **documentation**, **synthetic CSVs** under `data/synthetic/`, and a **local SQLite** mart at `data/processed/paradigm_mart.db` (built by `scripts/build_sqlite_mart.py`; not versioned). DDL and views live in `sql/ddl` and `sql/views`.
 
-## Arquitectura analítica (conceptual)
+## Conceptual analytics architecture
 
-Además del flujo técnico, Paradigm se organiza como cadena de valor analítica:
+Beyond the technical pipeline, Paradigm follows an analytic value chain:
 
-1. **Datos** sintéticos gobernados  
-2. **Estructura / mart** dimensional y vistas KPI  
-3. **Calidad** y trazabilidad hacia consumo  
-4. **Monitoreo ejecutivo** (pocas señales, periodo)  
-5. **Análisis diagnóstico** (cortes, causa, exploración)  
-6. **Scoring predictivo** (riesgo de no-show en el punto de decisión documentado)  
-7. **Interpretación** (importancias, limitaciones, lectura en lenguaje operativo)  
-8. **Decisión** operativa (priorización, revisión de reglas; el repo no automatiza acciones)
+1. **Governed synthetic data**
+2. **Dimensional mart** and KPI-oriented SQL views
+3. **Quality** and traceability toward consumption
+4. **Executive monitoring** (few signals, period focus)
+5. **Diagnostic analysis** (cuts, drivers, exploration)
+6. **Predictive scoring** (no-show risk at the documented decision point)
+7. **Interpretation** (feature importances, limits, operational language)
+8. **Operational decision** (prioritization, policy review—the repo does **not** automate actions)
 
-Así se conectan **datos** e **inteligencia operativa aplicada** sin confundir el tablero histórico con la priorización ni el riesgo.
+This keeps **historical dashboards**, **prioritization**, and **risk** conceptually separate.
 
-## Dos lentes sobre la misma operación
+## Two lenses on the same operation
 
-| Lente | Herramienta documentada | Función |
-|--------|-------------------------|---------|
-| **Vista ejecutiva / monitoreo** | Power BI (`bi/powerbi/`) | KPIs del periodo, tendencia, lectura rápida para dirección: *qué pasa* |
-| **Vista analítica / diagnóstico** | Tableau (`bi/tableau/`) | Cortes, exploración y lectura de causa: *dónde profundizar* |
+| Lens | Documented tool | Role |
+|------|-----------------|------|
+| **Executive / monitoring** | Power BI (`bi/powerbi/`) | Period KPIs, trend, fast read for leadership: *what happened* |
+| **Diagnostic / exploration** | Tableau (`bi/tableau/`) | Cuts, drivers, cause paths: *where to dig* |
 
-Ambas consumen la **misma verdad estructurada** (mart + exportes CSV). No es duplicación arbitraria de herramientas: son **roles distintos** frente a la misma operación.
+Both consume the **same structured truth** (mart + CSV exports). The duplication is **role-based**, not arbitrary tooling overlap.
 
-## Diagrama conceptual (flujo analítico)
+## Conceptual analytic flow
 
 ```mermaid
 flowchart LR
-  subgraph entrada ["Datos y estructura"]
+  subgraph entrada ["Data and structure"]
     Syn[data_synthetic]
     Mart[(SQLite_mart)]
-    Qual[Calidad_y_KPIs]
+    Qual[Quality_and_KPIs]
   end
-  subgraph analisis ["Análisis y predicción"]
-    Diag[Analisis_diagnostico]
-    Score[Scoring_predictivo]
-    Expl[Explicacion]
+  subgraph analisis ["Analysis and prediction"]
+    Diag[Diagnostic_analysis]
+    Score[Predictive_scoring]
+    Expl[Interpretation]
   end
-  subgraph usoSalida ["Uso"]
-    Dec[Decision_operativa]
+  subgraph usoSalida ["Use"]
+    Dec[Operational_decision]
   end
   Syn --> Mart
   Mart --> Qual
@@ -62,63 +62,63 @@ flowchart LR
   Expl --> Dec
 ```
 
-- **Calidad_y_KPIs:** validaciones Python + vistas SQL alineadas a definiciones.  
-- **Analisis_diagnostico:** principalmente Tableau + vistas para cortes; complementa al monitoreo Power BI.  
-- **Scoring_predictivo:** modelo de no-show (`ml/`).  
-- **Explicacion:** importancias y narrativa en `ml/README.md` y métricas en `metrics.json`.  
-- **Decision_operativa:** fuera del repo; el diseño habilita *priorizar* y *revisar*, no ejecuta campañas.
+- **Quality_and_KPIs:** Python validations + SQL views aligned to [`metrics.md`](metrics.md).
+- **Diagnostic_analysis:** mainly Tableau + SQL views for segmentation; complements Power BI monitoring.
+- **Predictive_scoring:** no-show experiment (`ml/`).
+- **Interpretation:** narrative in [`ml/README.md`](../ml/README.md) and `ml/experiments/metrics.json`.
+- **Operational_decision:** outside the repo; the design supports prioritization and review, not automated campaigns.
 
-## Casos de decisión
+## Decision-oriented design
 
-El diseño de Paradigm **habilita** lecturas orientadas a decisión (políticas y automatización quedan fuera del código). Las **preguntas troncales** (T1–T6), la **matriz** pregunta → KPI → SQL → BI → posible acción, los **casos concretos** (UC1–UC5) y la **plantilla de explicabilidad** del modelo de no-show están en [`analytical_questions.md`](analytical_questions.md).
+Paradigm **enables** decision-oriented reads (policy and automation stay out of code). Trunk questions T1–T6, the matrix mapping question → KPI → SQL → BI → action, concrete use cases UC1–UC5, and the lightweight ML explainability checklist live in [`analytical_questions.md`](analytical_questions.md).
 
-En síntesis: **monitoreo ejecutivo** (Power BI) para *qué pasa* en el periodo; **diagnóstico por cortes** (Tableau, vistas SQL) para *dónde profundizar*; **riesgo de no-show** (`ml/`) como apoyo a **priorización**, no sustituto del criterio humano.
+In short: **Power BI** for *what happened* in the period; **Tableau + SQL** for *where to investigate*; **`ml/`** for **prioritization support**, not a substitute for human judgment.
 
-## Modelo dimensional (resumen)
+## Dimensional model (summary)
 
-- **Hechos:** `fact_appointment` (grano: una cita), `fact_billing_line` (grano: una línea de cargo).
-- **Calendario:** `dim_date` conformada; **role-playing** en hechos mediante columnas `appointment_date`, `booking_date`, `cancellation_date`, y en facturación `billing_date`.
-- **Dimensiones:** paciente, proveedor, especialidad (servicio reservado), cobertura, estado de cita, canal de reserva, estado de facturación; motivo de cancelación (opcional, acotado en MVP).
+- **Facts:** `fact_appointment` (grain: one appointment), `fact_billing_line` (grain: one billing line).
+- **Calendar:** conformed `dim_date`; **role-playing** via `appointment_date`, `booking_date`, `cancellation_date` on facts, and `billing_date` on billing.
+- **Dimensions:** patient, provider, specialty (booked service), coverage, appointment status, booking channel, billing status; cancellation reason (optional, MVP-scoped).
 
-La especialidad **operativa** del turno vive en **fact_appointment**; `dim_provider` puede incluir **especialidad principal** como atributo descriptivo.
+Operational specialty for the visit lives on **`fact_appointment`**; `dim_provider` may carry **primary specialty** as a descriptive attribute.
 
-## Archivos de datos sintéticos (MVP)
+## Synthetic data files (MVP)
 
-| Archivo | Rol |
-|---------|-----|
-| `dim_date.csv` | Calendario |
-| `dim_specialty.csv` | Especialidades |
-| `dim_coverage.csv` | Coberturas |
-| `dim_appointment_status.csv` | Estados de cita |
-| `dim_booking_channel.csv` | Canales de reserva |
-| `dim_billing_status.csv` | Estados de línea de facturación |
-| `dim_cancellation_reason.csv` | Motivos (solo canceladas) |
-| `dim_patient.csv` | Pacientes |
-| `dim_provider.csv` | Profesionales |
-| `fact_appointment.csv` | Citas |
-| `fact_billing_line.csv` | Líneas de cargo |
+| File | Role |
+|------|------|
+| `dim_date.csv` | Calendar |
+| `dim_specialty.csv` | Specialties |
+| `dim_coverage.csv` | Coverage / payer labels |
+| `dim_appointment_status.csv` | Appointment statuses |
+| `dim_booking_channel.csv` | Booking channels |
+| `dim_billing_status.csv` | Billing line statuses |
+| `dim_cancellation_reason.csv` | Reasons (cancelled only) |
+| `dim_patient.csv` | Patients |
+| `dim_provider.csv` | Providers |
+| `fact_appointment.csv` | Appointments |
+| `fact_billing_line.csv` | Billing lines |
 
-Los detalles de columnas están en [`data_dictionary.md`](data_dictionary.md).
+Column-level detail: [`data_dictionary.md`](data_dictionary.md).
 
-## Estado actual (implementación)
+## Current implementation
 
-- **SQL:** SQLite (ver [`sql/README.md`](../sql/README.md)); vistas KPI en `sql/views/`.
-- **Python:** paquete [`python/src/paradigm/`](../python/README.md) — **calidad** (`scripts/run_data_quality.py` → `reports/quality_report.md`), exports BI, **ML** (`scripts/train_no_show.py` → `ml/experiments/`).
-- **BI:** CSV desde el mart (`export_powerbi_source.py`, `export_tableau_source.py`); diseños en [`bi/powerbi/README.md`](../bi/powerbi/README.md) y [`bi/tableau/README.md`](../bi/tableau/README.md). Conviene correr calidad después de `build_sqlite_mart.py`.
+- **SQL:** SQLite (see [`sql/README.md`](../sql/README.md)); KPI views in `sql/views/`.
+- **Python:** package [`python/src/paradigm/`](../python/README.md) — **quality** (`scripts/run_data_quality.py` → `reports/quality_report.md`), BI exports, **ML** (`scripts/train_no_show.py` → `ml/experiments/`).
+- **BI:** CSV from the mart (`export_powerbi_source.py`, `export_tableau_source.py`); designs in [`bi/powerbi/README.md`](../bi/powerbi/README.md) and [`bi/tableau/README.md`](../bi/tableau/README.md). Run quality after `build_sqlite_mart.py`.
 
-## Diagrama de despliegue técnico (referencia)
+## Technical deployment diagram
 
 ```mermaid
 flowchart LR
-  subgraph sources [Fuentes MVP]
+  subgraph sources [MVP sources]
     Syn[data/synthetic CSVs]
   end
-  subgraph mart [SQL local]
+  subgraph mart [Local SQL]
     SQL[(SQLite paradigm_mart.db)]
   end
-  subgraph consumption [Consumo]
-    PBI[Power BI ejecutivo]
-    Tab[Tableau analítico]
+  subgraph consumption [Consumption]
+    PBI[Power BI executive]
+    Tab[Tableau diagnostic]
     ML[ML no-show]
   end
   Syn --> SQL
@@ -126,3 +126,13 @@ flowchart LR
   SQL --> Tab
   SQL --> ML
 ```
+
+## Lineage summary
+
+| Stage | Artifact | Role |
+|-------|----------|------|
+| Source | `data/synthetic/*.csv` | Regenerate with `scripts/generate_paradigm_v2_synthetic.py` |
+| Mart | `data/processed/paradigm_mart.db` | DDL, load, views — single analytic truth |
+| Quality | `reports/quality_report.md` | Checks on loaded mart |
+| BI exports | `bi/powerbi/source_csv/`, `bi/tableau/source_csv/` | Tool-agnostic consumption |
+| ML | `ml/experiments/metrics.json`, `.joblib` (ignored) | Same mart as BI |

@@ -22,4 +22,4 @@ The default demo CSV path is `legacy/data/sample/medical_clinic/medical_clinic_f
 
 ## Note on language
 
-Legacy UI strings and some comments may remain in Spanish; the **current** project documentation (root `README.md`, `docs/`, etc.) is being aligned to English in later phases.
+Legacy UI strings and some comments may remain in Spanish; the **current** project documentation (root `README.md`, `docs/`, and folder READMEs outside `legacy/`) is **English**.

@@ -1,16 +1,16 @@
-# Assets — capturas de portfolio
+# Assets — portfolio images
 
-Carpeta para **imágenes** que acompañen el README o la documentación (principalmente **Power BI** y **Tableau**). Las rutas completas respecto de la raíz del repo son `assets/bi/<archivo>`.
+Folder for **images** supporting the README or documentation (mainly **Power BI** and **Tableau**). Paths from the repo root are `assets/bi/<file>`.
 
-**Convención compartida con el README y** [`docs/portfolio_evidence.md`](../docs/portfolio_evidence.md)**:** el ejemplo ejecutivo que ya aparece en la landing puede vivir en `public/img/Dashboard_ejecutivo.png`; las capturas opcionales bajo `assets/bi/` usan los nombres de la tabla siguiente para unificar nombres en portfolio.
+**Convention shared with the root README and** [`docs/portfolio.md`](../docs/portfolio.md)**:** the executive example shown on the landing page may live at `public/img/Dashboard_ejecutivo.png`; optional captures under `assets/bi/` use the names in the table below for consistent portfolio naming.
 
-## Archivos sugeridos (añadirlos al publicar o antes)
+## Suggested files (add before publish or when ready)
 
-| Ruta desde la raíz del repo | Uso |
-|-------------------------------|-----|
-| `assets/bi/powerbi_executive.png` | Vista del tablero ejecutivo (una página); equivalente temático a la imagen de `public/img/` si querés centralizar capturas aquí |
-| `assets/bi/tableau_analytics.png` | Vista analítica representativa (Tableau) |
+| Path from repo root | Purpose |
+|----------------------|---------|
+| `assets/bi/powerbi_executive.png` | Executive dashboard (one page); same intent as `public/img/` if you centralize screenshots here |
+| `assets/bi/tableau_analytics.png` | Representative Tableau diagnostic view |
 
-Los nombres deben coincidir con [`docs/portfolio_evidence.md`](../docs/portfolio_evidence.md) y con la tabla **Dónde encontrar evidencia** del [`README.md`](../README.md) raíz.
+Names should match [`docs/portfolio.md`](../docs/portfolio.md) and the Dashboard evidence section of the root [`README.md`](../README.md).
 
-Hasta que existan capturas reales en `assets/bi/`, no hace falta commitear placeholders en blanco: basta con esta nota y el enlace desde el README raíz.
+Until real captures exist in `assets/bi/`, you do not need blank placeholders: this note plus the README link is enough.
