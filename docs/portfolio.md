@@ -98,6 +98,8 @@ flowchart LR
 
 ### 60–90 seconds
 
+A polished spoken script lives under [Portfolio positioning copy](#portfolio-positioning-copy) (60–90 second demo pitch). The bullets below are a quick outline.
+
 1. **Problem** — Outpatient friction (no-shows, cancels, billing misalignment); metrics must be governed.
 2. **What you built** — Synthetic dimensional data → SQLite mart → quality → BI exports (two lenses) → scoped ML experiment.
 3. **Proof** — One architecture sentence or diagram reference; one KPI definition cite [`metrics.md`](metrics.md); executive screenshot or README.
@@ -143,16 +145,92 @@ Cover: dimensional model and SQL as KPI contract; quality validation and regener
 
 ---
 
-## Draft external copy (placeholders — refine for your voice)
+## Portfolio positioning copy
 
-Use these as **starting points**, not final marketing.
+Concise, international-facing blocks for GitHub, LinkedIn, CV, demos, and recruiter pages. **All figures are synthetic**—do not imply real operational impact. The ML slice is a **methodology-first prioritization experiment**, not a production predictor.
 
-| Channel | Draft placeholder |
-|---------|-------------------|
-| **GitHub repo description** | Synthetic outpatient analytics portfolio: SQLite mart, governed KPIs, Power BI + Tableau exports, reproducible Python pipeline, scoped ML prioritization experiment. |
-| **LinkedIn project blurb** | End-to-end demo of dimensional modeling and metric governance for outpatient operations: reproducible mart, BI-ready exports, quality checks, and an honest ML prioritization layer on synthetic data—focused on methodology, not fake clinical claims. |
-| **CV bullet** | Built a reproducible synthetic healthcare analytics portfolio (SQLite mart, governed KPIs, dual BI lens documentation, Python QC pipeline, scoped no-show prioritization experiment with temporal validation and leakage controls). |
-| **Short demo pitch** | “Paradigm is a portfolio case study: one governed mart feeding executive and diagnostic BI plus a small ML experiment framed for prioritization—not production prediction—all on synthetic data to show how I define metrics, validate them, and document limits.” |
+### GitHub repository description (pick one)
+
+GitHub “About” descriptions are short; each option below is **90–140 characters** (including spaces).
+
+1. *(137 chars)* — `Synthetic healthcare analytics: governed KPIs, SQLite mart, Python QC, Power BI and Tableau exports, scoped ML prioritization experiment.`
+
+2. *(140 chars)* — `Synthetic outpatient portfolio: dimensional SQLite mart, governed KPIs, BI-ready CSVs, methodology-first ML prioritization (synthetic data).`
+
+3. *(139 chars)* — `Analytics engineering demo: synthetic data to SQLite mart, governed KPIs, dual BI exports, honest prioritization ML layer (not production).`
+
+### Suggested GitHub topics / tags
+
+Paste into the repository **Topics** field (mix and match as fits):
+
+`analytics-engineering` · `data-portfolio` · `healthcare-analytics` · `synthetic-data` · `business-intelligence` · `power-bi` · `tableau` · `sqlite` · `python` · `scikit-learn` · `data-quality` · `kpi-governance` · `dimensional-modeling` · `sql` · `data-modeling` · `machine-learning` · `operational-analytics`
+
+### LinkedIn project description
+
+#### Short (4–6 lines)
+
+Outpatient teams stall when KPI **definitions**, **grain**, and **time anchors** drift—everyone sees “the dashboard,” but not the same numerator or denominator.
+
+**Paradigm** is a reproducible **synthetic** case study: dimensional-style CSVs load into a **SQLite mart** with governed metrics in Markdown and KPI-oriented **SQL** views.
+
+**Python** covers generation-to-mart automation, **data-quality** checks, and reconciliation-style **KPI validation** against the mart.
+
+The repo documents **Power BI** (executive monitoring) and **Tableau** (diagnostic exploration) from **shared CSV exports**—two roles, one analytical truth.
+
+A compact **no-show prioritization experiment** records booking-time targets, **leakage** rules, and a **temporal** evaluation—not a ship-ready predictor.
+
+**Synthetic only:** illustrative numbers; useful signal for process and documentation, not for operational ROI claims.
+
+#### Longer (8–10 lines)
+
+Clinic operations leak efficiency through **no-shows**, **late cancellations**, and gaps between **billing** and **attendance**—yet dashboards only help when KPIs share explicit definitions and **time anchoring**.
+
+Without that discipline, teams debate the visualization instead of the operation—and comparisons across specialties or channels become unreliable.
+
+**Paradigm** is an **analytics engineering** portfolio slice built on **fully synthetic** data: outpatient-style dimensions and facts, loaded into **SQLite**, with KPI-oriented **SQL** views backed by a Markdown dictionary.
+
+**Python** automates generation → mart → **data-quality** reporting → optional ML training, plus scripted reconciliation so executive KPI totals match what SQL computes.
+
+The repo documents **CSV exports** and build guidance for **Power BI** (executive lens) and **Tableau** (diagnostic lens), emphasizing **one mart**, **two analytical roles**.
+
+On **ML**, the scope stays narrow: a booking-time **prioritization experiment** with **temporal** splitting and **leakage** prevention—framed as reproducible methodology.
+
+Synthetic metrics may look weak; that is **stated openly**, because the portfolio point is **evaluation design**, not selling a production model.
+
+**No** real patients, **no** production deployment claim—**reproducible scripts** and **clear documentation** are the deliverable.
+
+### CV / resume bullets (pick an angle)
+
+**Data Analyst**
+
+- Designed a **synthetic outpatient analytics portfolio**: SQLite mart with KPI-oriented SQL views, documented metric definitions, and reproducible Python validation against the mart (`scripts/validate_executive_kpis.py`, quality reports).
+- Produced **BI-ready CSV exports** and build notes for Power BI and Tableau from a single governed source; analytical question traceability (T1–T6) documented in Markdown.
+
+**BI Analyst**
+
+- Built **dual-lens BI documentation** (executive vs diagnostic) over one SQLite mart: DAX/canvas guidance for Power BI, Tableau workbook scope and exports—aligned to a shared [`metrics.md`](metrics.md) dictionary.
+- Automated **mart rebuild + validation** so dashboard KPIs reconcile to SQL views; synthetic data clearly labeled—no production deployment claims.
+
+**Analytics Engineer / Data & AI**
+
+- Implemented an end-to-end **Python pipeline** (generation → mart → QC → exports → optional ML train) with governed KPIs, regenerable `reports/quality_report.md`, and honest scoping of a **no-show prioritization experiment** (temporal split, leakage controls—not production prediction).
+- Documented **dimensional modeling**, SQL views, and methodology-first ML framing in-repo for reproducible review; assets and binaries excluded from Git by design.
+
+### 60–90 second demo pitch (polished script)
+
+“**Paradigm** is a synthetic **healthcare analytics** portfolio piece—it shows how I structure outpatient-style operations as **governed metrics** and a **single analytic mart**, not how I ‘fixed’ a real clinic.
+
+The **problem** is familiar: **no-shows**, cancellations, and **billing misalignment** hurt utilization and revenue—and if KPIs aren’t defined the same way everywhere, executives and analysts waste time arguing about the chart instead of the operation.
+
+What I **built**: fully **synthetic** dimensional data, loaded into a **SQLite** mart with **SQL views**, **Python** data-quality checks, and script-based **KPI validation**. From that one source I document **CSV exports** for **Power BI**—think one-screen executive monitoring—and **Tableau** for diagnostic cuts and drivers. There’s a snapshot in the repo so you can see the executive story without installing anything.
+
+On **ML**, I’m deliberate: it’s a **scoped prioritization experiment** on the same mart—**booking-time** target, **no leakage**, **temporal split**, evaluation written down. On synthetic data the scores are **weak**; I **say that openly**. The point is **methodology** and honest disclosure, not selling a production **predictor**.
+
+If you take one thing away about **me**: I care about **definitions, reproducibility, and defensible communication**—and I separate portfolio demonstration from production claims.”
+
+### Recruiter-facing summary (3–4 sentences)
+
+**Paradigm** is a reproducible **synthetic** outpatient analytics portfolio: a **dimensional** source, **SQLite** mart with KPI-oriented **SQL**, **Python** validation and quality reporting, and documented **Power BI** and **Tableau** consumption paths. The repository emphasizes **metric governance**, traceability, and **analytics engineering** discipline rather than vanity charts. A small **ML** section documents a **prioritization experiment**—target definition, leakage controls, temporal evaluation—with **no claim** of production-ready prediction or clinical impact. All numbers are illustrative; the deliverable is **clear documentation** and **repeatable scripts**.
 
 ---
 

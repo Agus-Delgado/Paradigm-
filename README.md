@@ -229,5 +229,7 @@ This project is licensed under the [MIT License](LICENSE). Synthetic datasets ar
 
 ## Contact
 
+Portfolio positioning and demo scripts are available in [`docs/portfolio.md`](docs/portfolio.md).
+
 - GitHub: [Agus-Delgado](https://github.com/Agus-Delgado)
 - LinkedIn: [Agustín Delgado](https://www.linkedin.com/in/agustin-delgado-data98615190/)
