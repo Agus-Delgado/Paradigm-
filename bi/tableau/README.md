@@ -6,7 +6,7 @@
 
 **Sources of truth:** [`docs/metrics.md`](../../docs/metrics.md), views in [`sql/views/`](../../sql/views/), mart at `data/processed/paradigm_mart.db` after [`scripts/build_sqlite_mart.py`](../../scripts/build_sqlite_mart.py), quality via [`scripts/run_data_quality.py`](../../scripts/run_data_quality.py).
 
-**Out of scope for this workbook:** ML models inside Tableau (scoring lives in [`ml/README.md`](../../ml/README.md)); occupancy proxy as a numeric KPI; cash collected as strict finance; **any metric not listed** in the dictionary.
+**Out of scope for this workbook:** native ML model building inside Tableau; the **documented prioritization experiment** and training entrypoints live in [`ml/README.md`](../../ml/README.md). Also: occupancy proxy as a numeric KPI; cash collected as strict finance; **any metric not listed** in the dictionary.
 
 **Trunk questions (T1–T6):** [`docs/analytical_questions.md`](../../docs/analytical_questions.md).
 

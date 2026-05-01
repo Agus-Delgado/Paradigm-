@@ -10,7 +10,7 @@ Before a demo or interview:
 
 - [ ] Pipeline run at least through mart + quality: `build_sqlite_mart.py`, `run_data_quality.py` (and BI exports if opening Desktop).
 - [ ] [`reports/quality_report.md`](../reports/quality_report.md) present or regenerated.
-- [ ] [`ml/experiments/metrics.json`](../ml/experiments/metrics.json) matches last training if discussing ML.
+- [ ] [`ml/experiments/metrics.json`](../ml/experiments/metrics.json) matches last training if you open it (**reproducibility / evaluation plumbing**—not a synthetic performance trophy).
 - [ ] Know which image you use for the executive view: canonical [`assets/dashboards/powerbi_executive.png`](../assets/dashboards/powerbi_executive.png).
 - [ ] Know the **1 → 2 → 3** reveal order below.
 
@@ -32,7 +32,7 @@ In demo, show **one** executive view first (order below).
 
 1. **Executive (Power BI)** — “what happened in the period” in a few KPIs (`assets/dashboards/powerbi_executive.png`).
 2. **Diagnostic (Tableau)** — cuts and drivers; second lens (`tableau_analytics.png` when it exists).
-3. **Technical backup** — [`reports/quality_report.md`](../reports/quality_report.md) and/or [`ml/experiments/metrics.json`](../ml/experiments/metrics.json) for pipeline and ML credibility—not the opening screen.
+3. **Technical backup** — [`reports/quality_report.md`](../reports/quality_report.md); if ML comes up, lead with [`ml/README.md`](../ml/README.md) (framing, leakage, split)—use `metrics.json` only to show **how** evaluation is wired, not to headline AUC.
 
 If `assets/bi/` has no Tableau capture yet, the README still shows the executive image from `assets/dashboards/`; describe Tableau using [`bi/tableau/README.md`](../bi/tableau/README.md) without inventing a screenshot.
 
@@ -60,6 +60,18 @@ For **Tableau** only (executive Power BI image is canonical under `assets/dashbo
 ## Walkthrough structure
 
 From general to specific: landing README → architecture → (optional) [`analytical_questions.md`](analytical_questions.md) if traceability is requested → BI layers → ML → regenerable evidence.
+
+## Presenting the ML layer (portfolio-safe)
+
+When you reach ML in a demo, **methodology is the star**, not ROC-AUC.
+
+- **Problem framing** — Booking-time target, eligible appointment universe, explicit “what this is not” (e.g. cancellation is a different label).
+- **Leakage discipline** — Only features knowable at the decision point; history strictly before the current appointment.
+- **Temporal split** — By appointment date (not random rows), so the read is closer to deployment reality than a shuffled split.
+- **Why weak metrics are disclosed** — Synthetic ROC-AUC near or below 0.5 is **expected to be possible**; hiding it would mislead. It reflects weak generator signal and portfolio honesty, not a secret bug.
+- **How it improves with real data** — Real histories, richer segments, monitoring, calibration, and organizational validation—none of which synthetic data can substitute for.
+
+Optional glance at [`ml/experiments/metrics.json`](../ml/experiments/metrics.json): **split definition**, ranking-style fields, importances—**not** “winning” scores on synthetic data.
 
 ```mermaid
 flowchart LR
@@ -89,7 +101,7 @@ flowchart LR
 1. **Problem** — Outpatient friction (no-shows, cancels, billing misalignment); metrics must be governed.
 2. **What you built** — Synthetic dimensional data → SQLite mart → quality → BI exports (two lenses) → scoped ML experiment.
 3. **Proof** — One architecture sentence or diagram reference; one KPI definition cite [`metrics.md`](metrics.md); executive screenshot or README.
-4. **ML** — Prioritization framing only; point to [`ml/README.md`](../ml/README.md), not raw AUC as success.
+4. **ML** — **Methodology story** (target, leakage, temporal split, honest metrics); [`ml/README.md`](../ml/README.md) first—never treat synthetic AUC as the headline win.
 5. **Close** — Synthetic data; no production deployment.
 
 ### ~5 minutes
@@ -106,7 +118,7 @@ Cover steps **1–2**, **4**, **7**, **8** from the detailed table below (proble
 | 4 | Period status at a glance (executive). | [`assets/dashboards/powerbi_executive.png`](../assets/dashboards/powerbi_executive.png) | 1–2 min |
 | 5 | Diagnostic is a different role: cuts and drivers. | Tableau capture or [`bi/tableau/README.md`](../bi/tableau/README.md) | 1–2 min |
 | 6 | Mart quality is verifiable. | [`reports/quality_report.md`](../reports/quality_report.md) excerpt | 1 min |
-| 7 | ML ranks; it does not replace business or descriptive BI. | [`ml/README.md`](../ml/README.md) + `metrics.json` (split, metrics, importances—not “winning” score) | 2 min |
+| 7 | ML is a **documented prioritization experiment**: same mart as BI; **how** the label and features are defined matters more than synthetic AUC. | [`ml/README.md`](../ml/README.md) (lead); optional `metrics.json` only for split / plumbing / importances—**disclose** weak synthetic performance | 2 min |
 | 8 | Close with honesty: synthetic, not production. | Same themes as README Limitations | 1 min |
 
 **Shortcut:** if asked “which business question maps where?” — open [`analytical_questions.md`](analytical_questions.md) (T1–T6 or matrix).
@@ -118,7 +130,7 @@ Cover steps **1–2**, **4**, **7**, **8** from the detailed table below (proble
 
 ### Technical defense (~8–10 min)
 
-Cover: dimensional model and SQL as KPI contract; quality validation and regenerable report; two BI tools / same source / different roles; ML target, allowed features vs leakage, temporal split, ranking metrics; limitations (synthetic, no production ML service, finance MVP bounds).
+Cover: dimensional model and SQL as KPI contract; quality validation and regenerable report; two BI tools / same source / different roles; ML **framing** (target, allowed features vs leakage, temporal split, evaluation)—and **why** weak synthetic metrics are stated openly; limitations (synthetic, no production ML service, finance MVP bounds).
 
 ### Implementation evidence (if asked)
 
@@ -127,7 +139,7 @@ Cover: dimensional model and SQL as KPI contract; quality validation and regener
 3. [`reports/quality_report.md`](../reports/quality_report.md) fragment.
 4. Power BI: capture or local `.pbix`; repo has CSV + DAX + instructions.
 5. Tableau: diagnostic capture.
-6. ML: [`ml/README.md`](../ml/README.md) + `metrics.json`.
+6. ML: [`ml/README.md`](../ml/README.md) (primary); `metrics.json` as artifact-of-process if asked (not as proof of strong predictive performance).
 
 ---
 

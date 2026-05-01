@@ -8,7 +8,7 @@ Technical flow:
 data/synthetic  →  [Python: build mart + quality]  →  SQL mart (DDL + views)
                                                       →  Power BI (executive)
                                                       →  Tableau (diagnostic)
-                                                      →  ML no-show (prioritization, same mart)
+                                                      →  ML prioritization experiment (no-show, same mart)
 ```
 
 The repository ships **documentation**, **synthetic CSVs** under `data/synthetic/`, and a **local SQLite** mart at `data/processed/paradigm_mart.db` (built by `scripts/build_sqlite_mart.py`; not versioned). DDL and views live in `sql/ddl` and `sql/views`.
@@ -22,7 +22,7 @@ Beyond the technical pipeline, Paradigm follows an analytic value chain:
 3. **Quality** and traceability toward consumption
 4. **Executive monitoring** (few signals, period focus)
 5. **Diagnostic analysis** (cuts, drivers, exploration)
-6. **Predictive scoring** (no-show risk at the documented decision point)
+6. **ML prioritization experiment** (no-show ranking at the documented booking-time decision point)
 7. **Interpretation** (feature importances, limits, operational language)
 8. **Operational decision** (prioritization, policy review—the repo does **not** automate actions)
 
@@ -46,9 +46,9 @@ flowchart LR
     Mart[(SQLite_mart)]
     Qual[Quality_and_KPIs]
   end
-  subgraph analisis ["Analysis and prediction"]
+  subgraph analisis ["Analysis and ML experiment"]
     Diag[Diagnostic_analysis]
-    Score[Predictive_scoring]
+    Score[ML_prioritization_experiment]
     Expl[Interpretation]
   end
   subgraph usoSalida ["Use"]
@@ -64,7 +64,7 @@ flowchart LR
 
 - **Quality_and_KPIs:** Python validations + SQL views aligned to [`metrics.md`](metrics.md).
 - **Diagnostic_analysis:** mainly Tableau + SQL views for segmentation; complements Power BI monitoring.
-- **Predictive_scoring:** no-show experiment (`ml/`).
+- **ML_prioritization_experiment:** no-show ranking experiment (`ml/`); methodology-focused, not production prediction.
 - **Interpretation:** narrative in [`ml/README.md`](../ml/README.md) and `ml/experiments/metrics.json`.
 - **Operational_decision:** outside the repo; the design supports prioritization and review, not automated campaigns.
 
@@ -119,7 +119,7 @@ flowchart LR
   subgraph consumption [Consumption]
     PBI[Power BI executive]
     Tab[Tableau diagnostic]
-    ML[ML no-show]
+    ML[ML_prioritization_experiment]
   end
   Syn --> SQL
   SQL --> PBI

@@ -1,10 +1,18 @@
 # Machine Learning — Paradigm v2
 
-## Positioning: complementary predictive layer
+## Honest framing
 
-This module is the **predictive layer** of the applied operational analytics project: it estimates **no-show risk** at the documented decision point below. It does not replace descriptive analysis or diagnostic cuts in BI; it is not a production service or a business-disconnected black box. It uses the **same mart** as Tableau and Power BI and is read alongside [`docs/metrics.md`](../docs/metrics.md) and synthetic-data **limitations**.
+This repository contains a **reproducible prioritization experiment** over **synthetic** outpatient-style data. It is **not** a production **no-show prediction** product, clinical decision system, or deployable screening model.
 
-**Status:** **implemented (MVP)** — no-show risk at **appointment** grain, aligned with the metrics dictionary and the SQLite mart.
+- **Observed metrics:** on the current synthetic generator, **ROC-AUC is near or below 0.5** (see `ml/experiments/metrics.json`). That outcome is treated as a **documented limitation** of synthetic signal strength and sample characteristics—not something to hide or cast as a “broken” implementation.
+- **What the portfolio demonstrates:** **methodology**—explicit **target** definition, **leakage** controls, **temporal** train/test split, a **feature** catalog aligned to the mart, **evaluation** logic (ranking-style reads such as top-decile capture), and an **operational framing** (“who might you contact first?”), not leaderboard accuracy.
+- **Real deployment would require:** real historical data with governance, **monitoring** and drift checks, **calibration** and threshold processes fit to the organization, **privacy and security** review, and **clinical/operational validation**—none of which this repo claims to deliver.
+
+## Positioning: methodology-first prioritization experiment
+
+This module adds a **ranking-oriented experiment** on top of the same mart as BI: it produces scores for **prioritization / ordering** (e.g. reminder lists) at the **documented booking-time decision point**. It does **not** replace descriptive analysis or diagnostic BI; it is **not** a production service. It uses the **same mart** as Tableau and Power BI and must be read with [`docs/metrics.md`](../docs/metrics.md) and synthetic-data **limitations**.
+
+**Status:** **implemented (MVP)** — appointment-grain labels aligned to the metrics dictionary and SQLite mart; outputs are **evidence of process**, not a validated predictor.
 
 **Sources of truth:** [`docs/metrics.md`](../docs/metrics.md), mart [`data/processed/paradigm_mart.db`](../data/processed/) via [`scripts/build_sqlite_mart.py`](../scripts/build_sqlite_mart.py).
 
@@ -142,4 +150,4 @@ Notebooks are optional; flow is script + importable package.
 
 ## 11. Possible next steps (not implemented)
 
-Illustrative evolution only—not scope commitments: explicit **cancellation** modeling, behavior **clustering**, or other techniques aligned to the same mart and business definitions. The MVP centers on **no-show** as the documented predictive case.
+Illustrative evolution only—not scope commitments: explicit **cancellation** modeling, behavior **clustering**, or other techniques aligned to the same mart and business definitions. The MVP centers on **no-show** as the documented **prioritization experiment** case study.

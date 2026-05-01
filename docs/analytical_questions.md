@@ -1,10 +1,10 @@
 # Paradigm — Trunk analytical questions and traceability
 
-This document is the **conceptual backbone** of the analytic framework: **trunk questions** (T1–T6), the **matrix** to KPIs, SQL, BI consumption and illustrative actions, **decision use cases**, a **lightweight explainability checklist** for the predictive layer, and the boundary between documented scope and future technical work.
+This document is the **conceptual backbone** of the analytic framework: **trunk questions** (T1–T6), the **matrix** to KPIs, SQL, BI consumption and illustrative actions, **decision use cases**, a **lightweight explainability checklist** for the **methodology-focused ML prioritization experiment**, and the boundary between documented scope and future technical work.
 
 Repository data are **synthetic**; numeric answers are **illustrative**. Value lies in **definitions, traceability, and defensible narrative**.
 
-**Related docs:** KPI definitions in [`metrics.md`](metrics.md); dimensional layout and flow in [`architecture.md`](architecture.md); business framing in [`problem.md`](problem.md); no-show modeling in [`ml/README.md`](../ml/README.md).
+**Related docs:** KPI definitions in [`metrics.md`](metrics.md); dimensional layout and flow in [`architecture.md`](architecture.md); business framing in [`problem.md`](problem.md); no-show **prioritization experiment** (target, leakage, split, evaluation) in [`ml/README.md`](../ml/README.md).
 
 ---
 

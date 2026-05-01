@@ -19,7 +19,7 @@ Paradigm shows how to:
 - Structure outpatient-style operations as a **dimensional model** with clear grain.
 - Implement a **repeatable pipeline** from CSV sources to a **SQLite mart** with KPI-oriented SQL views.
 - Run **data-quality checks** and **script-based KPI validation** against the same mart used for BI and ML.
-- Consume the mart through **documented BI patterns** (executive vs diagnostic lenses) and a **scoped ML prioritization experiment** framed as methodology, not production prediction.
+- Consume the mart through **documented BI patterns** (executive vs diagnostic lenses) and a **scoped ML prioritization experiment** that demonstrates **decision framing and evaluation discipline**—not automated outreach, not a vetted clinical predictor, and not production deployment.
 
 For the analytical question framework (T1–T6), traceability to SQL/BI, and decision-use cases, see [`analytical_questions.md`](analytical_questions.md).
 

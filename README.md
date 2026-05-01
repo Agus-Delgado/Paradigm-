@@ -140,11 +140,11 @@ The repository ships **CSV exports, DAX snippets, and build notes** under [`bi/p
 
 ---
 
-## ML layer (honest framing)
+## ML layer (methodology-focused)
 
-The ML layer is intentionally scoped as a **reproducible prioritization experiment** over synthetic data. The value is **not** raw model performance, but the **decision framing**: target definition, leakage prevention, temporal split, feature documentation, and operational use case. Current metrics on synthetic data show **ROC-AUC near or below 0.5**, which is documented as a **limitation of the synthetic generator** rather than presented as a production-ready predictive result.
+The ML work is a **scoped prioritization experiment** on synthetic data—a **methodology-focused** slice, **not** a **production-ready predictive result** for real clinics. The emphasis is **how** the problem is framed and evaluated: target definition, leakage prevention, temporal split, documented features, and ranking-style metrics—not headline accuracy. Synthetic-data **ROC-AUC is near or below 0.5**; that is disclosed as a **limitation of the generator and weak signal**, not proof of a deployable model.
 
-Details, feature rules, and evaluation: [`ml/README.md`](ml/README.md).
+Full framing, feature rules, and evaluation: [`ml/README.md`](ml/README.md).
 
 ---
 

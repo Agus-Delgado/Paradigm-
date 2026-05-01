@@ -20,7 +20,7 @@ python scripts/validate_executive_kpis.py
 python scripts/train_no_show.py
 ```
 
-For Power BI: import CSV from `bi/powerbi/source_csv/` (see [`bi/powerbi/README.md`](../bi/powerbi/README.md)). Optional no-show model artifacts in `ml/experiments/` — see [`../ml/README.md`](../ml/README.md).
+For Power BI: import CSV from `bi/powerbi/source_csv/` (see [`bi/powerbi/README.md`](../bi/powerbi/README.md)). Optional ML experiment outputs in `ml/experiments/` — see [`../ml/README.md`](../ml/README.md).
 
 1. **Synthetic** — CSV in `data/synthetic/`.
 2. **Mart** — `data/processed/paradigm_mart.db` (DDL + load + SQL views).

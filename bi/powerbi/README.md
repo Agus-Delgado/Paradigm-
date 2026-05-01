@@ -18,7 +18,7 @@
 | **No-show** and **cancellation** rates aligned to dictionary | **Late cancellation rate** (fine time logic; better in Tableau or a future view) |
 | **Attended appointment** volume | **Cash collected** as real finance (no payment date in MVP) |
 | **Billed revenue** with **`billing_date`** anchor (separate from operations) | Any KPI not listed in [`docs/metrics.md`](../../docs/metrics.md) |
-| **Attendance–billing gap** indicator (count / soft alert) | **ML / scoring** on this canvas (see [`ml/README.md`](../../ml/README.md)) |
+| **Attendance–billing gap** indicator (count / soft alert) | **ML prioritization experiment** (not on this canvas—see [`ml/README.md`](../../ml/README.md)) |
 
 **One PBIX file, one main page (“Executive”)** in MVP; optional second page (“Reference”) only if long legends are needed — prioritize **one screen** readable in 30–60 s.
 
