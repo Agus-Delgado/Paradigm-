@@ -1,6 +1,6 @@
 """
 Genera datos sintéticos reproducibles para la demo de consultorio médico.
-Salida: data/sample/medical_clinic/*.csv
+Salida: legacy/data/sample/medical_clinic/*.csv
 """
 
 from __future__ import annotations
@@ -420,7 +420,7 @@ def build_flat(
 def main() -> None:
     rng = np.random.default_rng(SEED)
     root = Path(__file__).resolve().parent.parent
-    out_dir = root / "data" / "sample" / "medical_clinic"
+    out_dir = root / "legacy" / "data" / "sample" / "medical_clinic"
     out_dir.mkdir(parents=True, exist_ok=True)
 
     patients = build_patients(rng)

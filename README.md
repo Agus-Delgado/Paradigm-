@@ -197,14 +197,15 @@ Todos los identificadores y hechos son **ficticios** y fueron generados para dem
 
 ```
 Paradigm/
-├── app/                      # Legacy v1: Streamlit explorador (ver abajo)
+├── legacy/                   # Paradigm v1 (Streamlit); see legacy/README.md
+│   ├── app/
+│   └── data/sample/medical_clinic/
 ├── assets/                   # Capturas de portfolio (BI); ver assets/README.md
 ├── bi/
 │   ├── powerbi/              # CSV, DAX, instrucciones ejecutivo
 │   └── tableau/              # CSV, README analítico
 ├── data/
-│   ├── synthetic/            # Fuente dimensional v2 (generador en scripts/)
-│   └── sample/               # Legacy: demo plana medical_clinic
+│   └── synthetic/            # Fuente dimensional v2 (generador en scripts/)
 ├── docs/                     # Caso de negocio, arquitectura, métricas, analytical_questions, portfolio_presentation / portfolio_evidence
 ├── ml/                       # README ML, experiments/ (artefactos regenerables)
 ├── public/img/               # Imagen de ejemplo del dashboard (README)
@@ -218,19 +219,20 @@ Paradigm/
 
 ## Paradigm v1 (legacy): Streamlit
 
-La app en [`app/`](app/main.py) sigue siendo un **explorador genérico** de CSV/XLSX con una demo de consultorio en tabla plana ([`data/sample/medical_clinic/`](data/sample/medical_clinic/)). **No es el núcleo de v2:** el hilo principal del portfolio es el mart dimensional, SQL, BI documentado y ML.
+La app en [`legacy/app/`](legacy/app/main.py) sigue siendo un **explorador genérico** de CSV/XLSX con una demo de consultorio en tabla plana ([`legacy/data/sample/medical_clinic/`](legacy/data/sample/medical_clinic/)). **No es el núcleo de v2:** el hilo principal del portfolio es el mart dimensional, SQL, BI documentado y ML.
 
 ```bash
-streamlit run app/main.py
+pip install -r requirements-app.txt
+streamlit run legacy/app/main.py
 ```
 
 ---
 
-## Licencia
+## License
 
-Todos los derechos reservados.
+This project is licensed under the [MIT License](LICENSE).
 
-Este repositorio y su contenido forman parte del proyecto Paradigm. No se autoriza su copia, redistribución, modificación ni uso comercial sin permiso previo y por escrito del autor.
+**Datasets:** All tabular data in this repository is **synthetic** and is provided only for demonstration, portfolio, and reproducibility purposes. It does not represent real patients, providers, or organizations.
 
 ## Contacto
 

@@ -1,4 +1,0 @@
-id,activo,nota,region,codigo
-a1e2b3c4-d5e6-7890-abcd-ef1234567890,true,Texto largo de descripción libre para probar,Norte,100
-b2f3c4d5-e6f7-8901-bcde-f12345678901,false,Otro texto distinto aquí,Sur,101
-c3a4d5e6-f7a8-9012-cdef-123456789012,true,Descripción,Norte,102

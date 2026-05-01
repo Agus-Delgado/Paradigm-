@@ -1,17 +1,17 @@
-# Entornos virtuales
+# Virtual environments
 .venv/
 venv/
 ENV/
 env/
 
-# Bytecode y caché Python
+# Python bytecode and cache
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
 
-# Herramientas de test y tipos
+# Testing and typing tools
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
@@ -27,7 +27,7 @@ htmlcov/
 # Streamlit
 .streamlit/secrets.toml
 
-# Distribución / empaquetado
+# Packaging / distribution
 build/
 dist/
 *.egg-info/
@@ -38,7 +38,7 @@ dist/
 *.log
 logs/
 
-# Entornos y editores
+# Editors and IDEs
 .idea/
 .vscode/
 *.swp
@@ -48,7 +48,7 @@ logs/
 .pydevproject
 .settings/
 
-# Sistema operativo
+# Operating system
 .DS_Store
 Thumbs.db
 Desktop.ini
@@ -57,23 +57,29 @@ ehthumbs.db
 # Windows
 *.stackdump
 
-# Archivos temporales / backup
+# Temporary / backup files
 *.tmp
 *.temp
 *.bak
 *.orig
 
-# Base analítica local (regenerable)
+# Local analytical database (regenerable)
 data/processed/*.db
+data/processed/*.sqlite
 
-# Variables de entorno locales
+# BI desktop binaries (not versioned)
+*.pbix
+*.twbx
+
+# Local environment files
 .env
 .env.local
 .env.*.local
 
-# Artefactos ML locales (regenerables)
+# Local ML artifacts (regenerable)
 ml/experiments/*.joblib
+ml/experiments/*.pkl
 
-# Herramientas opcionales
+# Optional editor projects
 *.sublime-project
 *.sublime-workspace

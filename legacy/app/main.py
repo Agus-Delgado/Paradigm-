@@ -37,8 +37,10 @@ from visualization.charts import (
     chart_nulls_by_column,
 )
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
-DEMO_FLAT_CSV = REPO_ROOT / "data" / "sample" / "medical_clinic" / "medical_clinic_flat.csv"
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+DEMO_FLAT_CSV = (
+    REPO_ROOT / "legacy" / "data" / "sample" / "medical_clinic" / "medical_clinic_flat.csv"
+)
 
 SYNTHETIC_DATA_BANNER = (
     "Este dataset es completamente sintético y fue generado con fines demostrativos. "
@@ -265,7 +267,7 @@ resume nulos y duplicados, perfila cada campo y genera gráficos automáticos. E
 - **Archivo propio:** subí cualquier CSV o Excel (primera hoja) como en un explorador genérico.
 - KPIs globales, indicadores operativos opcionales (si el esquema coincide), filtros, vista previa y gráfico exploratorio.
 
-**Otros ejemplos:** en `data/sample/` hay CSV adicionales para pruebas rápidas.
+**Otros ejemplos:** puedes colocar CSV adicionales en `legacy/data/sample/` para pruebas rápidas.
             """
         )
         return
