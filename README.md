@@ -54,7 +54,7 @@ flowchart LR
   Q[Quality checks]
   V[KPI validation]
   E[BI CSV exports]
-  D[Dashboards in Power BI / Tableau]
+  D["Dashboards: Power BI / Tableau"]
   L[ML prioritization experiment]
   G --> M
   M --> Q
@@ -78,6 +78,18 @@ From the repository root:
 python -m venv .venv
 # Windows: .venv\Scripts\activate   |   Linux/macOS: source .venv/bin/activate
 pip install -r requirements.txt
+```
+
+Run the pipeline in order:
+
+```bash
+python scripts/generate_paradigm_v2_synthetic.py
+python scripts/build_sqlite_mart.py
+python scripts/run_data_quality.py
+python scripts/export_powerbi_source.py
+python scripts/export_tableau_source.py
+python scripts/validate_executive_kpis.py
+python scripts/train_no_show.py
 ```
 
 | Command | Output |
