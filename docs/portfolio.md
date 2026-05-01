@@ -1,6 +1,6 @@
 # Paradigm — Portfolio evidence and presentation
 
-What to show on GitHub or in an interview, aligned with **analytics engineering** positioning (not “charts only”). Optional BI screenshots under `assets/bi/` remain optional until you export them from Desktop; the repo stays coherent without new binary images.
+What to show on GitHub or in an interview, aligned with **analytics engineering** positioning (not “charts only”). The **executive** screenshot lives under **`assets/dashboards/`** (canonical). Optional Tableau captures under `assets/bi/` remain optional until exported; the repo stays coherent without new binary images.
 
 ---
 
@@ -11,31 +11,30 @@ Before a demo or interview:
 - [ ] Pipeline run at least through mart + quality: `build_sqlite_mart.py`, `run_data_quality.py` (and BI exports if opening Desktop).
 - [ ] [`reports/quality_report.md`](../reports/quality_report.md) present or regenerated.
 - [ ] [`ml/experiments/metrics.json`](../ml/experiments/metrics.json) matches last training if discussing ML.
-- [ ] Know which image you use for the executive view: [`public/img/Dashboard_ejecutivo.png`](../public/img/Dashboard_ejecutivo.png) and/or optional `assets/bi/powerbi_executive.png`.
+- [ ] Know which image you use for the executive view: canonical [`assets/dashboards/powerbi_executive.png`](../assets/dashboards/powerbi_executive.png).
 - [ ] Know the **1 → 2 → 3** reveal order below.
 
 ---
 
 ## Dashboard screenshot convention
 
-| Location | Role | Executive Power BI file |
-|----------|------|-------------------------|
-| [`public/img/Dashboard_ejecutivo.png`](../public/img/Dashboard_ejecutivo.png) | **Fixed example** referenced from the root README; keeps the landing page readable. | `Dashboard_ejecutivo.png` |
-| `assets/bi/powerbi_executive.png` ([`assets/README.md`](../assets/README.md)) | **Optional:** same idea with a unified filename if you centralize captures under `assets/bi/`. Add the PNG when ready; the README links the convention to avoid broken paths. |
+| Location | Role |
+|----------|------|
+| [`assets/dashboards/powerbi_executive.png`](../assets/dashboards/powerbi_executive.png) | **Canonical** executive snapshot referenced from the root [`README.md`](../README.md). |
 
-You may copy the same capture to `assets/bi/powerbi_executive.png` or keep only `public/img/`. In demo, show **one** executive view first (order below).
+In demo, show **one** executive view first (order below).
 
-**Tableau:** no fixed image in `public/img/`; convention is `assets/bi/tableau_analytics.png` when available ([`assets/README.md`](../assets/README.md)).
+**Tableau (optional):** when exported, use `assets/bi/tableau_analytics.png` ([`assets/README.md`](../assets/README.md)).
 
 ---
 
 ## Suggested reveal order (demo or README story)
 
-1. **Executive (Power BI)** — “what happened in the period” in a few KPIs (`Dashboard_ejecutivo.png` or `powerbi_executive.png`).
+1. **Executive (Power BI)** — “what happened in the period” in a few KPIs (`assets/dashboards/powerbi_executive.png`).
 2. **Diagnostic (Tableau)** — cuts and drivers; second lens (`tableau_analytics.png` when it exists).
 3. **Technical backup** — [`reports/quality_report.md`](../reports/quality_report.md) and/or [`ml/experiments/metrics.json`](../ml/experiments/metrics.json) for pipeline and ML credibility—not the opening screen.
 
-If `assets/bi/` has no captures yet, the README still shows the executive image from `public/img/`; describe Tableau using [`bi/tableau/README.md`](../bi/tableau/README.md) without inventing a screenshot.
+If `assets/bi/` has no Tableau capture yet, the README still shows the executive image from `assets/dashboards/`; describe Tableau using [`bi/tableau/README.md`](../bi/tableau/README.md) without inventing a screenshot.
 
 ---
 
@@ -50,11 +49,10 @@ If `assets/bi/` has no captures yet, the README still shows the executive image 
 
 ## Optional captures (`assets/bi/`)
 
-Place **PNG or WebP** files per [`assets/README.md`](../assets/README.md):
+For **Tableau** only (executive Power BI image is canonical under `assets/dashboards/`). Place **PNG or WebP** per [`assets/README.md`](../assets/README.md):
 
 | View | File | Minimum content |
 |------|------|-----------------|
-| Power BI — executive | `powerbi_executive.png` | Filter bar + KPIs + one trend (non-sensitive) |
 | Tableau — diagnostic | `tableau_analytics.png` | E.g. heatmap or driver view; consistent with [`bi/tableau/README.md`](../bi/tableau/README.md) |
 
 ---
@@ -105,7 +103,7 @@ Cover steps **1–2**, **4**, **7**, **8** from the detailed table below (proble
 | 1 | The issue is operational metrics, not “more charts.” | README Problem/Solution or [`problem.md`](problem.md) summary | 1 min |
 | 2 | The repo has a reproducible chain from data to consumption. | README Architecture or [`architecture.md`](architecture.md) | 1 min |
 | 3 | Metrics are defined and auditable. | Snippet from [`metrics.md`](metrics.md) (one KPI with numerator/denominator) | 1 min |
-| 4 | Period status at a glance (executive). | [`public/img/Dashboard_ejecutivo.png`](../public/img/Dashboard_ejecutivo.png) or optional `assets/bi/` | 1–2 min |
+| 4 | Period status at a glance (executive). | [`assets/dashboards/powerbi_executive.png`](../assets/dashboards/powerbi_executive.png) | 1–2 min |
 | 5 | Diagnostic is a different role: cuts and drivers. | Tableau capture or [`bi/tableau/README.md`](../bi/tableau/README.md) | 1–2 min |
 | 6 | Mart quality is verifiable. | [`reports/quality_report.md`](../reports/quality_report.md) excerpt | 1 min |
 | 7 | ML ranks; it does not replace business or descriptive BI. | [`ml/README.md`](../ml/README.md) + `metrics.json` (split, metrics, importances—not “winning” score) | 2 min |

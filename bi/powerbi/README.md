@@ -211,7 +211,7 @@ python scripts/validate_executive_kpis.py
 
 When the `.pbix` is built:
 
-1. Capture the **Executive** page → save as e.g. [`assets/powerbi-executive.png`](../../assets/) (suggested name).
+1. Capture the **Executive** page → save as [`assets/dashboards/powerbi_executive.png`](../../assets/dashboards/powerbi_executive.png) (canonical name; replace the committed file when you refresh the design).
 2. In the root README, one line: *Executive dashboard built in Power BI Desktop; CSV source + measures in `bi/powerbi/`.*
 
 **Do not** require Tableau or ML screenshots here yet.

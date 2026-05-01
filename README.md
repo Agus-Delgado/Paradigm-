@@ -134,7 +134,7 @@ Definitions live in [`docs/metrics.md`](docs/metrics.md). At a glance, the mart 
 
 Example **Power BI–style executive snapshot** (synthetic data):
 
-![Executive dashboard snapshot](public/img/Dashboard_ejecutivo.png)
+![Executive dashboard snapshot](assets/dashboards/powerbi_executive.png)
 
 The repository ships **CSV exports, DAX snippets, and build notes** under [`bi/powerbi/`](bi/powerbi/README.md) and [`bi/tableau/`](bi/tableau/README.md)—not checked-in `.pbix` / `.twbx` binaries. Optional Tableau-style captures and a unified asset layout may be added in a later documentation pass.
 
@@ -187,14 +187,13 @@ See [`legacy/README.md`](legacy/README.md).
 
 ```
 Paradigm/
-├── assets/           # Portfolio image conventions (see assets/README.md)
+├── assets/           # Portfolio visuals: dashboards/, diagrams/, walkthrough/ — see assets/README.md
 ├── bi/               # Power BI & Tableau exports and notes
 ├── data/
 │   └── synthetic/    # Generated dimensional CSVs (regenerable)
 ├── docs/             # Case study, architecture, metrics, dictionaries
 ├── legacy/           # Paradigm v1 Streamlit + legacy sample CSVs
 ├── ml/               # ML README and experiments (artifacts mostly gitignored)
-├── public/img/       # README dashboard screenshot
 ├── python/src/paradigm/   # Quality, I/O, ML package
 ├── reports/          # quality_report.md (regenerable evidence)
 ├── scripts/          # Pipeline entrypoints
