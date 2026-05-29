@@ -7,6 +7,8 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
+from core.ai_analytics import run_conversational_analysis
+from core.ai_analytics.types import ConversationalResult
 from core.clinic_operational_insights import (
     build_clinic_operational_insights,
     clinic_operational_insights_available,
@@ -80,6 +82,101 @@ def _render_operational_findings(findings: list[Finding]) -> None:
             st.info(f.message)
 
 
+def _confidence_label_es(confidence: str) -> str:
+    return {"high": "Alta", "medium": "Media", "low": "Baja"}.get(confidence, confidence)
+
+
+def _append_ai_history(query: str, result: ConversationalResult) -> None:
+    history: list[dict] = st.session_state.setdefault("paradigm_ai_history", [])
+    history.append({"query": query, "result": result})
+    if len(history) > _AI_HISTORY_MAX:
+        st.session_state["paradigm_ai_history"] = history[-_AI_HISTORY_MAX:]
+
+
+def _render_ai_result(result: ConversationalResult) -> None:
+    with st.container(border=True):
+        st.markdown(f"### {result['title']}")
+        st.caption(f"Intención: `{result['intent']}` · Confianza: {_confidence_label_es(result['confidence'])}")
+        st.markdown(result["summary"])
+
+        if result["findings"]:
+            st.markdown("**Hallazgos**")
+            for item in result["findings"]:
+                st.markdown(f"- {item}")
+
+        if result["data_used"]:
+            st.markdown("**Datos utilizados**")
+            st.caption(", ".join(result["data_used"]))
+
+        with st.expander("Cómo se generó esta respuesta", expanded=False):
+            st.markdown(result["explanation"])
+            st.info(result["suggested_next_step"])
+
+
+def _render_paradigm_ai_tab(
+    df: pd.DataFrame,
+    logical: dict[str, str],
+    profile,
+    findings: list[Finding],
+) -> None:
+    st.subheader("Preguntar a Paradigm")
+    st.caption(
+        "Capa conversacional **determinística** (reglas fijas, sin modelos de lenguaje). "
+        "Las respuestas usan el **dataset completo** cargado; los filtros de la barra lateral no se aplican aquí."
+    )
+
+    if "paradigm_ai_history" not in st.session_state:
+        st.session_state["paradigm_ai_history"] = []
+
+    st.markdown("**Preguntas de ejemplo**")
+    row1 = st.columns(4)
+    row2 = st.columns(3)
+    cols = row1 + row2
+    for i, prompt in enumerate(_SAMPLE_PROMPTS):
+        with cols[i % len(cols)]:
+            if st.button(prompt, key=f"paradigm_ai_sample_{i}", use_container_width=True):
+                st.session_state["paradigm_ai_pending_query"] = prompt
+                st.rerun()
+
+    pending = st.session_state.pop("paradigm_ai_pending_query", "")
+    with st.form("paradigm_ai_question_form", clear_on_submit=False):
+        user_query = st.text_input(
+            "Tu pregunta",
+            value=pending,
+            placeholder="Ej.: Analizar este dataset, ¿qué columnas tienen nulos?",
+        )
+        submitted = st.form_submit_button("Analizar", use_container_width=True)
+
+    run_query = ""
+    if pending.strip():
+        run_query = pending.strip()
+    elif submitted and user_query.strip():
+        run_query = user_query.strip()
+
+    if run_query:
+        with st.spinner("Analizando…"):
+            result = run_conversational_analysis(
+                run_query,
+                df,
+                logical,
+                profile,
+                findings=findings,
+            )
+        _append_ai_history(run_query, result)
+        _render_ai_result(result)
+    elif submitted:
+        st.warning("Escribí una pregunta o elegí un ejemplo.")
+
+    history: list[dict] = st.session_state.get("paradigm_ai_history", [])
+    if history:
+        with st.expander("Historial de preguntas", expanded=False):
+            for entry in reversed(history):
+                q = entry["query"]
+                r = entry["result"]
+                st.markdown(f"**{q}** — {r['title']} ({_confidence_label_es(r['confidence'])})")
+                st.caption(r["summary"][:200] + ("…" if len(r["summary"]) > 200 else ""))
+
+
 def _render_findings(findings: list[Finding]) -> None:
     if not findings:
         st.info(
@@ -95,6 +192,19 @@ def _render_findings(findings: list[Finding]) -> None:
                 st.info(f.message)
 
 
+_AI_HISTORY_MAX = 10
+
+_SAMPLE_PROMPTS: tuple[str, ...] = (
+    "Analizar este dataset",
+    "Explicar este dataset",
+    "Detectar anomalías",
+    "Resumir insights clave",
+    "¿Qué valores se ven inusuales?",
+    "¿Qué columnas tienen nulos?",
+    "¿Qué debería revisar primero?",
+)
+
+
 def _reset_exploration_session(uploaded_name: str, nrows: int, ncols: int) -> None:
     file_key = f"{uploaded_name}|{nrows}|{ncols}"
     if st.session_state.get("paradigm_data_key") == file_key:
@@ -103,6 +213,8 @@ def _reset_exploration_session(uploaded_name: str, nrows: int, ncols: int) -> No
     for k in list(st.session_state.keys()):
         if k.startswith("pf_") or k.startswith("explore_") or k == "paradigm_filter_cols":
             del st.session_state[k]
+    st.session_state["paradigm_ai_history"] = []
+    st.session_state["paradigm_ai_pending_query"] = ""
 
 
 def _sidebar_filter_specs(df: pd.DataFrame, logical: dict[str, str]) -> dict[str, dict]:
@@ -306,8 +418,15 @@ resume nulos y duplicados, perfila cada campo y genera gráficos automáticos. E
     df_filtrado = df.loc[mask].copy()
     active_filters = count_active_specs(filter_specs) > 0
 
-    tab_resumen, tab_indicadores, tab_hallazgos, tab_exploracion, tab_graficos = st.tabs(
-        ["Resumen", "Indicadores operativos", "Hallazgos", "Exploración", "Gráficos"]
+    tab_resumen, tab_indicadores, tab_hallazgos, tab_exploracion, tab_graficos, tab_paradigm_ai = st.tabs(
+        [
+            "Resumen",
+            "Indicadores operativos",
+            "Hallazgos",
+            "Exploración",
+            "Gráficos",
+            "Preguntar a Paradigm",
+        ]
     )
 
     with tab_resumen:
@@ -470,6 +589,9 @@ resume nulos y duplicados, perfila cada campo y genera gráficos automáticos. E
             "Porcentaje de nulos por columna sobre el archivo cargado completo. No dependen de los filtros de exploración."
         )
         st.plotly_chart(fig_nulls, use_container_width=True)
+
+    with tab_paradigm_ai:
+        _render_paradigm_ai_tab(df, logical, profile, findings)
 
 
 if __name__ == "__main__":
