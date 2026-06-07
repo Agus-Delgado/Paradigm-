@@ -1,0 +1,23 @@
+services:
+  app:
+    build: .
+    container_name: paradigm-app
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data/processed:/app/data/processed
+      - ./ml/experiments:/app/ml/experiments
+    restart: unless-stopped
+
+  db:
+    profiles: ["init"]
+    build: .
+    container_name: paradigm-db-init
+    volumes:
+      - ./data/processed:/app/data/processed
+      - ./data/synthetic:/app/data/synthetic
+      - ./ml/experiments:/app/ml/experiments
+    command: >
+      sh -c "python scripts/generate_paradigm_v2_synthetic.py &&
+             python scripts/build_sqlite_mart.py &&
+             python scripts/train_no_show.py"

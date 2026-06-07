@@ -1,5 +1,7 @@
-# Optional: Paradigm v1 Streamlit explorer under legacy/app/
-# Usage: pip install -r requirements-app.txt
+# Streamlit Live Demo (v2) + legacy v1 explorer
+# Usage:
+#   streamlit run streamlit_app.py          # v2 — mart SQLite (recomendado)
+#   streamlit run legacy/app/main.py        # v1 — sample CSV
 
 -r requirements.txt
 streamlit>=1.28.0

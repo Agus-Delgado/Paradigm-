@@ -1,0 +1,87 @@
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Testing and typing tools
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Streamlit secrets
+.streamlit/secrets.toml
+
+# Git
+.git/
+.gitignore
+
+# Packaging / distribution
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+
+# Logs
+*.log
+logs/
+
+# Editors and IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# Operating system
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+# Windows
+*.stackdump
+
+# Temporary / backup files
+*.tmp
+*.temp
+*.bak
+*.orig
+
+# Local environment files
+.env
+.env.local
+.env.*.local
+
+# Runtime artifacts (mounted as volumes)
+data/processed/*.db
+data/processed/*.sqlite
+ml/experiments/*.joblib
+ml/experiments/*.pkl
+
+# BI desktop binaries
+*.pbix
+*.twbx
+
+# Optional editor projects
+*.sublime-project
+*.sublime-workspace
