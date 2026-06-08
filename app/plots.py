@@ -172,3 +172,132 @@ def attended_vs_billed_chart(monthly: pd.DataFrame) -> go.Figure:
         font=dict(color=COLOR_SECONDARY),
     )
     return fig
+
+
+def shap_global_importance_chart(importance: list[dict], title: str = "Importancia global (SHAP)") -> go.Figure:
+    """Barras horizontales: mean |SHAP| por feature."""
+    if not importance:
+        fig = go.Figure()
+        fig.update_layout(title=f"{title} — sin datos", height=360)
+        return fig
+
+    df = pd.DataFrame(importance)
+    value_col = "mean_abs_shap" if "mean_abs_shap" in df.columns else "importance"
+    df = df.sort_values(value_col, ascending=True).tail(15)
+
+    fig = px.bar(
+        df,
+        x=value_col,
+        y="feature",
+        orientation="h",
+        title=title,
+        labels={value_col: "Impacto medio |SHAP|", "feature": "Feature"},
+        color=value_col,
+        color_continuous_scale=["#99F6E4", COLOR_PRIMARY, COLOR_ACCENT],
+    )
+    fig.update_layout(
+        height=max(360, 28 * len(df)),
+        showlegend=False,
+        coloraxis_showscale=False,
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=COLOR_SECONDARY),
+        margin=dict(l=20, r=20, t=50, b=20),
+    )
+    return fig
+
+
+def shap_local_waterfall_chart(
+    feature_names: list[str],
+    shap_row: list[float],
+    expected_value: float,
+    title: str = "Explicación local (contribuciones SHAP)",
+) -> go.Figure:
+    """Waterfall en Plotly: valor base + contribuciones SHAP."""
+    pairs = sorted(zip(feature_names, shap_row), key=lambda x: abs(x[1]), reverse=True)[:12]
+    labels = ["Base E[f(x)]"] + [p[0] for p in pairs] + ["Total"]
+    contributions = [p[1] for p in pairs]
+    total = expected_value + sum(contributions)
+
+    fig = go.Figure(
+        go.Waterfall(
+            name="SHAP",
+            orientation="v",
+            measure=["absolute"] + ["relative"] * len(pairs) + ["total"],
+            x=labels,
+            y=[expected_value] + contributions + [total],
+            connector=dict(line=dict(color=COLOR_MUTED, width=1, dash="dot")),
+            increasing=dict(marker=dict(color=COLOR_ACCENT)),
+            decreasing=dict(marker=dict(color=COLOR_PRIMARY)),
+            totals=dict(marker=dict(color=COLOR_SECONDARY)),
+        )
+    )
+    fig.update_layout(
+        title=title,
+        height=420,
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=COLOR_SECONDARY),
+        margin=dict(l=40, r=40, t=60, b=120),
+        xaxis_tickangle=-35,
+    )
+    return fig
+
+
+def shap_force_bar_chart(
+    feature_names: list[str],
+    shap_row: list[float],
+    title: str = "Force plot (contribuciones SHAP)",
+) -> go.Figure:
+    """Barras divergentes: contribución positiva/negativa por feature."""
+    pairs = sorted(zip(feature_names, shap_row), key=lambda x: abs(x[1]), reverse=True)[:12]
+    pairs = sorted(pairs, key=lambda x: x[1])
+    colors = [COLOR_ACCENT if v >= 0 else COLOR_PRIMARY for _, v in pairs]
+
+    fig = go.Figure(
+        go.Bar(
+            x=[v for _, v in pairs],
+            y=[f for f, _ in pairs],
+            orientation="h",
+            marker_color=colors,
+        )
+    )
+    fig.update_layout(
+        title=title,
+        xaxis_title="Contribución SHAP",
+        height=max(320, 30 * len(pairs)),
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=COLOR_SECONDARY),
+        margin=dict(l=20, r=20, t=50, b=20),
+    )
+    return fig
+
+
+def business_impact_chart(comparison_df: pd.DataFrame, top_pct: int) -> go.Figure:
+    """Comparación baseline vs priorizado (ARS)."""
+    if comparison_df.empty:
+        fig = go.Figure()
+        fig.update_layout(title="Impacto de negocio — sin datos", height=360)
+        return fig
+
+    fig = px.bar(
+        comparison_df,
+        x="metric",
+        y="value_ars",
+        color="scenario",
+        barmode="group",
+        text="value_ars",
+        labels={"value_ars": "ARS", "metric": "Métrica", "scenario": "Escenario"},
+        title=f"Baseline vs top {top_pct}% priorizado",
+        color_discrete_sequence=[COLOR_MUTED, COLOR_PRIMARY],
+    )
+    fig.update_traces(texttemplate="%{y:,.0f}", textposition="outside")
+    fig.update_layout(
+        height=400,
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=COLOR_SECONDARY),
+        margin=dict(l=40, r=40, t=60, b=40),
+    )
+    return fig

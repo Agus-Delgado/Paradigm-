@@ -8,7 +8,7 @@ What to show on GitHub or in an interview, aligned with **analytics engineering*
 
 Before a demo or interview:
 
-- [ ] Pipeline run at least through mart + quality: `build_sqlite_mart.py`, `run_data_quality.py` (and BI exports if opening Desktop).
+- [ ] Pipeline run at least through mart + quality: `make all` (or `build_sqlite_mart.py`, `run_data_quality.py`, and BI exports if opening Desktop).
 - [ ] [`reports/quality_report.md`](../reports/quality_report.md) present or regenerated.
 - [ ] [`ml/experiments/metrics.json`](../ml/experiments/metrics.json) matches last training if you open it (**reproducibility / evaluation plumbing**—not a synthetic performance trophy).
 - [ ] Know which image you use for the executive view: canonical [`assets/dashboards/powerbi_executive.png`](../assets/dashboards/powerbi_executive.png).

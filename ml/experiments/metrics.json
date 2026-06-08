@@ -142,7 +142,150 @@
           "feature": "coverage_id_5",
           "importance": 0.010332969077531961
         }
+      ],
+      "shap_importance_top": [
+        {
+          "feature": "provider_prior_appt_count",
+          "mean_abs_shap": 0.04642798036893162
+        },
+        {
+          "feature": "appointment_month",
+          "mean_abs_shap": 0.02454595584246635
+        },
+        {
+          "feature": "provider_prior_no_show_rate",
+          "mean_abs_shap": 0.023270485123816832
+        },
+        {
+          "feature": "provider_prior_no_show_count",
+          "mean_abs_shap": 0.021308353667513238
+        },
+        {
+          "feature": "lead_time_days",
+          "mean_abs_shap": 0.0201571819899366
+        },
+        {
+          "feature": "provider_id_3",
+          "mean_abs_shap": 0.017706517944457868
+        },
+        {
+          "feature": "booking_hour",
+          "mean_abs_shap": 0.01674411922658374
+        },
+        {
+          "feature": "appointment_hour",
+          "mean_abs_shap": 0.016556916524031618
+        },
+        {
+          "feature": "age_band_55-69",
+          "mean_abs_shap": 0.016348276334913207
+        },
+        {
+          "feature": "appointment_dow",
+          "mean_abs_shap": 0.01576125118390973
+        },
+        {
+          "feature": "provider_id_1",
+          "mean_abs_shap": 0.011078483668660323
+        },
+        {
+          "feature": "provider_id_2",
+          "mean_abs_shap": 0.008998802466601584
+        },
+        {
+          "feature": "specialty_id_4",
+          "mean_abs_shap": 0.008409615651881485
+        },
+        {
+          "feature": "patient_prior_appt_count",
+          "mean_abs_shap": 0.006948956932998661
+        },
+        {
+          "feature": "specialty_id_2",
+          "mean_abs_shap": 0.006012206437157523
+        }
       ]
     }
+  },
+  "shap": {
+    "shap_available": true,
+    "bundle_path": "C:\\Proyectos\\Paradigm\\data\\processed\\shap_bundle.joblib",
+    "summary_png": "C:\\Proyectos\\Paradigm\\ml\\figures\\shap_summary_beeswarm.png",
+    "shap_importance_top": [
+      {
+        "feature": "provider_prior_appt_count",
+        "mean_abs_shap": 0.04642798036893162
+      },
+      {
+        "feature": "appointment_month",
+        "mean_abs_shap": 0.02454595584246635
+      },
+      {
+        "feature": "provider_prior_no_show_rate",
+        "mean_abs_shap": 0.023270485123816832
+      },
+      {
+        "feature": "provider_prior_no_show_count",
+        "mean_abs_shap": 0.021308353667513238
+      },
+      {
+        "feature": "lead_time_days",
+        "mean_abs_shap": 0.0201571819899366
+      },
+      {
+        "feature": "provider_id_3",
+        "mean_abs_shap": 0.017706517944457868
+      },
+      {
+        "feature": "booking_hour",
+        "mean_abs_shap": 0.01674411922658374
+      },
+      {
+        "feature": "appointment_hour",
+        "mean_abs_shap": 0.016556916524031618
+      },
+      {
+        "feature": "age_band_55-69",
+        "mean_abs_shap": 0.016348276334913207
+      },
+      {
+        "feature": "appointment_dow",
+        "mean_abs_shap": 0.01576125118390973
+      },
+      {
+        "feature": "provider_id_1",
+        "mean_abs_shap": 0.011078483668660323
+      },
+      {
+        "feature": "provider_id_2",
+        "mean_abs_shap": 0.008998802466601584
+      },
+      {
+        "feature": "specialty_id_4",
+        "mean_abs_shap": 0.008409615651881485
+      },
+      {
+        "feature": "patient_prior_appt_count",
+        "mean_abs_shap": 0.006948956932998661
+      },
+      {
+        "feature": "specialty_id_2",
+        "mean_abs_shap": 0.006012206437157523
+      }
+    ],
+    "expected_value": 0.49904512700536047
+  },
+  "business_impact_top10pct": {
+    "top_fraction": 0.1,
+    "appointments_prioritized": 10,
+    "no_shows_in_prioritized": 1,
+    "slots_liberated_est": 1.0,
+    "revenue_recovered_ars": 20012.328927536233,
+    "baseline_no_shows": 11,
+    "baseline_revenue_at_risk_ars": 220135.61820289856,
+    "capture_rate": 0.09090909090909091,
+    "avg_revenue_ars": 20012.328927536233,
+    "reassignment_rate": 1.0,
+    "avg_revenue_source": "fact_billing_line"
   }
 }

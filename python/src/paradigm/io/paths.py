@@ -8,7 +8,11 @@ from pathlib import Path
 _REPO = Path(__file__).resolve().parents[4]
 
 REPO_ROOT: Path = _REPO
-DB_PATH: Path = _REPO / "data" / "processed" / "paradigm_mart.db"
+PROCESSED_DIR: Path = _REPO / "data" / "processed"
+DB_PATH: Path = PROCESSED_DIR / "paradigm_mart.db"
 REPORTS_DIR: Path = _REPO / "reports"
 DEFAULT_QUALITY_REPORT: Path = REPORTS_DIR / "quality_report.md"
 ML_EXPERIMENTS_DIR: Path = _REPO / "ml" / "experiments"
+ML_FIGURES_DIR: Path = _REPO / "ml" / "figures"
+SHAP_BUNDLE_PATH: Path = PROCESSED_DIR / "shap_bundle.joblib"
+SHAP_SUMMARY_PNG: Path = ML_FIGURES_DIR / "shap_summary_beeswarm.png"

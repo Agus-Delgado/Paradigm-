@@ -79,6 +79,8 @@ data/processed/*.sqlite
 # Local ML artifacts (regenerable)
 ml/experiments/*.joblib
 ml/experiments/*.pkl
+data/processed/shap_bundle.joblib
+ml/figures/*.png
 
 # Optional editor projects
 *.sublime-project

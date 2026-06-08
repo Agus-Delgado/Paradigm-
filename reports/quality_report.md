@@ -1,6 +1,6 @@
 # Reporte de calidad de datos — Paradigm v2
 
-- **Generado (UTC):** 2026-06-07 05:04:27Z
+- **Generado (UTC):** 2026-06-08 15:10:58Z
 - **Base:** `C:/Proyectos/Paradigm/data/processed/paradigm_mart.db`
 
 | Severidad | ID | Nombre | Detalle | Métrica |

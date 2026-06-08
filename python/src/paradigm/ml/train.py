@@ -18,8 +18,10 @@ from sklearn.metrics import accuracy_score
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
+from paradigm.ml.business_impact import avg_revenue_per_appointment, simulate_prioritization_impact
 from paradigm.ml.dataset import load_eligible_appointments
 from paradigm.ml.evaluate import classification_metrics, top_fraction_capture
+from paradigm.ml.explain import compute_and_persist_shap
 from paradigm.ml.features import (
     CATEGORICAL_FEATURES,
     NUMERIC_FEATURES,
@@ -170,6 +172,31 @@ def run_training(
 
     joblib.dump(lr, out_dir / "no_show_logistic.joblib")
     joblib.dump(rf, out_dir / "no_show_random_forest.joblib")
+
+    rf_proba = rf.predict_proba(X_test)[:, 1]
+    shap_info = compute_and_persist_shap(
+        pipe=rf,
+        X_test=X_test,
+        test_df=test_df,
+        y_test=y_test,
+        proba=rf_proba,
+        model_name="random_forest",
+    )
+    if shap_info.get("shap_importance_top"):
+        metrics_rf["shap_importance_top"] = shap_info["shap_importance_top"]
+    summary["shap"] = shap_info
+
+    avg_rev, rev_source = avg_revenue_per_appointment(db_path)
+    impact = simulate_prioritization_impact(
+        y_true=y_test,
+        y_score=rf_proba,
+        top_fraction=0.10,
+        avg_revenue_ars=avg_rev,
+    )
+    summary["business_impact_top10pct"] = {
+        k: v for k, v in impact.items() if k != "comparison_df"
+    }
+    summary["business_impact_top10pct"]["avg_revenue_source"] = rev_source
 
     metrics_path = out_dir / "metrics.json"
     with metrics_path.open("w", encoding="utf-8") as f:

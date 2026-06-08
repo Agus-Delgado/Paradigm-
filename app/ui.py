@@ -230,6 +230,7 @@ def render_regenerate_section() -> None:
                 st.code(log or "(sin salida)")
             if ok:
                 st.cache_data.clear()
+                st.cache_resource.clear()
                 st.success("Datos regenerados. Recargando…")
                 st.rerun()
             else:

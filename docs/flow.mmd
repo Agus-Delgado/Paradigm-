@@ -1,0 +1,15 @@
+flowchart LR
+    GEN["Datos sintéticos<br/>11 dims + 2 facts"]
+    MART[("Mart SQLite<br/>vistas KPI")]
+    QTY["Calidad<br/>14 checks"]
+    PBI["Power BI<br/>ejecutivo"]
+    TAB["Tableau<br/>diagnóstico"]
+    ML["ML<br/>no-show"]
+    DEMO["Streamlit v2<br/>demo"]
+
+    GEN --> MART
+    MART --> QTY
+    MART --> PBI
+    MART --> TAB
+    MART --> ML
+    MART --> DEMO

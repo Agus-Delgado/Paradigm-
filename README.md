@@ -32,6 +32,62 @@
 
 ---
 
+## Paradigm — Analytics Engineering Portfolio
+
+**Un caso de estudio completo de analytics engineering para operaciones ambulatorias.**
+
+Pipeline reproducible que transforma datos sintéticos → mart gobernado → KPIs → BI + ML + Demo interactiva.
+
+![Flow](docs/flow.png)
+
+### Problema de negocio
+
+Las clínicas ambulatorias pierden eficiencia e ingresos por **no-shows**, cancelaciones tardías, huecos en agenda y desalineación atención-facturación. Sin definiciones gobernadas de KPIs, cada equipo habla un idioma distinto.
+
+### Solución
+
+Un **end-to-end pipeline** auditable y reproducible:
+
+- **Datos sintéticos** (11 dimensiones + 2 hechos)
+- **Mart SQLite** con vistas KPI gobernadas
+- **Calidad de datos** (14 checks automatizados)
+- **BI**: Power BI (ejecutivo) + Tableau (diagnóstico)
+- **ML**: Priorización de no-shows (metodología transparente)
+- **Demo**: Streamlit v2 interactiva
+
+### Números clave (datos sintéticos)
+
+| Métrica | Valor |
+|---------|------:|
+| Citas totales | 520 |
+| Tasa de asistencia | 70.8% |
+| Tasa de no-show | 13.0% |
+| Tasa de cancelación | 18.7% |
+| Ingreso facturado | ~6.9 M ARS |
+| Brecha atención-facturación | 31 citas |
+
+### Cómo probarlo (1 minuto)
+
+```bash
+make install        # una vez: dependencias del pipeline
+make all            # pipeline completo (7 pasos)
+make demo           # levanta Streamlit en http://localhost:8501
+```
+
+O manualmente:
+
+```bash
+pip install -r requirements-app.txt
+python scripts/build_sqlite_mart.py
+streamlit run streamlit_app.py
+```
+
+> En Windows, `make` requiere [GNU Make](https://www.gnu.org/software/make/) (Chocolatey: `choco install make`, Git Bash, o WSL). Sin Make, usar la secuencia manual en [How to Run](#how-to-run).
+
+*Detalle completo del proyecto, arquitectura, Docker y ML más abajo.*
+
+---
+
 ## Table of Contents
 
 | | |
@@ -242,7 +298,25 @@ No `.pbix` / `.twbx` binaries are versioned — evidence via CSV, docs, and scre
 
 ## How to Run
 
-**Requirements:** Python 3.10+ (local) · Docker + Docker Compose v2 (container)
+**Requirements:** Python 3.10+ (local) · Docker + Docker Compose v2 (container) · GNU Make (optional, for `make all` / `make demo`)
+
+### Make (recommended for local pipeline)
+
+```bash
+make install        # pipeline dependencies (requirements.txt)
+make all            # full pipeline: synthetic → mart → quality → BI exports → ML
+make demo           # Streamlit v2 Live Demo at http://localhost:8501
+```
+
+| Target | Purpose |
+|--------|---------|
+| `make all` | Run all 7 pipeline scripts in order |
+| `make demo` | Install app deps + `streamlit run streamlit_app.py` |
+| `make help` | List all available targets |
+
+On Windows without Make, use the manual script sequence below or install GNU Make via Chocolatey, Git Bash, or WSL.
+
+---
 
 ### Docker (recommended for quick demo)
 
@@ -298,6 +372,12 @@ pip install -r requirements.txt
 ### 2. Full pipeline (recommended order)
 
 ```bash
+make all
+```
+
+Or step by step:
+
+```bash
 python scripts/generate_paradigm_v2_synthetic.py
 python scripts/build_sqlite_mart.py
 python scripts/run_data_quality.py
@@ -318,6 +398,12 @@ python scripts/train_no_show.py
 | `train_no_show.py` | `ml/experiments/metrics.json` | Trains no-show prioritization models |
 
 ### 3. Live Demo — Streamlit v2 (recommended)
+
+```bash
+make demo
+```
+
+Or manually:
 
 ```bash
 pip install -r requirements-app.txt
@@ -343,7 +429,9 @@ sqlite3 data/processed/paradigm_mart.db < sql/samples/01_no_show_by_specialty.sq
 
 **Docker (recomendado para demo):** `docker compose --profile init run --rm db` → `docker compose up --build` → `http://localhost:8501`.
 
-**Local:** mismo flujo en Windows y Linux/macOS: `venv` → `pip install -r requirements.txt` → ejecutar los 7 scripts en orden. Live Demo v2 con `requirements-app.txt` y `streamlit run streamlit_app.py`.
+**Local (Make):** `make install` → `make all` → `make demo`.
+
+**Local (manual):** `venv` → `pip install -r requirements.txt` → ejecutar los 7 scripts en orden. Live Demo v2 con `make demo` o `requirements-app.txt` + `streamlit run streamlit_app.py`.
 
 ---
 
