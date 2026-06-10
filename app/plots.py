@@ -1,4 +1,4 @@
-"""Gráficos Plotly para la Live Demo."""
+"""Gráficos Plotly para la Live Demo — tema dark premium."""
 
 from __future__ import annotations
 
@@ -6,7 +6,19 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-from app.config import COLOR_ACCENT, COLOR_MUTED, COLOR_PRIMARY, COLOR_SECONDARY
+from app.config import COLOR_ACCENT, COLOR_MUTED, COLOR_PRIMARY, COLOR_TEXT
+
+# Shared dark layout applied to every figure
+_DARK_LAYOUT = dict(
+    template="plotly_dark",
+    paper_bgcolor="rgba(0,0,0,0)",
+    plot_bgcolor="rgba(0,0,0,0)",
+    font=dict(family="Inter, Segoe UI, sans-serif", color=COLOR_TEXT),
+    margin=dict(l=40, r=40, t=60, b=40),
+)
+
+# Color scale: navy → cyan
+_SCALE_CYAN = ["#1e3a8a", "#00f5ff"]
 
 
 def trend_chart(daily: pd.DataFrame) -> go.Figure:
@@ -16,6 +28,7 @@ def trend_chart(daily: pd.DataFrame) -> go.Figure:
         fig.update_layout(
             title="Tendencia temporal — sin datos para el filtro seleccionado",
             height=380,
+            **_DARK_LAYOUT,
         )
         return fig
 
@@ -40,22 +53,27 @@ def trend_chart(daily: pd.DataFrame) -> go.Figure:
         )
     )
     fig.update_layout(
+        **_DARK_LAYOUT,
         title="Tendencia: citas atendidas y tasa de no-show",
         xaxis_title="Fecha de cita",
-        yaxis=dict(title="Citas atendidas", gridcolor="rgba(148,163,184,0.2)"),
+        yaxis=dict(
+            title="Citas atendidas",
+            gridcolor="rgba(0,245,255,0.08)",
+        ),
         yaxis2=dict(
             title="No-show rate (%)",
             overlaying="y",
             side="right",
-            range=[0, max(30, daily["no_show_rate"].max() * 110) if daily["no_show_rate"].notna().any() else 30],
-            gridcolor="rgba(148,163,184,0.2)",
+            range=[
+                0,
+                max(30, daily["no_show_rate"].max() * 110)
+                if daily["no_show_rate"].notna().any()
+                else 30,
+            ],
+            gridcolor="rgba(0,245,255,0.08)",
         ),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
         height=400,
-        margin=dict(l=40, r=40, t=60, b=40),
-        plot_bgcolor="rgba(0,0,0,0)",
-        paper_bgcolor="rgba(0,0,0,0)",
-        font=dict(color=COLOR_SECONDARY),
     )
     return fig
 
@@ -64,7 +82,7 @@ def specialty_bar_chart(breakdown: pd.DataFrame) -> go.Figure:
     """Barras horizontales: citas atendidas por especialidad."""
     if breakdown.empty:
         fig = go.Figure()
-        fig.update_layout(title="Breakdown por especialidad — sin datos", height=360)
+        fig.update_layout(title="Breakdown por especialidad — sin datos", height=360, **_DARK_LAYOUT)
         return fig
 
     fig = px.bar(
@@ -74,22 +92,20 @@ def specialty_bar_chart(breakdown: pd.DataFrame) -> go.Figure:
         orientation="h",
         text="attended",
         color="no_show_rate",
-        color_continuous_scale=["#99F6E4", COLOR_PRIMARY, COLOR_ACCENT],
+        color_continuous_scale=_SCALE_CYAN,
         labels={
-            "attended": "Citas atendidas",
+            "attended":      "Citas atendidas",
             "specialty_name": "Especialidad",
-            "no_show_rate": "Tasa no-show",
+            "no_show_rate":  "Tasa no-show",
         },
         title="Atendidas por especialidad (color = tasa no-show)",
+        template="plotly_dark",
     )
     fig.update_traces(textposition="outside")
     fig.update_layout(
+        **_DARK_LAYOUT,
         height=max(320, 44 * len(breakdown)),
         coloraxis_colorbar=dict(title="No-show"),
-        plot_bgcolor="rgba(0,0,0,0)",
-        paper_bgcolor="rgba(0,0,0,0)",
-        font=dict(color=COLOR_SECONDARY),
-        margin=dict(l=20, r=20, t=50, b=20),
     )
     return fig
 
@@ -98,13 +114,17 @@ def reconciliation_donut(summary: pd.DataFrame) -> go.Figure:
     """Distribución de buckets de conciliación (solo atendidas)."""
     if summary.empty:
         fig = go.Figure()
-        fig.update_layout(title="Conciliación atención vs facturación — sin datos", height=360)
+        fig.update_layout(
+            title="Conciliación atención vs facturación — sin datos",
+            height=360,
+            **_DARK_LAYOUT,
+        )
         return fig
 
     colors = {
         "ATTENDED_WITH_BILLING": COLOR_PRIMARY,
-        "ATTENDED_WITH_PENDING": "#FBBF24",
-        "ATTENDED_NO_BILLING": COLOR_ACCENT,
+        "ATTENDED_WITH_PENDING": "#f59e0b",
+        "ATTENDED_NO_BILLING":   COLOR_ACCENT,
     }
     palette = [colors.get(b, COLOR_MUTED) for b in summary["reconciliation_bucket"]]
 
@@ -120,10 +140,9 @@ def reconciliation_donut(summary: pd.DataFrame) -> go.Figure:
         ]
     )
     fig.update_layout(
+        **_DARK_LAYOUT,
         title="Distribución de conciliación (citas atendidas)",
         height=380,
-        margin=dict(l=20, r=20, t=50, b=20),
-        font=dict(color=COLOR_SECONDARY),
     )
     return fig
 
@@ -132,7 +151,11 @@ def attended_vs_billed_chart(monthly: pd.DataFrame) -> go.Figure:
     """Comparativa mensual atención vs facturación."""
     if monthly.empty:
         fig = go.Figure()
-        fig.update_layout(title="Atención vs facturación mensual — sin datos", height=380)
+        fig.update_layout(
+            title="Atención vs facturación mensual — sin datos",
+            height=380,
+            **_DARK_LAYOUT,
+        )
         return fig
 
     fig = go.Figure()
@@ -142,7 +165,6 @@ def attended_vs_billed_chart(monthly: pd.DataFrame) -> go.Figure:
             y=monthly["attended_count"],
             name="Atendidas",
             marker_color=COLOR_PRIMARY,
-            yaxis="y",
         )
     )
     fig.add_trace(
@@ -156,29 +178,30 @@ def attended_vs_billed_chart(monthly: pd.DataFrame) -> go.Figure:
         )
     )
     fig.update_layout(
+        **_DARK_LAYOUT,
         title="Atención vs facturación por mes",
         xaxis_title="Mes",
-        yaxis=dict(title="Citas atendidas", gridcolor="rgba(148,163,184,0.2)"),
+        yaxis=dict(title="Citas atendidas",       gridcolor="rgba(0,245,255,0.08)"),
         yaxis2=dict(
             title="Monto facturado (ARS)",
             overlaying="y",
             side="right",
-            gridcolor="rgba(148,163,184,0.2)",
+            gridcolor="rgba(0,245,255,0.08)",
         ),
         legend=dict(orientation="h", yanchor="bottom", y=1.02),
         height=400,
-        plot_bgcolor="rgba(0,0,0,0)",
-        paper_bgcolor="rgba(0,0,0,0)",
-        font=dict(color=COLOR_SECONDARY),
     )
     return fig
 
 
-def shap_global_importance_chart(importance: list[dict], title: str = "Importancia global (SHAP)") -> go.Figure:
+def shap_global_importance_chart(
+    importance: list[dict],
+    title: str = "Importancia global (SHAP)",
+) -> go.Figure:
     """Barras horizontales: mean |SHAP| por feature."""
     if not importance:
         fig = go.Figure()
-        fig.update_layout(title=f"{title} — sin datos", height=360)
+        fig.update_layout(title=f"{title} — sin datos", height=360, **_DARK_LAYOUT)
         return fig
 
     df = pd.DataFrame(importance)
@@ -193,16 +216,14 @@ def shap_global_importance_chart(importance: list[dict], title: str = "Importanc
         title=title,
         labels={value_col: "Impacto medio |SHAP|", "feature": "Feature"},
         color=value_col,
-        color_continuous_scale=["#99F6E4", COLOR_PRIMARY, COLOR_ACCENT],
+        color_continuous_scale=_SCALE_CYAN,
+        template="plotly_dark",
     )
     fig.update_layout(
+        **_DARK_LAYOUT,
         height=max(360, 28 * len(df)),
         showlegend=False,
         coloraxis_showscale=False,
-        plot_bgcolor="rgba(0,0,0,0)",
-        paper_bgcolor="rgba(0,0,0,0)",
-        font=dict(color=COLOR_SECONDARY),
-        margin=dict(l=20, r=20, t=50, b=20),
     )
     return fig
 
@@ -229,15 +250,13 @@ def shap_local_waterfall_chart(
             connector=dict(line=dict(color=COLOR_MUTED, width=1, dash="dot")),
             increasing=dict(marker=dict(color=COLOR_ACCENT)),
             decreasing=dict(marker=dict(color=COLOR_PRIMARY)),
-            totals=dict(marker=dict(color=COLOR_SECONDARY)),
+            totals=dict(marker=dict(color="#38bdf8")),
         )
     )
     fig.update_layout(
+        **_DARK_LAYOUT,
         title=title,
         height=420,
-        plot_bgcolor="rgba(0,0,0,0)",
-        paper_bgcolor="rgba(0,0,0,0)",
-        font=dict(color=COLOR_SECONDARY),
         margin=dict(l=40, r=40, t=60, b=120),
         xaxis_tickangle=-35,
     )
@@ -263,13 +282,10 @@ def shap_force_bar_chart(
         )
     )
     fig.update_layout(
+        **_DARK_LAYOUT,
         title=title,
         xaxis_title="Contribución SHAP",
         height=max(320, 30 * len(pairs)),
-        plot_bgcolor="rgba(0,0,0,0)",
-        paper_bgcolor="rgba(0,0,0,0)",
-        font=dict(color=COLOR_SECONDARY),
-        margin=dict(l=20, r=20, t=50, b=20),
     )
     return fig
 
@@ -278,7 +294,7 @@ def business_impact_chart(comparison_df: pd.DataFrame, top_pct: int) -> go.Figur
     """Comparación baseline vs priorizado (ARS)."""
     if comparison_df.empty:
         fig = go.Figure()
-        fig.update_layout(title="Impacto de negocio — sin datos", height=360)
+        fig.update_layout(title="Impacto de negocio — sin datos", height=360, **_DARK_LAYOUT)
         return fig
 
     fig = px.bar(
@@ -291,13 +307,8 @@ def business_impact_chart(comparison_df: pd.DataFrame, top_pct: int) -> go.Figur
         labels={"value_ars": "ARS", "metric": "Métrica", "scenario": "Escenario"},
         title=f"Baseline vs top {top_pct}% priorizado",
         color_discrete_sequence=[COLOR_MUTED, COLOR_PRIMARY],
+        template="plotly_dark",
     )
     fig.update_traces(texttemplate="%{y:,.0f}", textposition="outside")
-    fig.update_layout(
-        height=400,
-        plot_bgcolor="rgba(0,0,0,0)",
-        paper_bgcolor="rgba(0,0,0,0)",
-        font=dict(color=COLOR_SECONDARY),
-        margin=dict(l=40, r=40, t=60, b=40),
-    )
+    fig.update_layout(**_DARK_LAYOUT, height=400)
     return fig

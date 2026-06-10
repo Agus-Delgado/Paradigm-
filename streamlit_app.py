@@ -26,11 +26,16 @@ from app.data import (
     daily_trend,
     ensure_db,
     get_db_mtime,
+    load_analyst_csv,
+    load_analyst_demo_csv,
     load_mart_tables,
     monthly_attended_vs_billed,
+    prepare_dataset_context,
     reconciliation_summary,
     specialty_breakdown,
 )
+from app.conversational.flow import render_conversational_page_v2
+from app.conversational.types import DatasetContext
 from app.ml_predict import render_prediction_tab
 from app.plots import (
     attended_vs_billed_chart,
@@ -43,6 +48,7 @@ from app.ui import (
     render_gap_card,
     render_header,
     render_kpi_grid,
+    render_landing_page,
     render_regenerate_section,
     render_sidebar_filters,
     render_theme_toggle,
@@ -136,6 +142,35 @@ def render_reconciliation(tables: dict, filters) -> None:
         )
 
 
+def _prepare_analyst_context(
+    mode: str,
+    tables: dict | None = None,
+    uploaded=None,
+    *,
+    synthetic_domain: str = "healthcare",
+) -> DatasetContext | None:
+    from app.conversational.synthetic import generate_synthetic_dataset, synthetic_source_label
+
+    if mode == "demo":
+        df, err = load_analyst_demo_csv()
+        if df is None:
+            st.error(err or "No se pudo cargar el demo.")
+            return None
+        return prepare_dataset_context(df, source="demo", source_label="Demo consultorio")
+    if mode == "synthetic":
+        df = generate_synthetic_dataset(synthetic_domain)  # type: ignore[arg-type]
+        label = synthetic_source_label(synthetic_domain)  # type: ignore[arg-type]
+        return prepare_dataset_context(df, source="synthetic", source_label=label)
+    if mode == "upload":
+        df, err = load_analyst_csv(uploaded)
+        if df is None:
+            st.error(err or "Error al cargar el archivo.")
+            return None
+        name = getattr(uploaded, "name", "archivo") or "archivo"
+        return prepare_dataset_context(df, source="upload", source_label=name)
+    return None
+
+
 def main() -> None:
     st.set_page_config(
         page_title="Paradigm Live Demo",
@@ -146,6 +181,14 @@ def main() -> None:
 
     dark_mode = render_theme_toggle()
     inject_theme(dark_mode)
+
+    # ── Landing page gate ──────────────────────────────────────────────────
+    # First visit (or after logout) shows the immersive landing hero.
+    # render_landing_page() calls st.rerun() after the Enter button is clicked,
+    # which sets show_landing=False and drops through to the main app below.
+    if st.session_state.get("show_landing", True):
+        render_landing_page()
+        st.stop()
 
     if not ensure_db(DB_PATH):
         st.stop()
@@ -158,7 +201,7 @@ def main() -> None:
 
     page = st.sidebar.radio(
         "Navegación",
-        ["Executive Overview", "Conciliación", "No-Show ML"],
+        ["Executive Overview", "Conciliación", "No-Show ML", "AI Conversational Insights"],
         label_visibility="collapsed",
     )
 
@@ -174,8 +217,22 @@ def main() -> None:
         render_executive_overview(tables, filters)
     elif page == "Conciliación":
         render_reconciliation(tables, filters)
-    else:
+    elif page == "No-Show ML":
         render_prediction_tab(tables, str(DB_PATH), db_mtime)
+    else:
+        analyst_ctx: DatasetContext | None = st.session_state.get("analyst_v2_ctx")
+
+        def on_prepare(mode: str, uploaded=None, synthetic_domain: str = "healthcare"):
+            ctx = _prepare_analyst_context(
+                mode,
+                uploaded=uploaded,
+                synthetic_domain=synthetic_domain,
+            )
+            if ctx is not None:
+                st.session_state["analyst_v2_ctx"] = ctx
+            return ctx
+
+        render_conversational_page_v2(analyst_ctx, on_prepare=on_prepare)
 
 
 if __name__ == "__main__":

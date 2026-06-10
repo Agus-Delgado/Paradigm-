@@ -311,3 +311,54 @@ def run_regenerate_pipeline(include_train: bool = False) -> tuple[bool, str]:
             logs.append(f"\n[ERROR] exit code {result.returncode}\n")
             return False, "".join(logs)
     return True, "".join(logs)
+
+
+def mart_appointments_to_analyst_df(tables: dict[str, pd.DataFrame]) -> pd.DataFrame:
+    """DataFrame plano de citas para el analista conversacional."""
+    return tables["appointments"].copy()
+
+
+def prepare_dataset_context(
+    df: pd.DataFrame,
+    *,
+    source: str,
+    source_label: str,
+):
+    """Infiere schema, perfila y detecta dominio."""
+    from app.conversational.domain import detect_domain
+    from app.conversational.legacy_bridge import (
+        build_findings,
+        build_profile,
+        infer_logical_types,
+    )
+    from app.conversational.session_utils import make_dataset_key
+    from app.conversational.types import DatasetContext
+
+    logical_types = infer_logical_types(df)
+    profile = build_profile(df, logical_types)
+    findings = build_findings(df, profile, logical_types)
+    domain = detect_domain(df, logical_types)
+    dataset_key = make_dataset_key(source, source_label, df.shape)
+    return DatasetContext(
+        df=df,
+        logical_types=logical_types,
+        profile=profile,
+        findings=findings,
+        domain=domain,
+        dataset_key=dataset_key,
+        source_label=source_label,
+    )
+
+
+def load_analyst_csv(uploaded) -> tuple[pd.DataFrame | None, str | None]:
+    """Carga CSV/XLSX para el flujo analista."""
+    from app.conversational.legacy_bridge import load_uploaded_file
+
+    return load_uploaded_file(uploaded)
+
+
+def load_analyst_demo_csv() -> tuple[pd.DataFrame | None, str | None]:
+    """Dataset demo consultorio (compatible no-shows legacy)."""
+    from app.conversational.legacy_bridge import DEMO_CLINIC_CSV, load_csv_path
+
+    return load_csv_path(DEMO_CLINIC_CSV)

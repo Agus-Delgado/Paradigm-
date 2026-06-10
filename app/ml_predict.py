@@ -259,6 +259,15 @@ def render_business_impact_section(db_path_str: str) -> None:
     )
 
 
+def no_show_ml_available(tables: dict[str, pd.DataFrame]) -> bool:
+    """True si hay citas elegibles ATTENDED/NO_SHOW para el tab ML."""
+    apt = tables.get("appointments")
+    if apt is None or apt.empty or "status_code" not in apt.columns:
+        return False
+    eligible = apt["status_code"].isin(["ATTENDED", "NO_SHOW"])
+    return int(eligible.sum()) >= 10
+
+
 def render_prediction_tab(
     tables: dict[str, pd.DataFrame],
     db_path_str: str,

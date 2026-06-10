@@ -276,6 +276,7 @@ Abre `http://localhost:8501`. Filtros en sidebar (fecha, especialidad, proveedor
 | **Executive Overview** | 6 KPIs, tendencia temporal, breakdown por especialidad, card de brecha |
 | **Conciliación** | ATTENDED_NO_BILLING, comparativa atención vs facturación |
 | **No-Show ML** | Formulario de simulación + probabilidad y recomendación |
+| **AI Conversational Insights** | Cuestionario guiado + análisis contextual, gráficos Plotly y recomendaciones ([flujo](docs/conversational_insights_flow.md)) |
 
 ---
 
@@ -479,6 +480,64 @@ Column-level documentation: [`docs/data_dictionary.md`](docs/data_dictionary.md)
 - **ML is methodology-first** — see [`ml/README.md`](ml/README.md) and `ml/experiments/metrics.json`.
 
 - Solo datos sintéticos · sin despliegue productivo · sin PHI · ML orientado a metodología.
+
+---
+
+## UI/UX Premium
+
+La demo interactiva usa un tema dark glassmorphism consistente en todas las vistas.
+
+### Paleta de colores
+
+| Token | Hex | Uso |
+|---|---|---|
+| `COLOR_PRIMARY` | `#00f5ff` | Cyan — CTA, acentos, bordes activos |
+| `COLOR_BG_MAIN` | `#0a2540` | Fondo principal (deep navy) |
+| `COLOR_BG_CARD` | `#13294b` | Superficie de cards |
+| `COLOR_SECONDARY` | `#1e3a8a` | Azul secundario |
+| `COLOR_TEXT` | `#e0f2fe` | Texto principal |
+| `COLOR_BORDER` | `#00f5ff33` | Borde sutil (cyan 20% opacidad) |
+| `COLOR_SUCCESS` | `#10b981` | Verde — badge impacto Bajo |
+| `COLOR_WARNING` | `#f59e0b` | Ámbar — badge impacto Medio |
+
+### Estructura de archivos UI
+
+```
+.streamlit/config.toml      ← tema Streamlit dark (base="dark")
+assets/css/custom.css       ← CSS maestro (glassmorphism, badges, landing)
+app/config.py               ← constantes de paleta centralizadas
+app/ui.py                   ← componentes: inject_theme, landing, KPI grid, wizard
+app/plots.py                ← charts Plotly (template="plotly_dark")
+app/conversational/plots.py ← charts contextuales (template="plotly_dark")
+assets/landing/             ← imágenes hero de la landing page
+```
+
+### Landing page
+
+Al abrir la app por primera vez se muestra una landing hero inmersiva:
+
+- Título **Paradigm** en cyan con text-shadow glow.
+- Subtítulo "Tu Asistente Analítico Inteligente".
+- Tres feature cards con glassmorphism (Cómo funciona / Objetivo / Valor).
+- Tres image cards con overlay degradado (assets/landing/).
+- Botón CTA cyan "Entrar al Asistente Analítico".
+
+El gate es `st.session_state["show_landing"]`; el botón lo pone en `False` y hace `st.rerun()`.
+
+### Glassmorphism
+
+Cards con `backdrop-filter: blur(12px)`, `background: rgba(19, 41, 75, 0.85)`,
+borde `1px solid #00f5ff33`. Hover: borde cambia a `#00f5ff` + `box-shadow` cyan.
+
+### Badges de impacto
+
+Las recomendaciones del wizard usan badges coloreados inline:
+
+| Badge | Color |
+|---|---|
+| Alto | Cyan `#00f5ff` |
+| Medio | Verde `#10b981` |
+| Bajo | Ámbar `#f59e0b` |
 
 ---
 
