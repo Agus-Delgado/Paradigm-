@@ -6,7 +6,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-from app.config import COLOR_ACCENT, COLOR_MUTED, COLOR_PRIMARY, COLOR_TEXT
+from app.config import COLOR_ACCENT, COLOR_CHART, COLOR_MUTED, COLOR_PRIMARY, COLOR_TEXT
 from app.conversational.legacy_bridge import insights_pick_compare_pair
 from app.conversational.types import AnalysisPlan, Domain
 
@@ -48,7 +48,7 @@ def _clinic_estado_chart(df: pd.DataFrame) -> go.Figure | None:
     vc.columns = ["estado", "count"]
     if vc.empty:
         return None
-    colors = [COLOR_PRIMARY, COLOR_ACCENT, "#6366F1", "#94A3B8"]
+    colors = [COLOR_CHART, COLOR_ACCENT, "#6366F1", "#94A3B8"]
     fig = px.pie(
         vc,
         names="estado",
@@ -70,7 +70,7 @@ def _mart_status_chart(df: pd.DataFrame) -> go.Figure | None:
         x="status",
         y="count",
         color="status",
-        color_discrete_sequence=[COLOR_PRIMARY, COLOR_ACCENT, "#6366F1", "#94A3B8"],
+        color_discrete_sequence=[COLOR_CHART, COLOR_ACCENT, "#6366F1", "#94A3B8"],
     )
     fig.update_layout(showlegend=False)
     return _apply_layout(fig, "Citas por estado operativo")
@@ -102,7 +102,7 @@ def _segment_metric_chart(
         y="_segment",
         orientation="h",
         color=metric_col,
-        color_continuous_scale=[COLOR_MUTED, COLOR_PRIMARY],
+        color_continuous_scale=[COLOR_MUTED, COLOR_CHART],
     )
     fig.update_layout(coloraxis_showscale=False, showlegend=False)
     return _apply_layout(fig, title)
@@ -135,7 +135,7 @@ def _mart_noshow_by_segment(df: pd.DataFrame, segment_col: str) -> go.Figure | N
         y="segment",
         orientation="h",
         color="no_show_rate",
-        color_continuous_scale=[COLOR_PRIMARY, COLOR_ACCENT],
+        color_continuous_scale=[COLOR_CHART, COLOR_ACCENT],
         hover_data=["citas"],
     )
     fig.update_layout(coloraxis_showscale=False, xaxis_title="No-show rate (%)", yaxis_title="")
@@ -165,7 +165,7 @@ def _time_series_chart(
             x="_date",
             y=value_col,
             line_shape="spline",
-            color_discrete_sequence=[COLOR_PRIMARY],
+            color_discrete_sequence=[COLOR_CHART],
         )
     else:
         sub["_date"] = sub[date_col].dt.date
@@ -176,7 +176,7 @@ def _time_series_chart(
             x="_date",
             y="count",
             markers=True,
-            color_discrete_sequence=[COLOR_PRIMARY],
+            color_discrete_sequence=[COLOR_CHART],
         )
     return _apply_layout(fig, title)
 
@@ -190,7 +190,7 @@ def _distribution_chart(df: pd.DataFrame, col: str, title: str) -> go.Figure | N
     fig = px.histogram(
         num,
         nbins=min(40, max(12, len(num) // 20)),
-        color_discrete_sequence=[COLOR_PRIMARY],
+        color_discrete_sequence=[COLOR_CHART],
         opacity=0.85,
     )
     fig.update_layout(bargap=0.05, xaxis_title=col, yaxis_title="Frecuencia")
@@ -329,3 +329,63 @@ def build_contextual_plots(
                 figures.append(("fallback_dist", fig))
 
     return figures[:4]
+
+
+def build_sql_result_chart(df: pd.DataFrame) -> go.Figure:
+    """Gráfico automático a partir de un resultado SQL."""
+    if df.empty:
+        return _empty_figure("Sin filas en el resultado.")
+
+    cols = list(df.columns)
+    numeric_cols = [c for c in cols if pd.api.types.is_numeric_dtype(df[c])]
+    non_numeric = [c for c in cols if c not in numeric_cols]
+    cat_cols = [c for c in non_numeric if df[c].nunique(dropna=True) <= 40]
+
+    if cat_cols and numeric_cols:
+        cat, num = cat_cols[0], numeric_cols[0]
+        if len(df) > 1 and df[cat].nunique() > 1:
+            agg = df.groupby(cat, as_index=False)[num].mean()
+            agg = agg.nlargest(min(15, len(agg)), num)
+            fig = px.bar(
+                agg,
+                x=cat,
+                y=num,
+                color_discrete_sequence=[COLOR_CHART],
+            )
+            fig.update_layout(xaxis_tickangle=-35)
+            return _apply_layout(fig, f"{num} promedio por {cat}")
+
+    if len(numeric_cols) >= 2 and not cat_cols:
+        x_col, y_col = numeric_cols[0], numeric_cols[1]
+        plot_df = df[[x_col, y_col]].dropna().head(200)
+        fig = px.scatter(
+            plot_df,
+            x=x_col,
+            y=y_col,
+            color_discrete_sequence=[COLOR_CHART],
+        )
+        return _apply_layout(fig, f"{y_col} vs {x_col}")
+
+    if numeric_cols:
+        col = numeric_cols[0]
+        fig = px.histogram(
+            df,
+            x=col,
+            color_discrete_sequence=[COLOR_CHART],
+            nbins=min(30, max(5, df[col].nunique())),
+        )
+        return _apply_layout(fig, f"Distribución de {col}")
+
+    if cols:
+        vc = df[cols[0]].astype(str).value_counts().head(15).reset_index()
+        vc.columns = [cols[0], "conteo"]
+        fig = px.bar(
+            vc,
+            x=cols[0],
+            y="conteo",
+            color_discrete_sequence=[COLOR_CHART],
+        )
+        fig.update_layout(xaxis_tickangle=-35)
+        return _apply_layout(fig, f"Conteo por {cols[0]}")
+
+    return _empty_figure("No se pudo inferir un gráfico para este resultado.")

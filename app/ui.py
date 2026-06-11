@@ -10,12 +10,16 @@ import pandas as pd
 import streamlit as st
 
 from app.config import (
+    APP_VERSION,
     COLOR_MUTED,
     COLOR_PRIMARY,
+    COLOR_PRIMARY_SOFT,
     COLOR_TEXT,
+    LAST_UPDATE,
     REPO_ROOT,
     SYNTHETIC_BANNER,
 )
+from app.export_report import build_analysis_report_md
 from app.data import ExecutiveKpis, FilterState, run_regenerate_pipeline
 
 _CSS_PATH = REPO_ROOT / "assets" / "css" / "custom.css"
@@ -61,18 +65,44 @@ def render_header() -> None:
     st.markdown(
         f"""
         <div class="paradigm-header">
-          <span style="font-size:1.8rem;font-weight:800;color:{COLOR_PRIMARY};
+          <span style="font-size:1.8rem;font-weight:800;color:{COLOR_PRIMARY_SOFT};
                        letter-spacing:-0.02em;">Paradigm</span>
           <span style="font-size:1.8rem;font-weight:400;color:{COLOR_TEXT};
                        letter-spacing:-0.02em;"> Live Demo</span>
+          <span style="font-size:0.75rem;font-weight:500;color:{COLOR_MUTED};
+                       margin-left:0.6rem;vertical-align:middle;">v{APP_VERSION}</span>
         </div>
         <p class="paradigm-subtitle">
-          Analytics engineering · operaciones ambulatorias · mart SQLite
+          Analytics engineering · operaciones ambulatorias · mart SQLite · actualizado {LAST_UPDATE}
         </p>
         """,
         unsafe_allow_html=True,
     )
     st.info(SYNTHETIC_BANNER)
+
+
+def render_workspace_header(title: str, meta: str) -> None:
+    """Cabecera consistente para pestañas del workspace analítico."""
+    st.markdown(
+        f'<div class="explorer-nav-card">'
+        f'<span class="explorer-nav-label">{title}</span>'
+        f'<span class="explorer-nav-meta">{meta}</span>'
+        f"</div>",
+        unsafe_allow_html=True,
+    )
+
+
+def render_app_footer() -> None:
+    """Footer con versión y disclaimer."""
+    st.markdown(
+        f"""
+        <div class="paradigm-footer">
+          <strong>Paradigm</strong> v{APP_VERSION} · última actualización {LAST_UPDATE}<br/>
+          Demo con datos sintéticos · portfolio analytics engineering
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 # ── Landing page ─────────────────────────────────────────────────────────────
@@ -213,10 +243,12 @@ def render_landing_page() -> None:
             st.session_state["show_landing"] = False
             st.rerun()
 
-    # Footer note
     st.markdown(
-        f"<p style='text-align:center;color:{COLOR_MUTED};font-size:0.8rem;"
-        "margin-top:1rem;'>Paradigm · Demo con datos 100 % sintéticos</p>",
+        f"""
+        <div class="paradigm-footer" style="margin-top:1.5rem;border-top:none;">
+          <strong>Paradigm</strong> v{APP_VERSION} · datos 100 % sintéticos · {LAST_UPDATE}
+        </div>
+        """,
         unsafe_allow_html=True,
     )
 
@@ -256,7 +288,7 @@ def render_gap_card(kpis: ExecutiveKpis) -> None:
     st.markdown(
         f"""
         <div class="gap-highlight">
-          <strong style="color:{COLOR_PRIMARY};">Brecha de facturación</strong><br/>
+          <strong style="color:{COLOR_PRIMARY_SOFT};">Brecha de facturación</strong><br/>
           <span style="font-size:1.2rem;font-weight:600;color:{COLOR_TEXT};">
             {kpis.billing_gap_count} citas atendidas sin línea de facturación
           </span><br/>
@@ -352,17 +384,17 @@ _ANALYST_PROGRESS: dict[str, str] = {
 
 def render_analyst_progress(phase: str) -> None:
     label = _ANALYST_PROGRESS.get(phase, "Procesando…")
-    st.info(f"⏳ {label}")
+    st.info(label)
 
 
 def render_analyst_wizard_banner() -> None:
     st.markdown(
         f"""
         <div class="wizard-banner">
-          <strong style="color:{COLOR_PRIMARY};">Analista Paradigm</strong><br/>
+          <strong style="color:{COLOR_PRIMARY_SOFT};">Analista Paradigm</strong><br/>
           <span style="color:{COLOR_MUTED};">
-            Antes de sacar conclusiones, necesitamos entender tu objetivo y tu hipótesis
-            sobre la causa raíz. Son 2–3 preguntas breves (~1 min).
+            Antes de sacar conclusiones, alineamos objetivo de negocio e hipótesis de causa raíz.
+            Son 2–3 preguntas breves (~1 min).
           </span>
         </div>
         """,
@@ -442,13 +474,34 @@ def render_guided_questionnaire(
     return answers
 
 
-def render_contextual_results(result, figures, *, show_ml_cta: bool = False) -> None:
+def render_contextual_results(
+    result,
+    figures,
+    *,
+    show_ml_cta: bool = False,
+    ctx=None,
+    plan=None,
+) -> None:
     """Premium cards: summary, findings with border-left, recommendations with impact badges."""
     st.markdown(f"### {result.title}")
 
+    if ctx is not None:
+        objective = None
+        if plan is not None and getattr(plan, "objective", None):
+            objective = plan.objective
+        report_md = build_analysis_report_md(result, ctx, plan_objective=objective)
+        st.download_button(
+            "Exportar reporte",
+            data=report_md,
+            file_name=f"paradigm_analisis_{ctx.dataset_key[:8]}.md",
+            mime="text/markdown",
+            help="Descarga un informe Markdown listo para compartir o convertir a PDF.",
+            key=f"export_analysis_{ctx.dataset_key}",
+        )
+
     # Summary card
     st.markdown(
-        f'<div class="insight-card" style="background:rgba(0,245,255,0.04);">'
+        f'<div class="insight-card" style="background:rgba(94,200,212,0.04);">'
         f'{result.summary}</div>',
         unsafe_allow_html=True,
     )

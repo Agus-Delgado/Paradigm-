@@ -45,6 +45,7 @@ from app.plots import (
 )
 from app.ui import (
     inject_theme,
+    render_app_footer,
     render_gap_card,
     render_header,
     render_kpi_grid,
@@ -233,6 +234,8 @@ def main() -> None:
             return ctx
 
         render_conversational_page_v2(analyst_ctx, on_prepare=on_prepare)
+
+    render_app_footer()
 
 
 if __name__ == "__main__":

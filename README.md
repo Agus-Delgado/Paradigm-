@@ -2,58 +2,161 @@
 
 # Paradigm
 
-### End-to-end analytics engineering for outpatient operations
+### Analytics engineering de punta a punta — del dato gobernado al insight accionable
 
-*From governed synthetic data to executive dashboards and an honest ML prioritization experiment — reproducible, auditable, portfolio-ready.*
+**Portfolio profesional:** mart SQLite, KPIs validados, BI dual-lens, ML con SHAP y una demo Streamlit premium con analista conversacional, SQL Explorer y Data Explorer inmersivo.**
 
-*Del dato sintético gobernado al tablero ejecutivo y un experimento ML de priorización — reproducible de punta a punta.*
+*Synthetic outpatient ops · reproducible pipeline · portfolio-ready · v2.1*
 
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![SQLite](https://img.shields.io/badge/SQLite-Mart-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](sql/README.md)
-[![Pandas](https://img.shields.io/badge/Pandas-2.0+-150458?style=for-the-badge&logo=pandas&logoColor=white)](https://pandas.pydata.org/)
-[![NumPy](https://img.shields.io/badge/NumPy-1.24+-013243?style=for-the-badge&logo=numpy&logoColor=white)](https://numpy.org/)
-[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.3+-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](ml/README.md)
-[![Power BI](https://img.shields.io/badge/Power%20BI-Executive-F2C811?style=for-the-badge&logo=powerbi&logoColor=black)](bi/powerbi/README.md)
-[![Tableau](https://img.shields.io/badge/Tableau-Diagnostic-E97627?style=for-the-badge&logo=tableau&logoColor=white)](bi/tableau/README.md)
 [![Streamlit](https://img.shields.io/badge/Streamlit-Live_Demo-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](#live-demo)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+[![Pandas](https://img.shields.io/badge/Pandas-2.0+-150458?style=for-the-badge&logo=pandas&logoColor=white)](https://pandas.pydata.org/)
+[![SHAP](https://img.shields.io/badge/SHAP-Explainability-0057B8?style=for-the-badge)](ml/README.md)
+[![SQLite](https://img.shields.io/badge/SQLite-Mart-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](sql/README.md)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](#how-to-run)
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-ML-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](ml/README.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-34d399?style=for-the-badge)](LICENSE)
 
-[About](#about) · [KPIs](#key-results) · [Architecture](#architecture) · [Tech Stack](#tech-stack) · [Layers](#project-layers) · [Demo](#live-demo) · [Run](#how-to-run) · [ML](#ml-experiment)
+[Características](#características-principales) · [Demo Visual](#demo-visual) · [Ejecutar](#cómo-ejecutar) · [Por qué](#por-qué-este-proyecto) · [Architecture](#architecture)
 
 </div>
 
 ---
 
-> **Disclaimer — EN:** All data in this repository is **synthetic** and exists solely for demonstration, portfolio, and reproducibility. It does not represent real patients, providers, organizations, or operational outcomes.
->
-> **Aviso — ES:** Todo el contenido es **sintético** y sirve solo para demostración, portfolio y reproducibilidad. No representa pacientes, prestadores ni resultados reales.
->
-> **Realistic synthetic data · Portfolio project** · **Datos sintéticos realistas · Proyecto de portfolio**
+> **Disclaimer:** Datos **100 % sintéticos** — demostración y portfolio únicamente. No representa pacientes, prestadores ni resultados operativos reales.
+
+---
+
+## Características Principales
+
+Paradigm es un **portfolio end-to-end de analytics engineering**: pipeline reproducible, mart SQLite gobernado, BI dual-lens y una **demo Streamlit premium** que un analista podría usar a diario.
+
+| Capa | Qué incluye |
+|------|-------------|
+| **Pipeline** | Datos sintéticos → mart SQLite → 14 checks de calidad → exports BI |
+| **Executive & Conciliación** | KPIs gobernados, tendencia, brecha atención–facturación |
+| **AI Conversational Insights** | Landing → wizard root-cause → 3 pestañas (Análisis · SQL · Data) |
+| **No-Show ML** | Priorización con SHAP, impacto de negocio, evaluación honesta |
+
+### Landing premium
+
+Hero glassmorphism, gate inmersivo y tema dark profesional antes de entrar al asistente.
+
+![Landing hero — Paradigm Live Demo](assets/screenshots/landing_hero.png)
+
+### Selección de dataset
+
+Demo consultorio, datos sintéticos por dominio (salud, finanzas, operaciones) o upload CSV/Excel.
+
+![Selección de fuente de datos](assets/screenshots/dataset_selection.png)
+
+### Wizard root-cause
+
+2–3 preguntas de negocio orientadas a causa raíz; motor determinístico (sin LLM).
+
+![Wizard de contexto de negocio](assets/screenshots/wizard_questions.png)
+
+### Análisis Guiado
+
+Hallazgos, gráficos Plotly, recomendaciones por impacto y **exportación de informe Markdown**.
+
+![Resultados del análisis contextual](assets/screenshots/analysis_results.png)
+
+### SQL Explorer
+
+NL→SQL heurístico, editor SQLite en memoria, resultados tabulares y gráfico automático.
+
+![SQL Explorer con consulta y resultados](assets/screenshots/sql_explorer.png)
+
+### Data Explorer
+
+Filtros dinámicos por tipo de columna, preview, estadísticas y puente «Explorar con IA».
+
+![Data Explorer con filtros y vista previa](assets/screenshots/data_explorer.png)
+
+### No-Show ML + SHAP
+
+Simulación de riesgo, explicabilidad local/global e impacto de negocio (priorización, no predicción clínica).
+
+![No-Show ML — waterfall SHAP](assets/screenshots/no_show_shap.png)
+
+Documentación del flujo conversacional: [`docs/conversational_insights_flow.md`](docs/conversational_insights_flow.md)
+
+---
+
+## Demo Visual
+
+Galería rápida de la experiencia interactiva (capturas reales de `streamlit run streamlit_app.py`):
+
+| Vista | Captura |
+|-------|---------|
+| Landing | ![landing](assets/screenshots/landing_hero.png) |
+| Dataset | ![dataset](assets/screenshots/dataset_selection.png) |
+| Wizard | ![wizard](assets/screenshots/wizard_questions.png) |
+| Análisis | ![análisis](assets/screenshots/analysis_results.png) |
+| SQL | ![sql](assets/screenshots/sql_explorer.png) |
+| Explorer | ![explorer](assets/screenshots/data_explorer.png) |
+| No-Show SHAP | ![shap](assets/screenshots/no_show_shap.png) |
+
+**Power BI ejecutivo** (evidencia BI del portfolio):
+
+![Power BI executive dashboard](assets/dashboards/powerbi_executive.png)
+
+**Arquitectura del pipeline:**
+
+![Flow](docs/flow.png)
+
+---
+
+## Cómo ejecutar
+
+### Opción recomendada (Make)
+
+```bash
+make install    # dependencias (una vez)
+make all        # pipeline completo: sintético → mart → quality → exports
+make demo       # levanta Streamlit en http://localhost:8501
+```
+
+### Manual
+
+```bash
+pip install -r requirements-app.txt
+python scripts/build_sqlite_mart.py
+python scripts/train_no_show.py              # opcional — pestaña No-Show ML
+streamlit run streamlit_app.py
+```
+
+### Docker
+
+```bash
+docker build -t paradigm-demo .
+docker run -p 8501:8501 paradigm-demo
+```
+
+**Recorrido sugerido en la app:** Landing → **Entrar al Asistente Analítico** → cargar dataset → wizard → pestañas **Análisis Guiado · SQL Explorer · Data Explorer** → sidebar **No-Show ML** para SHAP.
+
+> En Windows, `make` requiere [GNU Make](https://www.gnu.org/software/make/) (Git Bash, WSL o `choco install make`).
+
+---
+
+## Por qué este proyecto
+
+Paradigm demuestra en un solo repositorio lo que recruiters y hiring managers buscan en perfiles de datos:
+
+1. **Gobierno de métricas** — diccionario, vistas SQL, validación Python vs mart.
+2. **Dos lentes BI** — Power BI (ejecutivo) y Tableau (diagnóstico) sobre la misma fuente.
+3. **ML transparente** — split temporal, anti-leakage, SHAP, sin claims de producción.
+4. **Producto analítico** — demo Streamlit con SQL ad-hoc, exploración filtrada y analista guiado.
+5. **Reproducibilidad** — Makefile, Docker, scripts y datos regenerables.
+
+Ideal para **Analytics Engineer**, **Data Analyst senior** o **BI Developer** que quieran evidencia tangible en LinkedIn y entrevistas técnicas.
 
 ---
 
 ## Paradigm — Analytics Engineering Portfolio
 
-**Un caso de estudio completo de analytics engineering para operaciones ambulatorias.**
-
-Pipeline reproducible que transforma datos sintéticos → mart gobernado → KPIs → BI + ML + Demo interactiva.
-
-![Flow](docs/flow.png)
-
-### Problema de negocio
-
-Las clínicas ambulatorias pierden eficiencia e ingresos por **no-shows**, cancelaciones tardías, huecos en agenda y desalineación atención-facturación. Sin definiciones gobernadas de KPIs, cada equipo habla un idioma distinto.
-
-### Solución
-
-Un **end-to-end pipeline** auditable y reproducible:
-
-- **Datos sintéticos** (11 dimensiones + 2 hechos)
-- **Mart SQLite** con vistas KPI gobernadas
-- **Calidad de datos** (14 checks automatizados)
-- **BI**: Power BI (ejecutivo) + Tableau (diagnóstico)
-- **ML**: Priorización de no-shows (metodología transparente)
-- **Demo**: Streamlit v2 interactiva
+**Caso de estudio completo para operaciones ambulatorias** — del dato sintético gobernado al insight accionable con trazabilidad y calidad auditable.
 
 ### Números clave (datos sintéticos)
 
@@ -66,25 +169,7 @@ Un **end-to-end pipeline** auditable y reproducible:
 | Ingreso facturado | ~6.9 M ARS |
 | Brecha atención-facturación | 31 citas |
 
-### Cómo probarlo (1 minuto)
-
-```bash
-make install        # una vez: dependencias del pipeline
-make all            # pipeline completo (7 pasos)
-make demo           # levanta Streamlit en http://localhost:8501
-```
-
-O manualmente:
-
-```bash
-pip install -r requirements-app.txt
-python scripts/build_sqlite_mart.py
-streamlit run streamlit_app.py
-```
-
-> En Windows, `make` requiere [GNU Make](https://www.gnu.org/software/make/) (Chocolatey: `choco install make`, Git Bash, o WSL). Sin Make, usar la secuencia manual en [How to Run](#how-to-run).
-
-*Detalle completo del proyecto, arquitectura, Docker y ML más abajo.*
+*Detalle de arquitectura, capas y ML más abajo.*
 
 ---
 
@@ -276,7 +361,7 @@ Abre `http://localhost:8501`. Filtros en sidebar (fecha, especialidad, proveedor
 | **Executive Overview** | 6 KPIs, tendencia temporal, breakdown por especialidad, card de brecha |
 | **Conciliación** | ATTENDED_NO_BILLING, comparativa atención vs facturación |
 | **No-Show ML** | Formulario de simulación + probabilidad y recomendación |
-| **AI Conversational Insights** | Cuestionario guiado + análisis contextual, gráficos Plotly y recomendaciones ([flujo](docs/conversational_insights_flow.md)) |
+| **AI Conversational Insights** | Wizard + análisis contextual, **SQL Explorer** (NL→SQL, SQLite en memoria), **Data Explorer** (filtros + subset IA) ([flujo](docs/conversational_insights_flow.md)) |
 
 ---
 
@@ -491,14 +576,15 @@ La demo interactiva usa un tema dark glassmorphism consistente en todas las vist
 
 | Token | Hex | Uso |
 |---|---|---|
-| `COLOR_PRIMARY` | `#00f5ff` | Cyan — CTA, acentos, bordes activos |
+| `COLOR_PRIMARY` | `#00f5ff` | Cyan marca — acentos puntuales |
+| `COLOR_PRIMARY_SOFT` | `#5ec8d4` | Cyan apagado — headers, métricas, CTAs |
+| `COLOR_CHART` | `#38b8c7` | Series principales en gráficos |
 | `COLOR_BG_MAIN` | `#0a2540` | Fondo principal (deep navy) |
 | `COLOR_BG_CARD` | `#13294b` | Superficie de cards |
-| `COLOR_SECONDARY` | `#1e3a8a` | Azul secundario |
 | `COLOR_TEXT` | `#e0f2fe` | Texto principal |
-| `COLOR_BORDER` | `#00f5ff33` | Borde sutil (cyan 20% opacidad) |
-| `COLOR_SUCCESS` | `#10b981` | Verde — badge impacto Bajo |
-| `COLOR_WARNING` | `#f59e0b` | Ámbar — badge impacto Medio |
+| `COLOR_BORDER` | `#5ec8d433` | Borde sutil |
+| `COLOR_SUCCESS` | `#34d399` | Verde muted — éxito / impacto Bajo |
+| `COLOR_WARNING` | `#d4a24a` | Ámbar muted — impacto Medio |
 
 ### Estructura de archivos UI
 
@@ -535,9 +621,9 @@ Las recomendaciones del wizard usan badges coloreados inline:
 
 | Badge | Color |
 |---|---|
-| Alto | Cyan `#00f5ff` |
-| Medio | Verde `#10b981` |
-| Bajo | Ámbar `#f59e0b` |
+| Alto | Cyan muted `#5ec8d4` |
+| Medio | Ámbar muted `#d4a24a` |
+| Bajo | Verde muted `#34d399` |
 
 ---
 

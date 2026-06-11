@@ -6,19 +6,25 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
-# ── Paleta premium dark — Paradigm ────────────────────────────────────────
-COLOR_PRIMARY   = "#00f5ff"   # cyan — CTA, primary chart series
-COLOR_ACCENT    = "#38bdf8"   # sky-400 — secondary chart series / highlights
+# ── Versión demo (footer / README) ─────────────────────────────────────────
+APP_VERSION = "2.1.0"
+LAST_UPDATE = "2025-06-11"
+
+# ── Paleta premium dark — tonos profesionales (menos fluorescencia) ────────
+COLOR_PRIMARY   = "#00f5ff"   # cyan marca — acentos y CTA (usar con moderación)
+COLOR_PRIMARY_SOFT = "#5ec8d4"  # cyan apagado — áreas grandes, métricas
+COLOR_CHART     = "#38b8c7"   # series principales en gráficos
+COLOR_ACCENT    = "#5b9cb8"   # sky muted — series secundarias
 COLOR_SECONDARY = "#e0f2fe"   # body text (light on dark bg)
 COLOR_TEXT      = "#e0f2fe"   # alias for body text
 COLOR_BG_MAIN   = "#0a2540"   # deep navy background
 COLOR_BG_CARD   = "#13294b"   # card surface
 COLOR_BG_DARK   = "#0a2540"   # legacy alias — always dark
 COLOR_BG_LIGHT  = "#0a2540"   # legacy alias — always dark
-COLOR_BORDER    = "#00f5ff33" # subtle cyan border
+COLOR_BORDER    = "#5ec8d433" # subtle cyan border (muted)
 COLOR_MUTED     = "#94a3b8"   # muted text / minor labels
-COLOR_SUCCESS   = "#10b981"   # green — low impact badge / positive delta
-COLOR_WARNING   = "#f59e0b"   # amber — medium impact badge
+COLOR_SUCCESS   = "#34d399"   # green muted — delta positivo / éxito
+COLOR_WARNING   = "#d4a24a"   # amber muted — advertencias / impacto medio
 
 # ── Umbrales de recomendación no-show (probabilidad 0–1) ──────────────────
 THRESHOLD_HIGH   = 0.30

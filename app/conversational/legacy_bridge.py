@@ -80,6 +80,27 @@ def run_conversational_analysis(query, df, logical_types, profile, findings=None
     return _fn(query, df, logical_types, profile, findings=findings)
 
 
+def classify_intent(query: str):
+    ensure_legacy_path()
+    from core.ai_analytics.intent import classify_intent as _fn
+
+    return _fn(query)
+
+
+def exploration_filterable_columns(logical: dict[str, str], column_order: list[str]) -> list[str]:
+    ensure_legacy_path()
+    from core.exploration import filterable_columns as _fn
+
+    return _fn(logical, column_order)
+
+
+def exploration_build_filter_mask(df, logical: dict[str, str], specs: dict) -> "pd.Series":
+    ensure_legacy_path()
+    from core.exploration import build_filter_mask as _fn
+
+    return _fn(df, logical, specs)
+
+
 def insights_build_dataset_overview(df, profile, logical_types):
     ensure_legacy_path()
     from core.ai_analytics.insights import build_dataset_overview as _fn

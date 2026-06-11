@@ -6,7 +6,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-from app.config import COLOR_ACCENT, COLOR_MUTED, COLOR_PRIMARY, COLOR_TEXT
+from app.config import COLOR_ACCENT, COLOR_CHART, COLOR_MUTED, COLOR_TEXT, COLOR_WARNING
 
 # Shared dark layout applied to every figure
 _DARK_LAYOUT = dict(
@@ -17,8 +17,19 @@ _DARK_LAYOUT = dict(
     margin=dict(l=40, r=40, t=60, b=40),
 )
 
+
+def _dark_layout(**overrides) -> dict:
+    """Merge overrides into _DARK_LAYOUT; margin dicts are combined, not replaced twice."""
+    layout = dict(_DARK_LAYOUT)
+    margin_extra = overrides.pop("margin", None)
+    layout.update(overrides)
+    if margin_extra is not None:
+        layout["margin"] = {**_DARK_LAYOUT["margin"], **margin_extra}
+    return layout
+
+
 # Color scale: navy → cyan
-_SCALE_CYAN = ["#1e3a8a", "#00f5ff"]
+_SCALE_CYAN = ["#1e3a8a", COLOR_CHART]
 
 
 def trend_chart(daily: pd.DataFrame) -> go.Figure:
@@ -37,7 +48,7 @@ def trend_chart(daily: pd.DataFrame) -> go.Figure:
             x=daily["appointment_date"],
             y=daily["attended"],
             name="Atendidas",
-            marker_color=COLOR_PRIMARY,
+            marker_color=COLOR_CHART,
             opacity=0.85,
         )
     )
@@ -122,8 +133,8 @@ def reconciliation_donut(summary: pd.DataFrame) -> go.Figure:
         return fig
 
     colors = {
-        "ATTENDED_WITH_BILLING": COLOR_PRIMARY,
-        "ATTENDED_WITH_PENDING": "#f59e0b",
+        "ATTENDED_WITH_BILLING": COLOR_CHART,
+        "ATTENDED_WITH_PENDING": COLOR_WARNING,
         "ATTENDED_NO_BILLING":   COLOR_ACCENT,
     }
     palette = [colors.get(b, COLOR_MUTED) for b in summary["reconciliation_bucket"]]
@@ -164,7 +175,7 @@ def attended_vs_billed_chart(monthly: pd.DataFrame) -> go.Figure:
             x=monthly["year_month"],
             y=monthly["attended_count"],
             name="Atendidas",
-            marker_color=COLOR_PRIMARY,
+            marker_color=COLOR_CHART,
         )
     )
     fig.add_trace(
@@ -249,15 +260,14 @@ def shap_local_waterfall_chart(
             y=[expected_value] + contributions + [total],
             connector=dict(line=dict(color=COLOR_MUTED, width=1, dash="dot")),
             increasing=dict(marker=dict(color=COLOR_ACCENT)),
-            decreasing=dict(marker=dict(color=COLOR_PRIMARY)),
+            decreasing=dict(marker=dict(color=COLOR_CHART)),
             totals=dict(marker=dict(color="#38bdf8")),
         )
     )
     fig.update_layout(
-        **_DARK_LAYOUT,
+        **_dark_layout(margin={"b": 120}),
         title=title,
         height=420,
-        margin=dict(l=40, r=40, t=60, b=120),
         xaxis_tickangle=-35,
     )
     return fig
@@ -271,7 +281,7 @@ def shap_force_bar_chart(
     """Barras divergentes: contribución positiva/negativa por feature."""
     pairs = sorted(zip(feature_names, shap_row), key=lambda x: abs(x[1]), reverse=True)[:12]
     pairs = sorted(pairs, key=lambda x: x[1])
-    colors = [COLOR_ACCENT if v >= 0 else COLOR_PRIMARY for _, v in pairs]
+    colors = [COLOR_ACCENT if v >= 0 else COLOR_CHART for _, v in pairs]
 
     fig = go.Figure(
         go.Bar(
@@ -306,7 +316,7 @@ def business_impact_chart(comparison_df: pd.DataFrame, top_pct: int) -> go.Figur
         text="value_ars",
         labels={"value_ars": "ARS", "metric": "Métrica", "scenario": "Escenario"},
         title=f"Baseline vs top {top_pct}% priorizado",
-        color_discrete_sequence=[COLOR_MUTED, COLOR_PRIMARY],
+        color_discrete_sequence=[COLOR_MUTED, COLOR_CHART],
         template="plotly_dark",
     )
     fig.update_traces(texttemplate="%{y:,.0f}", textposition="outside")

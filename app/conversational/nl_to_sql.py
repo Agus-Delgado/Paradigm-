@@ -1,0 +1,251 @@
+"""Natural Language → SQL determinístico (sin LLM)."""
+
+from __future__ import annotations
+
+import re
+import unicodedata
+
+import pandas as pd
+
+from app.conversational.legacy_bridge import classify_intent
+from app.conversational.sql_engine import TABLE_NAME
+from app.conversational.types import Domain
+
+_DOMAIN_METRIC_HINTS: dict[Domain, tuple[str, ...]] = {
+    "finance": ("variacion_pct", "variacion", "desvio", "desviacion", "real", "presupuesto", "monto"),
+    "healthcare_clinic": ("ingreso_neto", "monto", "importe", "costo"),
+    "healthcare_mart": ("net_revenue", "amount", "revenue"),
+    "operations": ("defectos", "defecto", "tiempo_ciclo", "scrap", "unidades"),
+    "generic": (),
+}
+
+_DOMAIN_SEGMENT_HINTS: dict[Domain, tuple[str, ...]] = {
+    "finance": ("centro_costo", "departamento", "cuenta", "cliente"),
+    "healthcare_clinic": ("especialidad", "medico", "cobertura_medica", "medio_pago", "estado_turno"),
+    "healthcare_mart": ("specialty_name", "provider_label", "channel_code", "status_code"),
+    "operations": ("planta", "linea", "turno", "producto"),
+    "generic": (),
+}
+
+_QUERY_METRIC_WORDS = (
+    "desvio",
+    "desviacion",
+    "variacion",
+    "outlier",
+    "anomal",
+    "mayor",
+    "menor",
+    "promedio",
+    "media",
+    "total",
+    "suma",
+    "ingreso",
+    "costo",
+    "monto",
+    "defecto",
+)
+
+_QUERY_SEGMENT_WORDS = (
+    "cliente",
+    "customer",
+    "centro",
+    "departamento",
+    "especialidad",
+    "planta",
+    "linea",
+    "segmento",
+    "categoria",
+    "estado",
+    "canal",
+    "proveedor",
+)
+
+
+def _normalize(text: str) -> str:
+    text = text.strip().lower()
+    text = unicodedata.normalize("NFKD", text)
+    text = "".join(ch for ch in text if not unicodedata.combining(ch))
+    text = re.sub(r"[^\w\s]", " ", text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def _tokens(query: str) -> list[str]:
+    return [t for t in _normalize(query).split() if len(t) >= 2]
+
+
+def _score_column(col: str, tokens: list[str], hints: tuple[str, ...]) -> int:
+    norm_col = _normalize(col).replace("_", " ")
+    score = 0
+    for tok in tokens:
+        if tok in norm_col or norm_col in tok:
+            score += 3
+    for hint in hints:
+        hint_norm = _normalize(hint)
+        if hint_norm == _normalize(col):
+            score += 10
+        elif hint_norm in norm_col:
+            score += 5
+    return score
+
+
+def match_columns(
+    query: str,
+    columns: list[str],
+    *,
+    logical_types: dict[str, str],
+    want: str,
+    domain: Domain,
+    hints: tuple[str, ...] = (),
+) -> str | None:
+    """Resuelve la mejor columna según tokens del query y dominio."""
+    tokens = _tokens(query)
+    domain_hints = _DOMAIN_METRIC_HINTS.get(domain, ()) if want == "numeric" else _DOMAIN_SEGMENT_HINTS.get(domain, ())
+    all_hints = hints + domain_hints
+
+    candidates = [
+        c
+        for c in columns
+        if logical_types.get(c, "text") == want or (want == "numeric" and logical_types.get(c) == "numeric")
+    ]
+    if want == "categorical":
+        candidates = [c for c in columns if logical_types.get(c, "text") in ("categorical", "boolean", "text")]
+    if not candidates:
+        return None
+
+    scored = [(c, _score_column(c, tokens, all_hints)) for c in candidates]
+    scored.sort(key=lambda x: (-x[1], x[0]))
+    if scored[0][1] > 0:
+        return scored[0][0]
+
+    word_pool = _QUERY_METRIC_WORDS if want == "numeric" else _QUERY_SEGMENT_WORDS
+    for word in word_pool:
+        if word in _normalize(query):
+            for c in candidates:
+                if word in _normalize(c):
+                    return c
+
+    return candidates[0] if candidates else None
+
+
+def pick_compare_pair(
+    query: str,
+    columns: list[str],
+    logical_types: dict[str, str],
+    domain: Domain,
+) -> tuple[str | None, str | None]:
+    segment = match_columns(query, columns, logical_types=logical_types, want="categorical", domain=domain)
+    metric = match_columns(query, columns, logical_types=logical_types, want="numeric", domain=domain)
+    if segment and metric:
+        return segment, metric
+
+    cats = [c for c in columns if logical_types.get(c) in ("categorical", "boolean")]
+    nums = [c for c in columns if logical_types.get(c) == "numeric"]
+    return (cats[0] if cats else None, nums[0] if nums else None)
+
+
+def _quote_ident(name: str) -> str:
+    return '"' + name.replace('"', '""') + '"'
+
+
+def _limit_clause(query: str, default: int = 20) -> int:
+    norm = _normalize(query)
+    m = re.search(r"\b(top|primeros?|ultimos?|últimos?)\s+(\d+)\b", norm)
+    if m:
+        return min(int(m.group(2)), 500)
+    if any(w in norm for w in ("todos", "completo", "all")):
+        return 500
+    return default
+
+
+def generate_sql(
+    query: str,
+    df: pd.DataFrame,
+    logical_types: dict[str, str],
+    domain: Domain,
+) -> tuple[str, str]:
+    """
+    Genera SQL heurístico editable.
+    Returns: (sql, explanation)
+    """
+    columns = list(df.columns)
+    intent = classify_intent(query)
+    limit = _limit_clause(query)
+    t = TABLE_NAME
+    norm = _normalize(query)
+
+    if intent == "compare" or any(w in norm for w in ("compar", "versus", " vs ", "entre", "por")):
+        seg, met = pick_compare_pair(query, columns, logical_types, domain)
+        if seg and met:
+            sql = (
+                f"SELECT {_quote_ident(seg)} AS segmento,\n"
+                f"       AVG({_quote_ident(met)}) AS promedio,\n"
+                f"       COUNT(*) AS filas\n"
+                f"FROM {t}\n"
+                f"GROUP BY {_quote_ident(seg)}\n"
+                f"ORDER BY promedio DESC\n"
+                f"LIMIT {limit}"
+            )
+            return sql, f"Comparación agrupada: promedio de «{met}» por «{seg}»."
+
+    if intent == "detect_anomaly" or any(
+        w in norm for w in ("anomal", "outlier", "atipic", "desvio", "desviacion", "inusual", "extremo")
+    ):
+        metric = match_columns(query, columns, logical_types=logical_types, want="numeric", domain=domain)
+        if metric:
+            sql = (
+                f"SELECT *,\n"
+                f"       ABS({_quote_ident(metric)} - (SELECT AVG({_quote_ident(metric)}) FROM {t})) AS desvio_abs\n"
+                f"FROM {t}\n"
+                f"WHERE {_quote_ident(metric)} IS NOT NULL\n"
+                f"ORDER BY desvio_abs DESC\n"
+                f"LIMIT {limit}"
+            )
+            return sql, f"Filas ordenadas por desvío absoluto respecto al promedio de «{metric}»."
+
+    if intent == "search" or any(w in norm for w in ("nulo", "null", "faltan", "missing", "columna")):
+        parts = []
+        for col in columns[:12]:
+            qc = _quote_ident(col)
+            parts.append(
+                f"SELECT '{col}' AS columna, COUNT(*) AS filas, "
+                f"COUNT(*) - COUNT({qc}) AS nulos "
+                f"FROM {t}"
+            )
+        sql = "\nUNION ALL\n".join(parts) + "\nORDER BY nulos DESC"
+        return sql, "Conteo de nulos por columna (hasta 12 columnas)."
+
+    if intent == "filter" or any(w in norm for w in ("filtr", "solo", "donde", "mostrar")):
+        seg = match_columns(query, columns, logical_types=logical_types, want="categorical", domain=domain)
+        if seg and seg in df.columns:
+            top = df[seg].astype(str).value_counts().head(1)
+            if not top.empty:
+                val = str(top.index[0]).replace("'", "''")
+                sql = (
+                    f"SELECT *\nFROM {t}\n"
+                    f"WHERE CAST({_quote_ident(seg)} AS TEXT) = '{val}'\n"
+                    f"LIMIT {limit}"
+                )
+                return sql, f"Filtro sugerido: «{seg}» = '{top.index[0]}' (valor más frecuente)."
+
+    if intent == "summarize" or any(w in norm for w in ("resum", "panorama", "overview", "cuant")):
+        sql = (
+            f"SELECT COUNT(*) AS total_filas,\n"
+            f"       COUNT(DISTINCT {_quote_ident(columns[0])}) AS unicos_primera_columna\n"
+            f"FROM {t}"
+        )
+        return sql, "Resumen rápido del dataset."
+
+    # Fallback: top valores por segmento + métrica de dominio
+    seg, met = pick_compare_pair(query, columns, logical_types, domain)
+    if seg and met:
+        sql = (
+            f"SELECT {_quote_ident(seg)}, {_quote_ident(met)}, COUNT(*) AS filas\n"
+            f"FROM {t}\n"
+            f"GROUP BY {_quote_ident(seg)}, {_quote_ident(met)}\n"
+            f"ORDER BY {_quote_ident(met)} DESC\n"
+            f"LIMIT {limit}"
+        )
+        return sql, f"Consulta sugerida por defecto: «{met}» agrupado con «{seg}»."
+
+    sql = f"SELECT * FROM {t} LIMIT {min(limit, 50)}"
+    return sql, "No se detectó un patrón específico; consulta de exploración básica."

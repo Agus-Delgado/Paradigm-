@@ -12,8 +12,9 @@ import streamlit as st
 
 from app.config import (
     COLOR_ACCENT,
-    COLOR_PRIMARY,
+    COLOR_CHART,
     COLOR_SUCCESS,
+    COLOR_WARNING,
     MODEL_FILES,
     RECOMMENDATIONS,
     THRESHOLD_HIGH,
@@ -21,6 +22,8 @@ from app.config import (
     TRAIN_COMMAND,
 )
 from app.data import HISTORICAL_NUMERIC, load_historical_defaults
+from app.export_report import build_ml_prediction_report_md
+from app.ui import render_workspace_header
 from app.plots import (
     business_impact_chart,
     shap_force_bar_chart,
@@ -273,10 +276,13 @@ def render_prediction_tab(
     db_path_str: str,
     db_mtime: float,
 ) -> None:
-    st.subheader("No-Show Prediction")
+    render_workspace_header(
+        "No-Show ML",
+        "Priorización · SHAP · impacto de negocio",
+    )
     st.caption(
-        "Simulación de priorización con el modelo entrenado sobre datos sintéticos. "
-        "No es un sistema de producción — ver `ml/README.md` y `ml/experiment_report.md`."
+        "Simulación con modelo entrenado sobre datos sintéticos. "
+        "No es producción — ver `ml/README.md` y `ml/experiment_report.md`."
     )
 
     model_name = st.selectbox("Modelo", list(MODEL_FILES.keys()), index=0)
@@ -369,7 +375,7 @@ def render_prediction_tab(
 
         proba = float(pipe.predict_proba(X)[0, 1])
         level, recommendation = get_recommendation(proba)
-        color = COLOR_ACCENT if level == "Alto" else (COLOR_PRIMARY if level == "Medio" else COLOR_SUCCESS)
+        color = COLOR_ACCENT if level == "Alto" else (COLOR_WARNING if level == "Medio" else COLOR_SUCCESS)
 
         st.session_state["last_prediction"] = {
             "X": X,
@@ -385,12 +391,30 @@ def render_prediction_tab(
 
         st.markdown(
             f"""
-            <div style="border-left:4px solid {color};padding:0.75rem 1rem;
-            background:rgba(13,148,136,0.08);border-radius:8px;margin-top:0.5rem;">
+            <div class="insight-card" style="border-left:4px solid {color};margin-top:0.5rem;">
             <strong>Recomendación:</strong> {recommendation}
             </div>
             """,
             unsafe_allow_html=True,
+        )
+
+        summary = (
+            f"{specialty} · {provider} · {appt_date} {appt_time.strftime('%H:%M')}"
+        )
+        report_md = build_ml_prediction_report_md(
+            model_name=model_name,
+            proba=proba,
+            level=level,
+            recommendation=recommendation,
+            appointment_summary=summary,
+        )
+        st.download_button(
+            "Exportar reporte",
+            data=report_md,
+            file_name="paradigm_noshow_prediccion.md",
+            mime="text/markdown",
+            help="Informe Markdown de la predicción y recomendación operativa.",
+            key="export_ml_prediction",
         )
 
         with st.expander("Vector de features enviado al modelo"):
