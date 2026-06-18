@@ -34,6 +34,7 @@ def build_analysis_report_md(
     ctx: DatasetContext,
     *,
     plan_objective: str | None = None,
+    llm_insight: dict | None = None,
 ) -> str:
     lines = [
         "# Paradigm — Informe de Análisis Guiado",
@@ -69,10 +70,43 @@ def build_analysis_report_md(
         lines.append(", ".join(f"«{c}»" for c in result.data_used))
         lines.append("")
 
+    if llm_insight:
+        engine = "LLM + RAG" if llm_insight.get("used_llm") else "Heurístico"
+        lines.extend(
+            [
+                "## AI Analyst (LLM)",
+                "",
+                f"| Campo | Valor |",
+                f"|-------|-------|",
+                f"| Motor | {engine} |",
+                f"| Confianza | {llm_insight.get('confidence', '—')} |",
+                f"| Impacto | {llm_insight.get('business_impact', '—')} |",
+                "",
+                f"**Insight:** {llm_insight.get('insight', '')}",
+                "",
+                f"**Recomendación:** {llm_insight.get('recommendation', '')}",
+                "",
+            ]
+        )
+        sources = llm_insight.get("sources") or []
+        if sources:
+            lines.append("**Fuentes:** " + ", ".join(str(s) for s in sources))
+            lines.append("")
+        if llm_insight.get("sql"):
+            lines.extend(["### SQL sugerido", "", "```sql", str(llm_insight["sql"]).strip(), "```", ""])
+        if llm_insight.get("fallback_reason"):
+            lines.append(f"_Fallback: {llm_insight['fallback_reason']}_")
+            lines.append("")
+
+    footer_note = (
+        "Generado por Paradigm Live Demo · datos sintéticos · analista híbrido LLM."
+        if llm_insight and llm_insight.get("used_llm")
+        else "Generado por Paradigm Live Demo · datos sintéticos."
+    )
     lines.extend(
         [
             "---",
-            "_Generado por Paradigm Live Demo · datos sintéticos · sin LLM._",
+            f"_{footer_note}_",
         ]
     )
     return "\n".join(lines)
@@ -85,6 +119,9 @@ def build_sql_report_md(
     *,
     nl_prompt: str | None = None,
     error: str | None = None,
+    nl_engine: str | None = None,
+    nl_explanation: str | None = None,
+    heuristic_sql: str | None = None,
 ) -> str:
     lines = [
         "# Paradigm — Informe SQL Explorer",
@@ -98,6 +135,22 @@ def build_sql_report_md(
     ]
     if nl_prompt:
         lines.extend([f"**Consulta en lenguaje natural:** {nl_prompt}", ""])
+    if nl_engine:
+        lines.append(f"**Motor NL→SQL:** {nl_engine}")
+    if nl_explanation:
+        lines.extend([f"**Explicación:** {nl_explanation}", ""])
+    if heuristic_sql and heuristic_sql.strip() != sql.strip():
+        lines.extend(
+            [
+                "",
+                "### Comparación — SQL heurístico",
+                "",
+                "```sql",
+                heuristic_sql.strip(),
+                "```",
+                "",
+            ]
+        )
 
     lines.extend(["## SQL ejecutado", "", "```sql", sql.strip(), "```", ""])
 

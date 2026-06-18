@@ -1,15 +1,24 @@
-"""Natural Language → SQL determinístico (sin LLM)."""
+"""Natural Language → SQL híbrido (LLM + heurístico con fallback)."""
 
 from __future__ import annotations
 
+import logging
 import re
 import unicodedata
+from dataclasses import dataclass, field
+from typing import Literal
 
 import pandas as pd
 
+from app.config.llm_config import is_llm_available
 from app.conversational.legacy_bridge import classify_intent
+from app.conversational.llm_security import validate_llm_sql
 from app.conversational.sql_engine import TABLE_NAME
 from app.conversational.types import Domain
+
+logger = logging.getLogger(__name__)
+
+SQL_ENGINE = Literal["llm", "heuristic"]
 
 _DOMAIN_METRIC_HINTS: dict[Domain, tuple[str, ...]] = {
     "finance": ("variacion_pct", "variacion", "desvio", "desviacion", "real", "presupuesto", "monto"),
@@ -157,14 +166,27 @@ def _limit_clause(query: str, default: int = 20) -> int:
     return default
 
 
-def generate_sql(
+@dataclass
+class SQLResult:
+    """Resultado enriquecido de NL→SQL (LLM o heurístico)."""
+
+    sql: str
+    explanation: str
+    engine: SQL_ENGINE
+    confidence: str | None = None
+    sources: list[str] = field(default_factory=list)
+    used_llm: bool = False
+    fallback_reason: str | None = None
+
+
+def _generate_sql_heuristic(
     query: str,
     df: pd.DataFrame,
     logical_types: dict[str, str],
     domain: Domain,
 ) -> tuple[str, str]:
     """
-    Genera SQL heurístico editable.
+    Genera SQL heurístico editable (motor determinístico original).
     Returns: (sql, explanation)
     """
     columns = list(df.columns)
@@ -249,3 +271,94 @@ def generate_sql(
 
     sql = f"SELECT * FROM {t} LIMIT {min(limit, 50)}"
     return sql, "No se detectó un patrón específico; consulta de exploración básica."
+
+
+def _heuristic_sql_result(
+    query: str,
+    df: pd.DataFrame,
+    logical_types: dict[str, str],
+    domain: Domain,
+    *,
+    fallback_reason: str | None = None,
+) -> SQLResult:
+    sql_text, explanation = _generate_sql_heuristic(query, df, logical_types, domain)
+    return SQLResult(
+        sql=sql_text,
+        explanation=explanation,
+        engine="heuristic",
+        confidence="low",
+        sources=["heuristic:nl_to_sql"],
+        used_llm=False,
+        fallback_reason=fallback_reason,
+    )
+
+
+def generate_sql_llm_enhanced(
+    natural_query: str,
+    df: pd.DataFrame,
+    logical_types: dict[str, str],
+    domain: Domain,
+    *,
+    force_heuristic: bool = False,
+) -> SQLResult:
+    """
+    Genera SQL vía LLM (RAG + schema) con fallback al motor heurístico.
+
+    Usa ``llm_service.generate_sql_llm`` cuando el proveedor está disponible.
+    """
+    if force_heuristic or not is_llm_available():
+        reason = "LLM deshabilitado o no disponible" if not force_heuristic else "force_heuristic=True"
+        result = _heuristic_sql_result(natural_query, df, logical_types, domain, fallback_reason=reason)
+        logger.info("NL→SQL engine=heuristic (sin LLM) query=%r", natural_query[:120])
+        return result
+
+    from app.conversational.llm_service import generate_sql_llm
+
+    analyst = generate_sql_llm(natural_query, df, logical_types, domain)
+    sql_text = (analyst.sql or "").strip()
+    explanation = (analyst.explanation or analyst.insight or "").strip()
+
+    if analyst.used_llm and sql_text and validate_llm_sql(sql_text)[0]:
+        result = SQLResult(
+            sql=sql_text,
+            explanation=explanation or "Consulta generada por analista LLM.",
+            engine="llm",
+            confidence=analyst.confidence,
+            sources=list(analyst.sources),
+            used_llm=True,
+            fallback_reason=None,
+        )
+        logger.info(
+            "NL→SQL engine=llm confidence=%s query=%r sources=%s",
+            result.confidence,
+            natural_query[:120],
+            result.sources,
+        )
+        return result
+
+    reason = analyst.fallback_reason or "SQL LLM inválido o no seguro"
+    result = _heuristic_sql_result(natural_query, df, logical_types, domain, fallback_reason=reason)
+    logger.warning(
+        "NL→SQL engine=heuristic (fallback) reason=%s query=%r",
+        reason,
+        natural_query[:120],
+    )
+    return result
+
+
+def generate_sql(
+    query: str,
+    df: pd.DataFrame,
+    logical_types: dict[str, str],
+    domain: Domain,
+) -> tuple[str, str]:
+    """
+    Genera SQL para el dataset activo.
+
+    Intenta primero el analista LLM; si no está disponible, falla o el SQL
+    no pasa ``is_safe_sql``, usa el motor heurístico determinístico.
+
+    Returns: (sql, explanation) — firma compatible con consumidores existentes.
+    """
+    result = generate_sql_llm_enhanced(query, df, logical_types, domain)
+    return result.sql, result.explanation

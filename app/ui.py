@@ -481,23 +481,45 @@ def render_contextual_results(
     show_ml_cta: bool = False,
     ctx=None,
     plan=None,
+    llm_insight: dict | None = None,
+    llm_sql_df: pd.DataFrame | None = None,
 ) -> None:
-    """Premium cards: summary, findings with border-left, recommendations with impact badges."""
+    """Premium cards: summary, findings, LLM insight, recommendations."""
     st.markdown(f"### {result.title}")
 
     if ctx is not None:
         objective = None
         if plan is not None and getattr(plan, "objective", None):
             objective = plan.objective
-        report_md = build_analysis_report_md(result, ctx, plan_objective=objective)
+        report_md = build_analysis_report_md(
+            result,
+            ctx,
+            plan_objective=objective,
+            llm_insight=llm_insight,
+        )
         st.download_button(
-            "Exportar reporte",
+            "Exportar reporte MD",
             data=report_md,
             file_name=f"paradigm_analisis_{ctx.dataset_key[:8]}.md",
             mime="text/markdown",
-            help="Descarga un informe Markdown listo para compartir o convertir a PDF.",
+            help="Informe Markdown con análisis contextual + output del AI Analyst.",
             key=f"export_analysis_{ctx.dataset_key}",
         )
+
+    if llm_insight:
+        from app.conversational.ai_analyst_ui import render_llm_insight_card
+
+        st.markdown(
+            f"<p style='font-weight:600;color:{COLOR_TEXT};margin:0.5rem 0 0.4rem;'>"
+            "Análisis del wizard — AI Analyst</p>",
+            unsafe_allow_html=True,
+        )
+        render_llm_insight_card(
+            llm_insight,
+            title="Primer insight post-wizard",
+            sql_df=llm_sql_df,
+        )
+        st.divider()
 
     # Summary card
     st.markdown(

@@ -1,6 +1,6 @@
 # Flujo de AI Conversational Insights
 
-Paradigm incluye una capa de **analista conversacional determinística** (sin LLM): detecta el schema del dataset, hace preguntas guiadas orientadas a causas raíz y genera análisis, gráficos Plotly y recomendaciones priorizadas por impacto.
+Paradigm incluye un **analista conversacional híbrido**: motor determinístico de análisis contextual + **AI Analyst** (LLM + RAG) con fallback heurístico transparente.
 
 ## Dónde probarlo
 
@@ -18,21 +18,39 @@ Landing (demo | sintético | upload)
   → [Cargar y Comenzar Análisis]
   → Preview (shape, columnas, tipos)
   → Wizard (máx. 3 preguntas: objetivo + hipótesis + segmento sospechoso)
-  → Auto-análisis contextual
+  → Auto-análisis contextual + primer insight AI Analyst (LLM o heurístico)
   → Workspace con 3 pestañas (ver abajo)
 ```
 
-Progreso visible en cada etapa: *Cargando datos…*, *Detectando estructura…*, *Preparando preguntas…*, *Entendiendo tu objetivo…*, *Generando análisis contextual…*.
+Progreso visible: *Cargando datos…*, *Detectando estructura…*, *Generando análisis contextual + AI Analyst…*.
+
+## Arquitectura híbrida
+
+```text
+Usuario
+  → Wizard / Chat / NL→SQL
+       ├─ LLM disponible → RAG (docs + SQL samples) + schema → JSON estructurado
+       └─ Fallback       → motor heurístico (nl_to_sql / análisis contextual)
+```
+
+| Capa | Rol |
+|------|-----|
+| **RAG FAISS** | `data_dictionary.md`, `metrics.md`, `sql/samples/*.sql` |
+| **LLM** | Ollama (default), Groq, OpenAI, Grok — ver `.env.example` |
+| **Safeguards** | Solo `SELECT`/`WITH`, rate limit, log JSONL auditable |
+| **UI** | Banner de estado, **✦ Ask AI Analyst**, chat persistente |
+
+Con `PARADIGM_LLM_PROVIDER=disabled` el flujo es idéntico al modo determinístico original.
 
 ## Workspace post-análisis (3 pestañas)
 
-Tras completar el wizard (o **Explorar sin cuestionario**), la UI muestra navegación horizontal persistente (`session_state`):
-
 | Pestaña | Contenido |
 |---------|-----------|
-| **Análisis Guiado** | Resultados contextuales, re-analizar, chat de seguimiento |
-| **SQL Explorer** | NL→SQL, editor, ejecución SQLite en memoria, historial, gráfico auto |
-| **Data Explorer** | Filtros dinámicos, preview, stats rápidas, **Explorar con IA** |
+| **Análisis Guiado** | Insight LLM post-wizard, análisis contextual, gráficos, chat AI |
+| **SQL Explorer** | NL→SQL híbrido (LLM + comparación heurística), editor, historial |
+| **Data Explorer** | Filtros, preview, **Explorar con IA**, **Ask AI Analyst** |
+
+En las tres pestañas: banner LLM, botón **✦ Ask AI Analyst** y panel de chat compartido (`session_state`).
 
 ## Wizard (máx. 3 preguntas)
 
@@ -40,69 +58,54 @@ Tras completar el wizard (o **Explorar sin cuestionario**), la UI muestra navega
 2. **Hipótesis de causa:** qué métrica preocupa y por qué creés que ocurre (texto libre).
 3. **Segmento sospechoso:** dimensión donde esperás concentración del problema (select según schema).
 
-Botón secundario: **Explorar sin cuestionario** (análisis con objetivo genérico).
+Botón secundario: **Explorar sin cuestionario**.
+
+Tras el wizard, `generate_insights()` produce: insight, recomendación, impacto, confianza, fuentes y SQL opcional con gráfico automático.
 
 ## SQL Explorer
 
-- El DataFrame cargado se registra en **SQLite `:memory:`** como tabla `data` (stdlib, sin dependencias extra).
-- Solo consultas de lectura: `SELECT` / `WITH`.
-- **NL → SQL:** heurísticas por intención (`compare`, `detect_anomaly`, `search`, etc.) + resolución de columnas según dominio.
-- Editor monospace editable antes de ejecutar.
-- Resultados en `st.dataframe` + gráfico Plotly inferido automáticamente.
-- Historial de consultas en `session_state` (reusar con un clic).
+- Tabla SQLite en memoria: `data` (solo lectura).
+- **NL → SQL:** `generate_sql_llm_enhanced()` — LLM + RAG con fallback a heurísticas.
+- Badge **LLM + RAG** vs **Heurístico**; expander de comparación cuando difieren.
+- Validación reforzada: `validate_llm_sql()` (una sentencia, sin DDL/DML).
 
-Ejemplo NL (finanzas sintético): *"muéstrame los clientes con mayor desvío"* → SQL con `ORDER BY desvio_abs DESC` sobre `variacion_pct` / `centro_costo`.
+## AI Analyst — chat y logging
+
+- Chat persistente vía **✦ Ask AI Analyst** (hasta 20 turnos en memoria de sesión).
+- Log auditable: `data/processed/llm_interactions.jsonl` (query, respuesta, `duration_ms`, tokens aprox.).
+- Sidebar: toggle **Ver Historial AI** (o `PARADIGM_DEBUG=true`).
+- Rate limit: `PARADIGM_LLM_RATE_LIMIT` (default 10/min).
 
 ## Data Explorer
 
-- Columna izquierda: lista de columnas con tipo lógico + filtros dinámicos (categórico, numérico, fecha, booleano).
-- Columna derecha: métricas de filas filtradas, stats por columna, preview tabular.
-- **Explorar con IA:** aplica filtros, crea un `DatasetContext` del subset y salta a **Análisis Guiado** con análisis automático.
+- Filtros dinámicos, preview, stats rápidas.
+- **Explorar con IA:** subset filtrado → Análisis Guiado.
+- Mismo chrome AI Analyst que el resto del workspace.
 
 ## Fuentes de datos (v2)
 
 | Opción | Descripción |
 |--------|-------------|
-| Dataset demo | CSV plano del consultorio (`legacy/data/sample/medical_clinic/`) |
-| Datos aleatorios | Generador en `app/conversational/synthetic.py` con patrones analizables |
-| Upload | CSV o Excel (`.csv`, `.xlsx`, `.xls`) |
-
-Las tres pestañas operan sobre el mismo DataFrame cargado (demo, sintético o upload).
-
-## Dominios detectados
-
-| Dominio | Señales | Ejemplo |
-|---------|---------|---------|
-| `healthcare_clinic` | `estado_turno`, `especialidad`, `ingreso_neto` | Ausencias por especialidad/canal |
-| `healthcare_mart` | `status_code`, `appointment_date`, `specialty_name` | No-show por segmento mart |
-| `finance` | presupuesto, real, variacion, centro_costo | Desvíos presupuestarios |
-| `operations` | planta, linea, defectos, tiempo_ciclo | Defectos por planta/línea |
-| `generic` | cualquier CSV | Análisis genérico métrica × segmento |
-
-## Datos sintéticos
-
-El generador crea patrones detectables para demos:
-
-- **Salud:** Cardiología y canal Teléfono con más ausencias.
-- **Finanzas:** Planta Logística + Operaciones con desvíos altos; outliers en Marketing.
-- **Operaciones:** Planta B con más defectos; turno Noche con ciclos más largos.
+| Dataset demo | CSV plano del consultorio |
+| Datos aleatorios | `app/conversational/synthetic.py` |
+| Upload | CSV o Excel |
 
 ## Módulos
 
-- `app/conversational/flow.py` — landing, wizard, tabs post-análisis
-- `app/conversational/sql_engine.py` — SQLite en memoria, ejecución segura
-- `app/conversational/nl_to_sql.py` — NL → SQL determinístico
-- `app/conversational/sql_explorer.py` — UI SQL Explorer
-- `app/conversational/data_explorer.py` — UI Data Explorer
-- `app/conversational/` — dominio, preguntas, plan, análisis, plots, synthetic
-- `app/data.py` — `prepare_dataset_context`, carga CSV/demo
-- `app/ui.py` — progreso, cuestionario, resultados
-- `legacy/app/core/ai_analytics/` — motor Q&A reactivo (seguimiento conversacional)
-- `legacy/app/core/exploration.py` — máscaras de filtro reutilizadas
+| Módulo | Responsabilidad |
+|--------|-----------------|
+| `app/conversational/flow.py` | Landing, wizard, tabs |
+| `app/conversational/ai_analyst_ui.py` | Banner, chat, sidebar historial |
+| `app/conversational/llm_service.py` | LLM + RAG + orquestación |
+| `app/conversational/llm_security.py` | Validación SQL, rate limit |
+| `app/conversational/llm_logging.py` | JSONL estructurado |
+| `app/conversational/nl_to_sql.py` | NL→SQL híbrido |
+| `app/conversational/sql_explorer.py` | UI SQL |
+| `app/config/llm_config.py` | Proveedores y env vars |
 
 ## Limitaciones
 
-- Sin modelos de lenguaje: heurísticas basadas en schema y reglas (también en NL→SQL).
-- SQL Explorer: solo lectura; tabla fija `data`; datasets muy grandes pueden ser lentos en memoria.
-- Los filtros del sidebar de otras pestañas v2 **no** aplican al analista; Data Explorer tiene sus propios filtros locales.
-- Los filtros del sidebar legacy v1 **no** aplican al analista conversacional.
+- Rate limit en memoria del proceso (demo/portfolio; no multi-usuario productivo).
+- SQL Explorer: tabla fija `data`; datasets grandes pueden ser lentos en memoria.
+- Sin PHI — datos 100 % sintéticos.
+- Filtros del sidebar ejecutivo **no** aplican al analista conversacional.

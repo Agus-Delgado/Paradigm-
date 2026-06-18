@@ -1,0 +1,17 @@
+# LLM Conversational Analyst (opcional — incluido vía requirements-app.txt)
+# Orquestación
+langchain>=0.3.0
+langchain-core>=0.3.0
+langchain-community>=0.3.0
+
+# Proveedores (solo se usa el configurado en runtime)
+langchain-ollama>=0.3.0
+langchain-openai>=0.2.0
+langchain-groq>=0.2.0
+
+# RAG
+faiss-cpu>=1.8.0
+sentence-transformers>=3.0.0  # fallback embeddings si Ollama/API no disponibles
+
+# Config local
+python-dotenv>=1.0.0

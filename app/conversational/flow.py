@@ -4,9 +4,19 @@ from __future__ import annotations
 
 import streamlit as st
 
+from app.conversational.ai_analyst_ui import (
+    analyst_result_to_dict,
+    append_chat_turn,
+    build_wizard_llm_query,
+    chat_history_key,
+    fetch_llm_insight,
+    llm_spinner_message,
+    panel_open_key,
+    render_ai_workspace_chrome,
+    render_llm_insight_card,
+)
 from app.conversational.analysis import run_contextual_analysis
 from app.conversational.data_explorer import make_explore_ia_handler, render_data_explorer
-from app.conversational.legacy_bridge import run_conversational_analysis
 from app.conversational.plan import build_analysis_plan
 from app.conversational.plots import build_contextual_plots
 from app.conversational.questions import generate_guided_questions
@@ -47,7 +57,7 @@ def _pending_run_key(dataset_key: str) -> str:
 
 
 def _clear_analyst_session(dataset_key: str | None = None) -> None:
-    prefixes = ("analyst_", "sql_", "explorer_")
+    prefixes = ("analyst_", "sql_", "explorer_", "ai_analyst_")
     for k in list(st.session_state.keys()):
         if any(k.startswith(p) for p in prefixes):
             if dataset_key is None or dataset_key in k:
@@ -55,6 +65,9 @@ def _clear_analyst_session(dataset_key: str | None = None) -> None:
     if dataset_key is None:
         st.session_state.pop("paradigm_ai_history", None)
         st.session_state.pop("analyst_active_tab", None)
+    else:
+        st.session_state.pop(panel_open_key(dataset_key), None)
+        st.session_state.pop(chat_history_key(dataset_key), None)
     invalidate_sql_cache(dataset_key)
 
 
@@ -78,11 +91,24 @@ def _run_analysis(ctx: DatasetContext, answers: dict[str, str | float]) -> None:
         ctx.domain,
     )
     figures = build_contextual_plots(ctx.df, ctx.logical_types, plan)
+
+    wizard_query = build_wizard_llm_query(answers)
+    llm_insight, llm_sql_df = fetch_llm_insight(ctx, wizard_query)
+
     st.session_state[_result_key(ctx.dataset_key)] = {
         "result": result,
         "figures": figures,
         "plan": plan,
+        "llm_insight": analyst_result_to_dict(llm_insight),
+        "llm_sql_df": llm_sql_df,
     }
+
+    append_chat_turn(
+        ctx.dataset_key,
+        wizard_query,
+        analyst_result_to_dict(llm_insight),
+        llm_sql_df,
+    )
 
 
 def _render_dataset_header(ctx: DatasetContext) -> None:
@@ -112,38 +138,29 @@ def _render_tab_nav() -> str:
 
 
 def _render_followup_chat(ctx: DatasetContext) -> None:
+    """Seguimiento conversacional — delega al panel AI si está cerrado."""
+    dk = ctx.dataset_key
+    if st.session_state.get(panel_open_key(dk), False):
+        st.caption("Usá el panel **✦ Ask AI Analyst** arriba para seguir la conversación.")
+        return
+
     st.divider()
     st.subheader("Seguimiento conversacional")
-    st.caption(
-        "Preguntas de seguimiento sobre el dataset activo. "
-        "Motor determinístico basado en schema — sin LLM."
-    )
-    history_key = "paradigm_ai_history"
-    if history_key not in st.session_state:
-        st.session_state[history_key] = []
+    st.caption("Preguntas de seguimiento con AI Analyst (RAG + schema del dataset).")
 
-    with st.form("analyst_followup_form"):
+    with st.form(f"analyst_followup_form_{dk}"):
         query = st.text_input(
             "Tu pregunta",
-            placeholder="Ej.: ¿Qué columnas tienen más nulos? ¿Dónde están los outliers en defectos?",
+            placeholder="Ej.: ¿Qué columnas tienen más nulos? ¿Dónde está el no-show?",
         )
-        submitted = st.form_submit_button("Analizar", use_container_width=True)
+        submitted = st.form_submit_button("Preguntar al AI Analyst", use_container_width=True)
 
     if submitted and query.strip():
-        with st.spinner("Analizando…"):
-            result = run_conversational_analysis(
-                query.strip(),
-                ctx.df,
-                ctx.logical_types,
-                ctx.profile,
-                findings=ctx.findings,
-            )
-        st.session_state[history_key].append({"query": query.strip(), "result": result})
-        with st.container(border=True):
-            st.markdown(f"**{result['title']}**")
-            st.caption(result["summary"])
-            for item in result.get("findings", [])[:6]:
-                st.markdown(f"- {item}")
+        with st.spinner(llm_spinner_message()):
+            insight, sql_df = fetch_llm_insight(ctx, query.strip())
+        payload = analyst_result_to_dict(insight)
+        append_chat_turn(dk, query.strip(), payload, sql_df)
+        render_llm_insight_card(payload, title="Última respuesta", sql_df=sql_df)
 
 
 def _render_guided_tab(ctx: DatasetContext, *, show_ml_cta: bool) -> None:
@@ -160,6 +177,7 @@ def _render_guided_tab(ctx: DatasetContext, *, show_ml_cta: bool) -> None:
         "Análisis Guiado",
         f"{ctx.source_label} · {len(ctx.df):,} filas",
     )
+    render_ai_workspace_chrome(ctx, tab_suffix="guided")
 
     render_contextual_results(
         cached["result"],
@@ -167,6 +185,8 @@ def _render_guided_tab(ctx: DatasetContext, *, show_ml_cta: bool) -> None:
         show_ml_cta=show_ml_cta and ctx.domain == "healthcare_mart",
         ctx=ctx,
         plan=cached.get("plan"),
+        llm_insight=cached.get("llm_insight"),
+        llm_sql_df=cached.get("llm_sql_df"),
     )
     col_a, col_b = st.columns(2)
     with col_a:
@@ -175,7 +195,7 @@ def _render_guided_tab(ctx: DatasetContext, *, show_ml_cta: bool) -> None:
                 if dk in k and k.startswith("analyst_"):
                     del st.session_state[k]
             st.session_state.pop(_skip_key(dk), None)
-            st.session_state.pop("paradigm_ai_history", None)
+            st.session_state.pop(chat_history_key(dk), None)
             st.rerun()
     with col_b:
         if st.button("Cambiar dataset", key=f"change_ds_{dk}"):
@@ -202,6 +222,7 @@ def _render_post_analysis_workspace(ctx: DatasetContext, *, show_ml_cta: bool) -
             pending_run_key_fn=_pending_run_key,
         )
         render_data_explorer(ctx, on_explore_ia=on_ia)
+        render_ai_workspace_chrome(ctx, tab_suffix="explorer")
 
 
 def render_analyst_landing(*, on_prepare, show_change_dataset: bool = True) -> DatasetContext | None:
@@ -291,7 +312,7 @@ def render_analyst_flow(ctx: DatasetContext, *, show_ml_cta: bool = False) -> No
         answers = get_merged_answers(dk)
         if not answers:
             answers = {"objective": "Exploración general del dataset"}
-        with st.spinner("Generando análisis contextual…"):
+        with st.spinner("Generando análisis contextual + AI Analyst…"):
             _run_analysis(ctx, answers)
         st.rerun()
 
@@ -367,7 +388,6 @@ def render_conversational_page_v2(
     render_analyst_flow(ctx, show_ml_cta=True)
 
 
-# Compatibilidad legacy — delegar al flujo unificado
 def render_wizard_optional(ctx: DatasetContext, *, show_skip: bool = True) -> bool:
     """Deprecated: el wizard vive dentro de render_analyst_flow."""
     return bool(

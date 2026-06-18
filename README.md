@@ -35,7 +35,7 @@ Paradigm es un **portfolio end-to-end de analytics engineering**: pipeline repro
 |------|-------------|
 | **Pipeline** | Datos sintéticos → mart SQLite → 14 checks de calidad → exports BI |
 | **Executive & Conciliación** | KPIs gobernados, tendencia, brecha atención–facturación |
-| **AI Conversational Insights** | Landing → wizard root-cause → 3 pestañas (Análisis · SQL · Data) |
+| **AI Conversational Insights** | Landing → wizard root-cause → 3 pestañas (Análisis · SQL · Data) · **LLM híbrido** (Ollama/API) con fallback heurístico |
 | **No-Show ML** | Priorización con SHAP, impacto de negocio, evaluación honesta |
 
 ### Landing premium
@@ -133,6 +133,54 @@ streamlit run streamlit_app.py
 docker build -t paradigm-demo .
 docker run -p 8501:8501 paradigm-demo
 ```
+
+### AI Analyst — setup LLM (opcional)
+
+El analista conversacional soporta **Ollama local** (default) o APIs cloud (Groq, OpenAI, Grok). Sin LLM configurado, la demo sigue funcionando con el motor heurístico determinístico.
+
+**Ollama (recomendado para entrevistas offline):**
+
+```bash
+# 1. Instalar Ollama — https://ollama.com
+ollama pull llama3.2
+ollama pull nomic-embed-text   # embeddings para RAG (Fase 2)
+
+# 2. Configuración opcional
+cp .env.example .env           # Linux/macOS — en Windows: copy .env.example .env
+
+# 3. Levantar la demo
+pip install -r requirements-app.txt
+streamlit run streamlit_app.py
+```
+
+**APIs cloud** — copiá `.env.example` a `.env` y ajustá el proveedor:
+
+| Proveedor | `PARADIGM_LLM_PROVIDER` | Variable de API | Modelo sugerido |
+|-----------|-------------------------|-----------------|-----------------|
+| Groq | `groq` | `GROQ_API_KEY` | `llama-3.3-70b-versatile` |
+| OpenAI | `openai` | `OPENAI_API_KEY` | `gpt-4o-mini` |
+| Grok (xAI) | `grok` | `GROK_API_KEY` | `grok-2-latest` |
+
+Grok usa API compatible OpenAI; `GROK_BASE_URL` default: `https://api.x.ai/v1`.
+
+**Sin LLM:** `PARADIGM_LLM_PROVIDER=disabled` — solo heurísticas (comportamiento original).
+
+### Características avanzadas del AI Analyst
+
+| Feature | Descripción |
+|---------|-------------|
+| **RAG FAISS** | Retrieval sobre diccionario de datos, métricas y 5 SQL samples de referencia |
+| **Chat persistente** | Botón **✦ Ask AI Analyst** en las 3 pestañas del workspace |
+| **Insights estructurados** | JSON con insight, recomendación, impacto, confianza y fuentes citadas |
+| **NL→SQL híbrido** | LLM + comparación con motor heurístico y validación `SELECT`/`WITH` |
+| **Logging auditable** | `data/processed/llm_interactions.jsonl` — query, respuesta, latencia, tokens ~ |
+| **Rate limiting** | `PARADIGM_LLM_RATE_LIMIT=10` consultas LLM por minuto (configurable) |
+| **Transparencia UI** | Sidebar → **Ver Historial AI** o `PARADIGM_DEBUG=true` |
+| **Tests** | `python -m unittest tests/test_llm_integration.py` |
+
+Flujo detallado: [`docs/conversational_insights_flow.md`](docs/conversational_insights_flow.md)
+
+> **Docker:** el contenedor no incluye Ollama. Para LLM en Docker usá un proveedor cloud o apuntá `OLLAMA_BASE_URL` al host (`http://host.docker.internal:11434` en Windows/macOS).
 
 **Recorrido sugerido en la app:** Landing → **Entrar al Asistente Analítico** → cargar dataset → wizard → pestañas **Análisis Guiado · SQL Explorer · Data Explorer** → sidebar **No-Show ML** para SHAP.
 
@@ -591,7 +639,7 @@ La demo interactiva usa un tema dark glassmorphism consistente en todas las vist
 ```
 .streamlit/config.toml      ← tema Streamlit dark (base="dark")
 assets/css/custom.css       ← CSS maestro (glassmorphism, badges, landing)
-app/config.py               ← constantes de paleta centralizadas
+app/config/               ← tema (theme.py) + LLM (llm_config.py)
 app/ui.py                   ← componentes: inject_theme, landing, KPI grid, wizard
 app/plots.py                ← charts Plotly (template="plotly_dark")
 app/conversational/plots.py ← charts contextuales (template="plotly_dark")

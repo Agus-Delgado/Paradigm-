@@ -774,3 +774,118 @@ div[data-testid="stRadio"] > div[role="radiogroup"] {
   margin-top: 1rem;
   padding-top: 0.5rem;
 }
+
+/* ── AI Analyst (Fase 4) ───────────────────────────────────── */
+.ai-llm-banner {
+  padding: 0.55rem 0.85rem;
+  border-radius: var(--radius);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  border: 1px solid rgba(94, 200, 212, 0.18);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  margin-bottom: 0.35rem;
+}
+
+.ai-llm-banner--live {
+  border-color: rgba(52, 211, 153, 0.35);
+  background: rgba(52, 211, 153, 0.06);
+}
+
+.ai-llm-banner--warn {
+  border-color: rgba(212, 162, 74, 0.35);
+  background: rgba(212, 162, 74, 0.06);
+}
+
+.ai-llm-banner--muted {
+  border-color: rgba(148, 163, 184, 0.25);
+}
+
+.ai-llm-banner__icon {
+  color: var(--cyan-soft-tone);
+  margin-right: 0.25rem;
+}
+
+.ai-analyst-panel {
+  padding: 0.85rem 1rem;
+  margin: 0.5rem 0 0.75rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(0, 245, 255, 0.22);
+  background: linear-gradient(135deg, rgba(19, 41, 75, 0.92), rgba(10, 37, 64, 0.88));
+  box-shadow: var(--cyan-glow);
+}
+
+.ai-analyst-panel__title {
+  margin: 0;
+  font-weight: 700;
+  color: var(--cyan-soft-tone) !important;
+  font-size: 0.95rem;
+}
+
+.ai-analyst-panel__subtitle {
+  margin: 0.2rem 0 0;
+  font-size: 0.78rem;
+  color: var(--muted) !important;
+}
+
+.ai-insight-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0.5rem 0 0.35rem;
+}
+
+.ai-insight-title {
+  font-weight: 600;
+  color: var(--text) !important;
+  font-size: 0.92rem;
+}
+
+.ai-engine-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.ai-engine-badge--llm {
+  background: rgba(94, 200, 212, 0.18);
+  color: var(--cyan-soft-tone) !important;
+  border: 1px solid rgba(94, 200, 212, 0.35);
+}
+
+.ai-engine-badge--heuristic {
+  background: rgba(212, 162, 74, 0.12);
+  color: var(--warning) !important;
+  border: 1px solid rgba(212, 162, 74, 0.3);
+}
+
+.ai-analyst-panel-wrap {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .ai-analyst-panel {
+    padding: 0.65rem 0.75rem;
+    margin: 0.35rem 0 0.5rem;
+  }
+
+  .ai-insight-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  .ai-llm-banner {
+    font-size: 0.78rem;
+    padding: 0.45rem 0.65rem;
+  }
+
+  .ai-analyst-panel__title {
+    font-size: 0.88rem;
+  }
+}

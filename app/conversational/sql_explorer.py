@@ -7,7 +7,9 @@ from datetime import datetime, timezone
 import pandas as pd
 import streamlit as st
 
-from app.conversational.nl_to_sql import generate_sql
+from app.config.llm_config import is_llm_available
+from app.conversational.ai_analyst_ui import llm_spinner_message, render_ai_workspace_chrome
+from app.conversational.nl_to_sql import _generate_sql_heuristic, generate_sql_llm_enhanced
 from app.conversational.plots import build_sql_result_chart
 from app.conversational.sql_engine import TABLE_NAME, ensure_engine_ready, execute_sql_on_dataframe
 from app.conversational.types import DatasetContext
@@ -48,18 +50,20 @@ def render_sql_explorer(ctx: DatasetContext) -> None:
         unsafe_allow_html=True,
     )
 
+    render_ai_workspace_chrome(ctx, tab_suffix="sql_top")
+
     st.caption(
         "Explorá el dataset con SQL de solo lectura (SELECT / WITH). "
-        "Cada ejecución usa una copia SQLite en memoria — segura y aislada."
+        "NL→SQL híbrido: AI Analyst + fallback heurístico."
     )
 
     # ── NL → SQL ──────────────────────────────────────────────
-    with st.expander("Lenguaje natural → SQL", expanded=True):
+    with st.expander("Lenguaje natural → SQL (AI Analyst)", expanded=True):
         nl_col1, nl_col2 = st.columns([4, 1])
         with nl_col1:
             nl_prompt = st.text_input(
                 "Describí qué querés ver",
-                placeholder='Ej.: "muéstrame los clientes con mayor desvío" o "comparar especialidad con ingreso"',
+                placeholder='Ej.: "tasa de no-show por especialidad" o "comparar canal con ingreso"',
                 key=f"sql_nl_prompt_{dk}",
                 label_visibility="collapsed",
             )
@@ -67,22 +71,62 @@ def render_sql_explorer(ctx: DatasetContext) -> None:
             gen_clicked = st.button("Generar SQL", type="primary", use_container_width=True, key=f"sql_gen_{dk}")
 
         if gen_clicked and nl_prompt.strip():
-            sql_text, explanation = generate_sql(
-                nl_prompt.strip(),
-                ctx.df,
-                ctx.logical_types,
-                ctx.domain,
-            )
-            st.session_state[_editor_key(dk)] = sql_text
-            st.session_state[f"sql_nl_explanation_{dk}"] = explanation
+            spinner = llm_spinner_message()
+            with st.spinner(spinner):
+                sql_result = generate_sql_llm_enhanced(
+                    nl_prompt.strip(),
+                    ctx.df,
+                    ctx.logical_types,
+                    ctx.domain,
+                )
+                heuristic_sql, heuristic_exp = _generate_sql_heuristic(
+                    nl_prompt.strip(),
+                    ctx.df,
+                    ctx.logical_types,
+                    ctx.domain,
+                )
+            st.session_state[_editor_key(dk)] = sql_result.sql
+            st.session_state[f"sql_nl_explanation_{dk}"] = sql_result.explanation
+            st.session_state[f"sql_nl_engine_{dk}"] = sql_result.engine
+            st.session_state[f"sql_nl_confidence_{dk}"] = sql_result.confidence
+            st.session_state[f"sql_nl_sources_{dk}"] = sql_result.sources
+            st.session_state[f"sql_nl_heuristic_{dk}"] = heuristic_sql
+            st.session_state[f"sql_nl_heuristic_exp_{dk}"] = heuristic_exp
             st.session_state[f"sql_nl_last_{dk}"] = nl_prompt.strip()
+            st.session_state[f"sql_nl_used_llm_{dk}"] = sql_result.used_llm
             st.rerun()
 
+        engine = st.session_state.get(f"sql_nl_engine_{dk}")
         explanation = st.session_state.get(f"sql_nl_explanation_{dk}")
-        if explanation:
-            st.info(
-                f"**Sugerencia generada:** {explanation} "
-                "Revisá y editá el SQL antes de ejecutar."
+        used_llm = st.session_state.get(f"sql_nl_used_llm_{dk}")
+        if explanation or engine:
+            badge = "LLM + RAG" if used_llm else "Heurístico"
+            badge_color = COLOR_PRIMARY_SOFT if used_llm else COLOR_WARNING
+            st.markdown(
+                f'<div class="insight-card">'
+                f'<span style="color:{badge_color};font-weight:600;font-size:0.8rem;">{badge}</span> '
+                f"<strong>Explicación:</strong> {explanation or '—'}"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+            confidence = st.session_state.get(f"sql_nl_confidence_{dk}")
+            sources = st.session_state.get(f"sql_nl_sources_{dk}") or []
+            if confidence or sources:
+                src_txt = " · ".join(sources[:5]) if sources else "—"
+                st.caption(f"Confianza: {confidence or '—'} · Fuentes: {src_txt}")
+
+            heuristic_sql = st.session_state.get(f"sql_nl_heuristic_{dk}")
+            current_sql = st.session_state.get(_editor_key(dk), "")
+            if used_llm and heuristic_sql and heuristic_sql.strip() != (current_sql or "").strip():
+                with st.expander("Comparar con SQL heurístico", expanded=False):
+                    st.code(heuristic_sql, language="sql")
+                    heu_exp = st.session_state.get(f"sql_nl_heuristic_exp_{dk}")
+                    if heu_exp:
+                        st.caption(f"Heurístico: {heu_exp}")
+
+        if not is_llm_available():
+            st.caption(
+                "Usando motor heurístico — activá Ollama o configurá API keys para SQL avanzado con IA."
             )
 
     # ── Editor ────────────────────────────────────────────────
@@ -156,18 +200,22 @@ def render_sql_explorer(ctx: DatasetContext) -> None:
             f"({len(result_df):,} filas × {len(result_df.columns)} columnas)</span></p>",
             unsafe_allow_html=True,
         )
+        engine_label = "LLM + RAG" if st.session_state.get(f"sql_nl_used_llm_{dk}") else "Heurístico"
         report_md = build_sql_report_md(
             last_sql,
             result_df,
             ctx,
             nl_prompt=st.session_state.get(f"sql_nl_last_{dk}"),
+            nl_engine=engine_label if st.session_state.get(f"sql_nl_last_{dk}") else None,
+            nl_explanation=st.session_state.get(f"sql_nl_explanation_{dk}"),
+            heuristic_sql=st.session_state.get(f"sql_nl_heuristic_{dk}"),
         )
         st.download_button(
-            "Exportar reporte",
+            "Exportar reporte MD",
             data=report_md,
             file_name=f"paradigm_sql_{dk[:8]}.md",
             mime="text/markdown",
-            help="Informe Markdown con la consulta y una muestra de resultados.",
+            help="Informe Markdown con consulta, motor NL→SQL y resultados.",
             key=f"sql_export_{dk}",
         )
         st.dataframe(result_df, use_container_width=True, hide_index=True)

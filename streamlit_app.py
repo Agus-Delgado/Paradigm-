@@ -234,6 +234,9 @@ def main() -> None:
             return ctx
 
         render_conversational_page_v2(analyst_ctx, on_prepare=on_prepare)
+        from app.conversational.ai_analyst_ui import render_ai_analyst_sidebar_controls
+
+        render_ai_analyst_sidebar_controls()
 
     render_app_footer()
 
