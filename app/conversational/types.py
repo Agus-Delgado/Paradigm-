@@ -61,3 +61,20 @@ class DatasetContext:
     domain: Domain
     dataset_key: str
     source_label: str
+
+
+@dataclass
+class NotebookAnalysisResult:
+    filename: str
+    title: str | None
+    executive_summary: str
+    positives: list[str]
+    improvements: list[str]
+    critical_issues: list[str]
+    prioritized_recommendations: list[str]
+    advanced_suggestions: list[str]
+    plain_language_summary: str
+    used_llm: bool = False
+    fallback_reason: str | None = None
+    confidence: str = "medium"
+    sources: list[str] = field(default_factory=list)

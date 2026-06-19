@@ -17,7 +17,14 @@ from app.conversational.ai_analyst_ui import (
 )
 from app.conversational.analysis import run_contextual_analysis
 from app.conversational.data_explorer import make_explore_ia_handler, render_data_explorer
-from app.conversational.plan import build_analysis_plan
+from app.conversational.notebook_analyzer import analyze_notebook
+from app.conversational.notebook_parser import (
+    ParsedNotebook,
+    extract_headings,
+    parse_notebook,
+)
+from app.conversational.types import NotebookAnalysisResult
+from app.export_report import build_notebook_report_md
 from app.conversational.plots import build_contextual_plots
 from app.conversational.questions import generate_guided_questions
 from app.conversational.sql_engine import invalidate_cache as invalidate_sql_cache
@@ -38,6 +45,7 @@ TAB_GUIDED = "Análisis Guiado"
 TAB_SQL = "SQL Explorer"
 TAB_EXPLORER = "Data Explorer"
 TAB_OPTIONS = (TAB_GUIDED, TAB_SQL, TAB_EXPLORER)
+NOTEBOOK_RESULT_KEY = "analyst_v2_notebook_result"
 
 
 def _answers_key(prefix: str, dataset_key: str) -> str:
@@ -56,6 +64,16 @@ def _pending_run_key(dataset_key: str) -> str:
     return f"analyst_pending_run_{dataset_key}"
 
 
+def _is_ipynb_upload(name: str | None) -> bool:
+    return (name or "").lower().endswith(".ipynb")
+
+
+def _clear_notebook_session() -> None:
+    st.session_state.pop("analyst_v2_notebook", None)
+    st.session_state.pop("notebook_analyze_requested", None)
+    st.session_state.pop(NOTEBOOK_RESULT_KEY, None)
+
+
 def _clear_analyst_session(dataset_key: str | None = None) -> None:
     prefixes = ("analyst_", "sql_", "explorer_", "ai_analyst_")
     for k in list(st.session_state.keys()):
@@ -65,6 +83,7 @@ def _clear_analyst_session(dataset_key: str | None = None) -> None:
     if dataset_key is None:
         st.session_state.pop("paradigm_ai_history", None)
         st.session_state.pop("analyst_active_tab", None)
+        _clear_notebook_session()
     else:
         st.session_state.pop(panel_open_key(dataset_key), None)
         st.session_state.pop(chat_history_key(dataset_key), None)
@@ -225,6 +244,125 @@ def _render_post_analysis_workspace(ctx: DatasetContext, *, show_ml_cta: bool) -
         render_ai_workspace_chrome(ctx, tab_suffix="explorer")
 
 
+def _render_notebook_bullet_section(title: str, items: list[str]) -> None:
+    st.markdown(f"### {title}")
+    if items:
+        for item in items:
+            st.markdown(f"- {item}")
+    else:
+        st.caption("_Ninguno detectado._")
+
+
+def _render_notebook_analysis_result(result: NotebookAnalysisResult, parsed: ParsedNotebook) -> None:
+    engine = "LLM + RAG" if result.used_llm else "Heurístico"
+    conf_label = {"high": "Alta", "medium": "Media", "low": "Baja"}.get(result.confidence, result.confidence)
+    st.divider()
+    st.markdown("### Informe de análisis")
+    st.caption(f"Motor: **{engine}** · Confianza: **{conf_label}**")
+    if result.fallback_reason and not result.used_llm:
+        st.caption(f"Fallback: {result.fallback_reason}")
+
+    st.markdown("#### Resumen Ejecutivo")
+    st.write(result.executive_summary)
+
+    _render_notebook_bullet_section("Aspectos Positivos", result.positives)
+    _render_notebook_bullet_section("Áreas de Mejora", result.improvements)
+    _render_notebook_bullet_section("Issues Críticos", result.critical_issues)
+    _render_notebook_bullet_section("Recomendaciones Priorizadas", result.prioritized_recommendations)
+    _render_notebook_bullet_section("Sugerencias Técnicas Avanzadas", result.advanced_suggestions)
+
+    st.markdown("#### Resumen para no técnicos")
+    st.info(result.plain_language_summary)
+
+    md_report = build_notebook_report_md(result, parsed)
+    safe_name = parsed.filename.replace(".ipynb", "") or "notebook"
+    st.download_button(
+        "Exportar reporte MD",
+        md_report,
+        file_name=f"paradigm_notebook_{safe_name}.md",
+        mime="text/markdown",
+        key="notebook_export_md",
+        use_container_width=True,
+    )
+
+
+def render_notebook_flow(parsed: ParsedNotebook) -> None:
+    """Flujo paralelo para notebooks .ipynb: preview estructural + análisis completo."""
+    st.markdown("## Análisis de Notebook")
+    st.caption(
+        "Paradigm revisa el notebook como un analista senior: narrativa, código, outputs y gráficos."
+    )
+
+    if st.button("← Cambiar archivo", key="notebook_change_file"):
+        _clear_notebook_session()
+        _clear_analyst_session()
+        st.session_state.pop("analyst_v2_ctx", None)
+        st.rerun()
+
+    st.subheader(parsed.title or parsed.filename)
+    st.caption(f"Archivo: **{parsed.filename}**")
+
+    c1, c2, c3, c4, c5 = st.columns(5)
+    c1.metric("Celdas", parsed.cell_count)
+    c2.metric("Markdown", parsed.n_markdown)
+    c3.metric("Código", parsed.n_code)
+    c4.metric("Con output", parsed.n_with_output)
+    c5.metric("Gráficos", parsed.n_with_plot)
+
+    if parsed.n_errors:
+        st.warning(f"Se detectaron **{parsed.n_errors}** celda(s) con error de ejecución.")
+
+    headings = extract_headings(parsed)
+    if headings:
+        st.markdown("**Secciones detectadas:** " + " · ".join(headings[:10]))
+
+    with st.expander("Ver celdas del notebook", expanded=False):
+        for cell in parsed.cells:
+            if cell.cell_type not in ("markdown", "code"):
+                continue
+            label = f"Celda {cell.index} · {cell.cell_type}"
+            if cell.execution_count is not None:
+                label += f" · In [{cell.execution_count}]"
+            flags: list[str] = []
+            if cell.has_plot:
+                flags.append("gráfico")
+            if cell.has_error:
+                flags.append("error")
+            if flags:
+                label += f" ({', '.join(flags)})"
+            with st.expander(label, expanded=False):
+                st.markdown(cell.source) if cell.cell_type == "markdown" else st.code(cell.source, language="python")
+                if cell.outputs_summary:
+                    st.text("Output:\n" + cell.outputs_summary)
+
+    analysis_result: NotebookAnalysisResult | None = st.session_state.get(NOTEBOOK_RESULT_KEY)
+
+    col_a, col_b = st.columns([2, 1])
+    with col_a:
+        analyze_clicked = st.button(
+            "Analizar notebook completo",
+            type="primary",
+            key="notebook_analyze_btn",
+            use_container_width=True,
+        )
+    with col_b:
+        reanalyze_clicked = bool(
+            analysis_result
+            and st.button("Re-analizar", key="notebook_reanalyze_btn", use_container_width=True)
+        )
+
+    if analyze_clicked or reanalyze_clicked:
+        if reanalyze_clicked:
+            st.session_state.pop(NOTEBOOK_RESULT_KEY, None)
+        with st.spinner("Generando informe profundo (LLM + RAG)…"):
+            st.session_state[NOTEBOOK_RESULT_KEY] = analyze_notebook(parsed)
+        st.rerun()
+
+    analysis_result = st.session_state.get(NOTEBOOK_RESULT_KEY)
+    if analysis_result:
+        _render_notebook_analysis_result(analysis_result, parsed)
+
+
 def render_analyst_landing(*, on_prepare, show_change_dataset: bool = True) -> DatasetContext | None:
     """Pantalla inicial: elegir fuente y cargar con un solo botón."""
     st.markdown("## Asistente Analítico Paradigm")
@@ -234,7 +372,10 @@ def render_analyst_landing(*, on_prepare, show_change_dataset: bool = True) -> D
         "luego busca causas raíz en los datos."
     )
 
-    if show_change_dataset and st.session_state.get("analyst_v2_ctx") is not None:
+    if show_change_dataset and (
+        st.session_state.get("analyst_v2_ctx") is not None
+        or st.session_state.get("analyst_v2_notebook") is not None
+    ):
         if st.button("← Cambiar dataset", key="analyst_change_dataset"):
             st.session_state.pop("analyst_v2_ctx", None)
             _clear_analyst_session()
@@ -271,8 +412,8 @@ def render_analyst_landing(*, on_prepare, show_change_dataset: bool = True) -> D
         )
     elif source == "Subir mi propio archivo":
         uploaded = st.file_uploader(
-            "Archivo CSV o Excel",
-            type=["csv", "xlsx", "xls"],
+            "Archivo CSV, Excel o Notebook (.ipynb)",
+            type=["csv", "xlsx", "xls", "ipynb"],
             key="analyst_landing_upload",
         )
 
@@ -285,7 +426,21 @@ def render_analyst_landing(*, on_prepare, show_change_dataset: bool = True) -> D
                 ctx = on_prepare("synthetic", synthetic_domain=synthetic_domain)
             else:
                 if uploaded is None:
-                    st.warning("Subí un archivo CSV o Excel antes de continuar.")
+                    st.warning("Subí un archivo CSV, Excel o .ipynb antes de continuar.")
+                    return None
+                upload_name = getattr(uploaded, "name", "") or ""
+                if _is_ipynb_upload(upload_name):
+                    with st.spinner("Parseando notebook…"):
+                        raw = uploaded.getvalue() if hasattr(uploaded, "getvalue") else uploaded.read()
+                        parsed, err = parse_notebook(raw, filename=upload_name)
+                    if err or parsed is None:
+                        st.error(err or "No se pudo parsear el notebook.")
+                        return None
+                    st.session_state.pop("analyst_v2_ctx", None)
+                    _clear_analyst_session()
+                    _clear_notebook_session()
+                    st.session_state["analyst_v2_notebook"] = parsed
+                    st.rerun()
                     return None
                 ctx = on_prepare("upload", uploaded=uploaded)
 
@@ -381,7 +536,11 @@ def render_conversational_page_v2(
     *,
     on_prepare,
 ) -> None:
-    """Página v2: landing limpia + flujo analista."""
+    """Página v2: landing limpia + flujo analista o notebook."""
+    notebook = st.session_state.get("analyst_v2_notebook")
+    if notebook is not None:
+        render_notebook_flow(notebook)
+        return
     if ctx is None:
         render_analyst_landing(on_prepare=on_prepare)
         return

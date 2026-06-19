@@ -6,7 +6,8 @@ from datetime import datetime, timezone
 
 import pandas as pd
 
-from app.conversational.types import ContextualAnalysisResult, DatasetContext
+from app.conversational.types import ContextualAnalysisResult, DatasetContext, NotebookAnalysisResult
+from app.conversational.notebook_parser import ParsedNotebook
 
 
 def _timestamp() -> str:
@@ -169,6 +170,72 @@ def build_sql_report_md(
         [
             "---",
             "_Generado por Paradigm SQL Explorer · SQLite en memoria · solo lectura._",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def _bullet_section(title: str, items: list[str], *, empty_text: str = "_Ninguno detectado._") -> list[str]:
+    lines = [f"## {title}", ""]
+    if items:
+        for item in items:
+            lines.append(f"- {item}")
+    else:
+        lines.append(empty_text)
+    lines.append("")
+    return lines
+
+
+def build_notebook_report_md(
+    result: NotebookAnalysisResult,
+    parsed: ParsedNotebook,
+) -> str:
+    engine = "LLM + RAG" if result.used_llm else "Heurístico"
+    lines = [
+        "# Paradigm — Informe de Análisis de Notebook",
+        "",
+        "| Campo | Valor |",
+        "|-------|-------|",
+        f"| Generado | {_timestamp()} |",
+        f"| Notebook | {result.filename} |",
+        f"| Título | {result.title or '—'} |",
+        f"| Motor | {engine} |",
+        f"| Confianza | {result.confidence} |",
+        f"| Celdas | {parsed.cell_count} ({parsed.n_markdown} markdown, {parsed.n_code} código) |",
+        f"| Gráficos | {parsed.n_with_plot} |",
+        f"| Errores de ejecución | {parsed.n_errors} |",
+        "",
+        "## Resumen Ejecutivo",
+        "",
+        result.executive_summary,
+        "",
+    ]
+    lines.extend(_bullet_section("Aspectos Positivos", result.positives))
+    lines.extend(_bullet_section("Áreas de Mejora", result.improvements))
+    lines.extend(_bullet_section("Issues Críticos", result.critical_issues))
+    lines.extend(_bullet_section("Recomendaciones Priorizadas", result.prioritized_recommendations))
+    lines.extend(_bullet_section("Sugerencias Técnicas Avanzadas", result.advanced_suggestions))
+    lines.extend(
+        [
+            "## Resumen para no técnicos",
+            "",
+            result.plain_language_summary,
+            "",
+        ]
+    )
+    if result.sources:
+        lines.append("## Fuentes / evidencia")
+        lines.append("")
+        for src in result.sources:
+            lines.append(f"- {src}")
+        lines.append("")
+    if result.fallback_reason and not result.used_llm:
+        lines.append(f"_Fallback: {result.fallback_reason}_")
+        lines.append("")
+    lines.extend(
+        [
+            "---",
+            "_Generado por Paradigm · análisis de notebook híbrido LLM + heurístico._",
         ]
     )
     return "\n".join(lines)

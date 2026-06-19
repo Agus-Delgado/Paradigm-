@@ -417,6 +417,10 @@ class LLMService:
         elapsed_ms = (time.perf_counter() - t0) * 1000
         return str(content), elapsed_ms
 
+    def complete(self, system: str, user: str) -> tuple[str, float]:
+        """Invoca el LLM con prompts system + user. Retorna (texto, ms)."""
+        return self._invoke_chat(system, user)
+
     def generate_insights(
         self,
         query: str,
