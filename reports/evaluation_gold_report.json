@@ -1,0 +1,155 @@
+{
+  "generated_at_utc": "2026-07-07T18:58:12+00:00",
+  "gold_path": "C:\\Proyectos\\Paradigm\\data\\eval_gold\\conversational_eval_gold.json",
+  "run_id": "gold_eval_20260707_185812",
+  "n_samples": 3,
+  "overall_score": 0.5685,
+  "average_metrics": {
+    "sql_validity": 0.6667,
+    "sql_accuracy": 0.6667,
+    "semantic_similarity": 0.5169,
+    "faithfulness": 0.2619
+  },
+  "expected_checks": {
+    "checks": [
+      {
+        "sample_id": "gold_01",
+        "metric": "sql_validity",
+        "expected": 1.0,
+        "actual": 1.0,
+        "delta": 0.0,
+        "pass": true
+      },
+      {
+        "sample_id": "gold_01",
+        "metric": "sql_accuracy",
+        "expected": 1.0,
+        "actual": 1.0,
+        "delta": 0.0,
+        "pass": true
+      },
+      {
+        "sample_id": "gold_01",
+        "metric": "semantic_similarity",
+        "expected": 0.45,
+        "actual": 0.4589,
+        "delta": 0.0089,
+        "pass": true
+      },
+      {
+        "sample_id": "gold_01",
+        "metric": "faithfulness",
+        "expected": 0.15,
+        "actual": 0.25,
+        "delta": 0.1,
+        "pass": true
+      },
+      {
+        "sample_id": "gold_02",
+        "metric": "sql_validity",
+        "expected": 0.0,
+        "actual": 0.0,
+        "delta": 0.0,
+        "pass": true
+      },
+      {
+        "sample_id": "gold_02",
+        "metric": "sql_accuracy",
+        "expected": 0.0,
+        "actual": 0.0,
+        "delta": 0.0,
+        "pass": true
+      },
+      {
+        "sample_id": "gold_02",
+        "metric": "semantic_similarity",
+        "expected": 0.25,
+        "actual": 0.3453,
+        "delta": 0.0953,
+        "pass": true
+      },
+      {
+        "sample_id": "gold_02",
+        "metric": "faithfulness",
+        "expected": 0.15,
+        "actual": 0.25,
+        "delta": 0.1,
+        "pass": true
+      },
+      {
+        "sample_id": "gold_03",
+        "metric": "sql_validity",
+        "expected": 1.0,
+        "actual": 1.0,
+        "delta": 0.0,
+        "pass": true
+      },
+      {
+        "sample_id": "gold_03",
+        "metric": "sql_accuracy",
+        "expected": 1.0,
+        "actual": 1.0,
+        "delta": 0.0,
+        "pass": true
+      },
+      {
+        "sample_id": "gold_03",
+        "metric": "semantic_similarity",
+        "expected": 0.35,
+        "actual": 0.7464,
+        "delta": 0.3964,
+        "pass": false
+      },
+      {
+        "sample_id": "gold_03",
+        "metric": "faithfulness",
+        "expected": 0.15,
+        "actual": 0.2857,
+        "delta": 0.1357,
+        "pass": true
+      }
+    ],
+    "passed": 11,
+    "total": 12,
+    "pass_rate": 0.9166666666666666,
+    "tolerance": 0.2
+  },
+  "samples": [
+    {
+      "sample_id": "gold_01",
+      "query": "¿Cuál es la especialidad con mayor no-show?",
+      "metrics": {
+        "sql_validity": 1.0,
+        "sql_accuracy": 1.0,
+        "semantic_similarity": 0.4589,
+        "faithfulness": 0.25
+      },
+      "overall_score": 0.7522,
+      "missing_metrics": []
+    },
+    {
+      "sample_id": "gold_02",
+      "query": "¿Podés actualizar la tabla de citas para corregir estados?",
+      "metrics": {
+        "sql_validity": 0.0,
+        "sql_accuracy": 0.0,
+        "semantic_similarity": 0.3453,
+        "faithfulness": 0.25
+      },
+      "overall_score": 0.1238,
+      "missing_metrics": []
+    },
+    {
+      "sample_id": "gold_03",
+      "query": "¿Qué segmento tiene menor revenue promedio?",
+      "metrics": {
+        "sql_validity": 1.0,
+        "sql_accuracy": 1.0,
+        "semantic_similarity": 0.7464,
+        "faithfulness": 0.2857
+      },
+      "overall_score": 0.8295,
+      "missing_metrics": []
+    }
+  ]
+}

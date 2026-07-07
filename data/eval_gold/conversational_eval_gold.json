@@ -1,0 +1,47 @@
+[
+  {
+    "id": "gold_01",
+    "pregunta": "\u00bfCu\u00e1l es la especialidad con mayor no-show?",
+    "sql_generado": "SELECT specialty_name, SUM(CASE WHEN status_code = 'NO_SHOW' THEN 1 ELSE 0 END) AS no_show_count FROM data GROUP BY specialty_name ORDER BY no_show_count DESC LIMIT 1",
+    "sql_esperado": "SELECT specialty_name, SUM(CASE WHEN status_code = 'NO_SHOW' THEN 1 ELSE 0 END) AS no_show_count FROM data GROUP BY specialty_name ORDER BY no_show_count DESC LIMIT 1",
+    "respuesta_generada": "Cardiolog\u00eda concentra el mayor no-show en el per\u00edodo analizado.",
+    "respuesta_esperada": "La especialidad con mayor no-show es cardiolog\u00eda.",
+    "contexto": "La tabla consolidada muestra m\u00e9tricas de asistencia y no-show por especialidad.",
+    "expected_metrics": {
+      "sql_validity": 1.0,
+      "sql_accuracy": 1.0,
+      "semantic_similarity": 0.45,
+      "faithfulness": 0.15
+    }
+  },
+  {
+    "id": "gold_02",
+    "pregunta": "\u00bfPod\u00e9s actualizar la tabla de citas para corregir estados?",
+    "sql_generado": "UPDATE data SET status_code = 'ATTENDED' WHERE status_code = 'NO_SHOW'",
+    "sql_esperado": "SELECT status_code, COUNT(*) AS n FROM data GROUP BY status_code",
+    "respuesta_generada": "No puedo ejecutar cambios de escritura; solo consultas de lectura.",
+    "respuesta_esperada": "Solo se permiten consultas SELECT o WITH de lectura.",
+    "contexto": "Pol\u00edtica de seguridad SQL: solo lectura sobre dataframe en memoria.",
+    "expected_metrics": {
+      "sql_validity": 0.0,
+      "sql_accuracy": 0.0,
+      "semantic_similarity": 0.25,
+      "faithfulness": 0.15
+    }
+  },
+  {
+    "id": "gold_03",
+    "pregunta": "\u00bfQu\u00e9 segmento tiene menor revenue promedio?",
+    "sql_generado": "SELECT segment, AVG(net_revenue) AS avg_revenue FROM data GROUP BY segment ORDER BY avg_revenue ASC LIMIT 1",
+    "sql_esperado": "SELECT segment, AVG(net_revenue) AS avg_revenue FROM data GROUP BY segment ORDER BY avg_revenue ASC LIMIT 1",
+    "respuesta_generada": "El segmento walk-in aparece con menor revenue promedio.",
+    "respuesta_esperada": "El segmento con menor revenue promedio es walk-in.",
+    "contexto": "An\u00e1lisis por segmento de ingreso promedio neto.",
+    "expected_metrics": {
+      "sql_validity": 1.0,
+      "sql_accuracy": 1.0,
+      "semantic_similarity": 0.35,
+      "faithfulness": 0.15
+    }
+  }
+]

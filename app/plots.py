@@ -322,3 +322,137 @@ def business_impact_chart(comparison_df: pd.DataFrame, top_pct: int) -> go.Figur
     fig.update_traces(texttemplate="%{y:,.0f}", textposition="outside")
     fig.update_layout(**_DARK_LAYOUT, height=400)
     return fig
+
+
+def forecast_history_future_chart(
+    historical: pd.Series,
+    forecast_df: pd.DataFrame,
+    title: str = "Forecasting de demanda diaria",
+) -> go.Figure:
+    """Línea de histórico + predicción futura en una sola vista."""
+    fig = go.Figure()
+
+    if historical.empty:
+        fig.update_layout(title=f"{title} — sin histórico", height=420, **_DARK_LAYOUT)
+        return fig
+
+    fig.add_trace(
+        go.Scatter(
+            x=historical.index,
+            y=historical.values,
+            mode="lines",
+            name="Histórico",
+            line=dict(color=COLOR_CHART, width=2),
+        )
+    )
+
+    if not forecast_df.empty:
+        fig.add_trace(
+            go.Scatter(
+                x=forecast_df["ds"],
+                y=forecast_df["y_pred"],
+                mode="lines",
+                name="Forecast",
+                line=dict(color=COLOR_ACCENT, width=2, dash="dash"),
+            )
+        )
+
+    fig.add_vline(
+        x=historical.index.max(),
+        line_dash="dot",
+        line_color=COLOR_MUTED,
+        opacity=0.8,
+    )
+    fig.update_layout(
+        **_DARK_LAYOUT,
+        title=title,
+        xaxis_title="Fecha",
+        yaxis_title="Citas",
+        height=430,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+    )
+    return fig
+
+
+def forecast_backtest_chart(predictions: pd.DataFrame) -> go.Figure:
+    """Actual vs predicted para backtesting temporal."""
+    if predictions.empty:
+        fig = go.Figure()
+        fig.update_layout(title="Backtesting — sin datos", height=380, **_DARK_LAYOUT)
+        return fig
+
+    frame = predictions.copy().sort_values("ds")
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=frame["ds"],
+            y=frame["y_true"],
+            mode="lines",
+            name="Actual",
+            line=dict(color=COLOR_CHART, width=2),
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=frame["ds"],
+            y=frame["y_pred"],
+            mode="lines",
+            name="Predicted",
+            line=dict(color=COLOR_ACCENT, width=2),
+        )
+    )
+    fig.update_layout(
+        **_DARK_LAYOUT,
+        title="Backtesting temporal — actual vs predicted",
+        xaxis_title="Fecha",
+        yaxis_title="Citas",
+        height=400,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+    )
+    return fig
+
+
+def prescriptive_before_after_chart(before_after: pd.DataFrame) -> go.Figure:
+    """Before/after expected slots lost and revenue impact from what-if simulation."""
+    if before_after.empty:
+        fig = go.Figure()
+        fig.update_layout(title="Prescriptive what-if — sin datos", height=380, **_DARK_LAYOUT)
+        return fig
+
+    frame = before_after.copy()
+    fig = go.Figure()
+    fig.add_trace(
+        go.Bar(
+            x=frame["scenario"],
+            y=frame["expected_slots_lost"],
+            name="Slots perdidos esperados",
+            marker_color=COLOR_WARNING,
+            opacity=0.85,
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=frame["scenario"],
+            y=frame["expected_revenue_impact_ars"],
+            name="Impacto revenue (ARS)",
+            mode="lines+markers",
+            line=dict(color=COLOR_ACCENT, width=2),
+            marker=dict(size=8),
+            yaxis="y2",
+        )
+    )
+    fig.update_layout(
+        **_DARK_LAYOUT,
+        title="What-if prescriptivo: Before vs After",
+        xaxis_title="Escenario",
+        yaxis=dict(title="Slots perdidos esperados", gridcolor="rgba(0,245,255,0.08)"),
+        yaxis2=dict(
+            title="Impacto revenue (ARS)",
+            overlaying="y",
+            side="right",
+            gridcolor="rgba(0,245,255,0.08)",
+        ),
+        height=420,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+    )
+    return fig

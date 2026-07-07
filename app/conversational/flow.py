@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
+
 import streamlit as st
 
 from app.conversational.ai_analyst_ui import (
@@ -17,12 +19,19 @@ from app.conversational.ai_analyst_ui import (
 )
 from app.conversational.analysis import run_contextual_analysis
 from app.conversational.data_explorer import make_explore_ia_handler, render_data_explorer
+from app.conversational.evaluation.evaluator import ConversationalEvaluator, EvaluationSample
+from app.conversational.evaluation.leaderboard import (
+    average_of_averages,
+    leaderboard_dataframe,
+    load_evaluation_runs,
+)
 from app.conversational.notebook_analyzer import analyze_notebook
 from app.conversational.notebook_parser import (
     ParsedNotebook,
     extract_headings,
     parse_notebook,
 )
+from app.conversational.plan import build_analysis_plan
 from app.conversational.types import NotebookAnalysisResult
 from app.export_report import build_notebook_report_md
 from app.conversational.plots import build_contextual_plots
@@ -40,11 +49,13 @@ from app.ui import (
     render_schema_columns_preview,
     render_workspace_header,
 )
+from paradigm.io.paths import ML_EXPERIMENTS_DIR
 
 TAB_GUIDED = "Análisis Guiado"
 TAB_SQL = "SQL Explorer"
 TAB_EXPLORER = "Data Explorer"
-TAB_OPTIONS = (TAB_GUIDED, TAB_SQL, TAB_EXPLORER)
+TAB_EVAL = "Evaluation"
+TAB_OPTIONS = (TAB_GUIDED, TAB_SQL, TAB_EXPLORER, TAB_EVAL)
 NOTEBOOK_RESULT_KEY = "analyst_v2_notebook_result"
 
 
@@ -182,6 +193,134 @@ def _render_followup_chat(ctx: DatasetContext) -> None:
         render_llm_insight_card(payload, title="Última respuesta", sql_df=sql_df)
 
 
+def _build_eval_run_id(dataset_key: str, suffix: str) -> str:
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    return f"eval_{dataset_key}_{suffix}_{stamp}"
+
+
+def _render_evaluation_tab(ctx: DatasetContext) -> None:
+    dk = ctx.dataset_key
+    eval_engine = ConversationalEvaluator()
+
+    render_workspace_header(
+        "Evaluation Framework",
+        f"{ctx.source_label} · cuantificación de calidad conversacional",
+    )
+
+    use_tracker = st.checkbox(
+        "Guardar también en ExperimentTracker",
+        value=False,
+        key=f"eval_use_tracker_{dk}",
+        help="Siempre guarda JSON en data/processed/evaluations y opcionalmente crea run en ml/experiments.",
+    )
+
+    history = st.session_state.get(chat_history_key(dk), [])
+    st.caption(f"Turns conversacionales disponibles: {len(history)}")
+
+    col_last, col_run = st.columns(2)
+    last_clicked = col_last.button(
+        "Evaluar última respuesta",
+        use_container_width=True,
+        key=f"eval_last_turn_{dk}",
+        disabled=not history,
+    )
+    run_clicked = col_run.button(
+        "Evaluar run completo",
+        use_container_width=True,
+        key=f"eval_full_run_{dk}",
+        disabled=not history,
+    )
+
+    if last_clicked or run_clicked:
+        turns = history[-1:] if last_clicked else history
+        scope = "last" if last_clicked else "full"
+        samples = ConversationalEvaluator.samples_from_chat_history(turns, run_label=f"{dk}_{scope}")
+        run_id = _build_eval_run_id(dk, scope)
+        run, out_path = eval_engine.evaluate_and_save(
+            samples,
+            run_id=run_id,
+            metadata={
+                "dataset_key": dk,
+                "scope": scope,
+                "n_chat_turns": len(turns),
+            },
+        )
+        tracker_path = None
+        if use_tracker:
+            tracker_path = eval_engine.save_run_with_tracker(run, tracker_base_dir=ML_EXPERIMENTS_DIR)
+
+        st.success(f"Evaluación guardada: {out_path}")
+        if tracker_path:
+            st.caption(f"Artifact adicional en ExperimentTracker: {tracker_path}")
+
+    st.divider()
+    st.subheader("Leaderboard")
+    lb_df = leaderboard_dataframe()
+    if lb_df.empty:
+        st.info("Todavía no hay runs de evaluación guardados.")
+    else:
+        st.dataframe(lb_df, use_container_width=True, hide_index=True)
+
+        macro = average_of_averages()
+        metric_cols = st.columns(4)
+        metric_cols[0].metric("Overall (avg)", f"{macro.get('overall_score', 0.0):.3f}")
+        metric_cols[1].metric("SQL validity", f"{macro.get('sql_validity', 0.0):.3f}")
+        metric_cols[2].metric("Semantic similarity", f"{macro.get('semantic_similarity', 0.0):.3f}")
+        metric_cols[3].metric("Faithfulness", f"{macro.get('faithfulness', 0.0):.3f}")
+
+    st.divider()
+    st.subheader("Re-evaluar runs")
+    saved_runs = load_evaluation_runs()
+    if not saved_runs:
+        st.caption("No hay runs previos para re-evaluar.")
+        return
+
+    choice = st.selectbox(
+        "Run a re-evaluar",
+        options=range(len(saved_runs)),
+        format_func=lambda i: f"{saved_runs[i].get('run_id', 'unknown')} · {saved_runs[i].get('created_at_utc', '')}",
+        key=f"eval_rerun_select_{dk}",
+    )
+    rerun_clicked = st.button(
+        "Re-evaluar run seleccionado",
+        use_container_width=True,
+        key=f"eval_rerun_btn_{dk}",
+    )
+
+    if not rerun_clicked:
+        return
+
+    selected = saved_runs[int(choice)]
+    raw_samples = selected.get("sample_inputs", []) or []
+    samples: list[EvaluationSample] = []
+    for item in raw_samples:
+        if isinstance(item, dict):
+            samples.append(EvaluationSample(**item))
+
+    if not samples:
+        st.warning("El run seleccionado no tiene sample_inputs para recalcular métricas.")
+        return
+
+    source_run_id = str(selected.get("run_id", "unknown"))
+    rerun_id = _build_eval_run_id(dk, f"rerun_{source_run_id}")
+    new_run, new_out_path = eval_engine.evaluate_and_save(
+        samples,
+        run_id=rerun_id,
+        metadata={
+            "dataset_key": dk,
+            "source_run_id": source_run_id,
+            "re_evaluation": True,
+        },
+    )
+    tracker_artifact = None
+    if use_tracker:
+        tracker_artifact = eval_engine.save_run_with_tracker(new_run, tracker_base_dir=ML_EXPERIMENTS_DIR)
+
+    st.success(f"Re-evaluación completada: {new_out_path}")
+    if tracker_artifact:
+        st.caption(f"Artifact adicional en ExperimentTracker: {tracker_artifact}")
+
+
 def _render_guided_tab(ctx: DatasetContext, *, show_ml_cta: bool) -> None:
     dk = ctx.dataset_key
     cached = st.session_state.get(_result_key(dk))
@@ -233,6 +372,8 @@ def _render_post_analysis_workspace(ctx: DatasetContext, *, show_ml_cta: bool) -
         _render_guided_tab(ctx, show_ml_cta=show_ml_cta)
     elif tab == TAB_SQL:
         render_sql_explorer(ctx)
+    elif tab == TAB_EVAL:
+        _render_evaluation_tab(ctx)
     else:
         on_ia = make_explore_ia_handler(
             set_active_tab=_set_active_tab,

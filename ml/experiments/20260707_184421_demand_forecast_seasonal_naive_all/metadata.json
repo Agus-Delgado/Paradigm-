@@ -1,0 +1,42 @@
+{
+  "experiment_id": "20260707_184421_demand_forecast_seasonal_naive_all",
+  "name": "demand_forecast_seasonal_naive_all",
+  "timestamp": "20260707_184421",
+  "started_at_utc": "2026-07-07T18:44:21+00:00",
+  "finished_at_utc": "2026-07-07T18:44:22+00:00",
+  "status": "completed",
+  "model_type": "forecasting_seasonal_naive",
+  "hyperparameters": {
+    "model": "seasonal_naive",
+    "model_kwargs": {
+      "season_length": 7
+    },
+    "forecast_horizon": 30,
+    "source": "fact_appointment",
+    "specialty_id": null,
+    "specialty_name": null,
+    "initial_train_size": null,
+    "backtest_step": 7,
+    "backtest_enabled": true,
+    "db_path": "C:\\Proyectos\\Paradigm\\data\\processed\\paradigm_mart.db"
+  },
+  "metrics": {
+    "forecast_horizon_days": 30.0,
+    "n_observations": 424.0,
+    "history_start": "2024-01-02",
+    "history_end": "2025-02-28",
+    "series_mean": 1.2264150943396226,
+    "series_std": 1.3669482527915593,
+    "specialty_id": null,
+    "specialty_name": null,
+    "backtest_folds": 17.0,
+    "backtest_mae": 1.092436974789916,
+    "backtest_rmse": 1.6357078212159284,
+    "backtest_smape": 78.75416793347459
+  },
+  "git_commit": "058ccbf32aacfe6cdc6ec33464a14c478efae4f6",
+  "notes": "Demand forecasting run (Phase 2).",
+  "artifacts": {
+    "model": "C:\\Proyectos\\Paradigm\\ml\\experiments\\20260707_184421_demand_forecast_seasonal_naive_all\\forecast_seasonal_naive.joblib"
+  }
+}

@@ -36,6 +36,7 @@ from app.data import (
 )
 from app.conversational.flow import render_conversational_page_v2
 from app.conversational.types import DatasetContext
+from app.forecasting import render_forecasting_tab
 from app.ml_predict import render_prediction_tab
 from app.plots import (
     attended_vs_billed_chart,
@@ -202,7 +203,13 @@ def main() -> None:
 
     page = st.sidebar.radio(
         "Navegación",
-        ["Executive Overview", "Conciliación", "No-Show ML", "AI Conversational Insights"],
+        [
+            "Executive Overview",
+            "Conciliación",
+            "No-Show ML",
+            "Forecasting",
+            "AI Conversational Insights",
+        ],
         label_visibility="collapsed",
     )
 
@@ -220,6 +227,8 @@ def main() -> None:
         render_reconciliation(tables, filters)
     elif page == "No-Show ML":
         render_prediction_tab(tables, str(DB_PATH), db_mtime)
+    elif page == "Forecasting":
+        render_forecasting_tab(tables, str(DB_PATH), db_mtime)
     else:
         analyst_ctx: DatasetContext | None = st.session_state.get("analyst_v2_ctx")
 

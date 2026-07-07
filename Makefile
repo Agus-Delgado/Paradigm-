@@ -1,4 +1,4 @@
-.PHONY: help all demo install install-app synthetic mart quality export-pbi export-tab validate ml
+.PHONY: help all build-all demo run-app install install-app synthetic mart quality export-pbi export-tab validate ml train-forecast eval-gold test-evaluation
 
 PYTHON ?= python
 
@@ -7,7 +7,9 @@ help:
 	@echo "  make install      Install pipeline dependencies (requirements.txt)"
 	@echo "  make install-app  Install Streamlit demo dependencies (requirements-app.txt)"
 	@echo "  make all          Full pipeline: synthetic -> mart -> quality -> BI -> ML"
+	@echo "  make build-all    Extended pipeline: all + forecast + eval + tests"
 	@echo "  make demo         Launch Streamlit v2 Live Demo"
+	@echo "  make run-app      Launch Streamlit app (alias of demo)"
 	@echo ""
 	@echo "Atomic targets:"
 	@echo "  make synthetic    Generate data/synthetic/*.csv"
@@ -17,6 +19,9 @@ help:
 	@echo "  make export-tab   Export CSVs for Tableau"
 	@echo "  make validate     Validate executive KPIs"
 	@echo "  make ml           Train no-show prioritization models"
+	@echo "  make train-forecast Train demand forecasting model"
+	@echo "  make eval-gold    Run conversational gold evaluation"
+	@echo "  make test-evaluation Run evaluation test suite"
 
 install:
 	$(PYTHON) -m pip install -r requirements.txt
@@ -45,7 +50,20 @@ validate:
 ml:
 	$(PYTHON) scripts/train_no_show.py
 
+train-forecast:
+	$(PYTHON) scripts/train_forecast.py
+
+eval-gold:
+	$(PYTHON) scripts/run_evaluation_test.py
+
+test-evaluation:
+	$(PYTHON) -m unittest tests/test_evaluation.py
+
 all: synthetic mart quality export-pbi export-tab validate ml
+
+build-all: all train-forecast eval-gold test-evaluation
 
 demo: install-app
 	$(PYTHON) -m streamlit run streamlit_app.py
+
+run-app: demo

@@ -17,21 +17,75 @@ Salida:
 from __future__ import annotations
 
 import json
+import logging
 import sys
 from pathlib import Path
 
+import joblib
+
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "python" / "src"))
 
+from ml.experiments.tracker import ExperimentTracker  # noqa: E402
 from paradigm.io.paths import DB_PATH, ML_EXPERIMENTS_DIR  # noqa: E402
 from paradigm.ml.train import run_training  # noqa: E402
 
 
+LOGGER = logging.getLogger(__name__)
+
+
 def main() -> None:
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
+
+    tracker = ExperimentTracker(base_dir=ML_EXPERIMENTS_DIR)
+    experiment_id = tracker.start_experiment(
+        name="no_show_rf_baseline",
+        hyperparameters={
+            "test_ratio": 0.2,
+            "models": {
+                "baseline_logistic": {
+                    "solver": "lbfgs",
+                    "class_weight": "balanced",
+                    "max_iter": 2000,
+                },
+                "random_forest": {
+                    "n_estimators": 120,
+                    "max_depth": 10,
+                    "min_samples_leaf": 5,
+                    "class_weight": "balanced",
+                },
+            },
+        },
+        notes="Temporal split training run for no-show prioritization baseline.",
+    )
+    LOGGER.info("Started experiment %s", experiment_id)
+
+    LOGGER.info("Running training pipeline...")
     summary = run_training(db_path=DB_PATH, out_dir=ML_EXPERIMENTS_DIR, test_ratio=0.2)
-    print(json.dumps(summary["metrics"], indent=2, ensure_ascii=False))
+    tracker.log_metrics(summary.get("metrics", {}))
+    LOGGER.info("Logged metrics for experiment %s", experiment_id)
+
+    logistic_path = ML_EXPERIMENTS_DIR / "no_show_logistic.joblib"
+    rf_path = ML_EXPERIMENTS_DIR / "no_show_random_forest.joblib"
+    if logistic_path.exists():
+        tracker.log_model(joblib.load(logistic_path), filename="no_show_logistic.joblib")
+    if rf_path.exists():
+        tracker.log_model(joblib.load(rf_path), filename="no_show_random_forest.joblib")
+    LOGGER.info("Logged model artifacts for experiment %s", experiment_id)
 
     shap_info = summary.get("shap", {})
+    shap_bundle_path = shap_info.get("bundle_path")
+    if shap_info.get("shap_available") and shap_bundle_path:
+        tracker.log_shap(joblib.load(Path(shap_bundle_path)))
+        LOGGER.info("Logged SHAP bundle for experiment %s", experiment_id)
+
+    tracker.finish_experiment()
+    LOGGER.info("Finished experiment %s", experiment_id)
+
+    print(f"Experiment ID: {experiment_id}")
+    print(json.dumps(summary["metrics"], indent=2, ensure_ascii=False))
+
     if shap_info.get("shap_available"):
         print("\n--- SHAP (top features, mean |SHAP|) ---")
         for row in shap_info.get("shap_importance_top", [])[:10]:

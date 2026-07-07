@@ -1,0 +1,8 @@
+{
+  "model_name": "seasonal_naive",
+  "backtest_overall_metrics": {
+    "mae": 1.092436974789916,
+    "rmse": 1.6357078212159284,
+    "smape": 78.75416793347459
+  }
+}

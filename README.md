@@ -29,14 +29,20 @@
 
 ## Características Principales
 
-Paradigm es un **portfolio end-to-end de analytics engineering**: pipeline reproducible, mart SQLite gobernado, BI dual-lens y una **demo Streamlit premium** que un analista podría usar a diario.
+**Paradigm Intelligence** posiciona una narrativa integrada de **Analytics Engineering + Data Science + Prescriptive AI**.
+
+Después de Fases 1-4, el proyecto ya no se limita a reporting: combina capa gobernada de datos, predicción de demanda, evaluación técnica y simulación prescriptiva orientada a decisiones.
 
 | Capa | Qué incluye |
 |------|-------------|
-| **Pipeline** | Datos sintéticos → mart SQLite → 14 checks de calidad → exports BI |
-| **Executive & Conciliación** | KPIs gobernados, tendencia, brecha atención–facturación |
-| **AI Conversational Insights** | Landing → wizard root-cause → 3 pestañas (Análisis · SQL · Data) · **LLM híbrido** (Ollama/API) con fallback heurístico |
-| **No-Show ML** | Priorización con SHAP, impacto de negocio, evaluación honesta |
+| **Analytics Engineering Core** | Datos sintéticos reproducibles, mart SQLite gobernado, 14 checks de calidad, exports BI (Power BI + Tableau) |
+| **Executive Intelligence** | KPIs trazables, conciliación atención-facturación, vistas operativas y recorrido analítico guiado |
+| **Data Science (Predictive)** | No-Show ML con split temporal, SHAP global/local, simulación de impacto de negocio |
+| **Forecasting Layer** | Forecast de demanda diaria por modelo/segmento, backtesting temporal y tracking de experimentos |
+| **Evaluation Framework** | Evaluación conversacional sobre gold set, métricas comparables, reportes auditables y tests automáticos |
+| **Prescriptive AI + What-if** | Recomendaciones por riesgo, selección de intervenciones, simulación Monte Carlo y export ejecutivo (CSV/MD/ZIP) |
+
+En conjunto, Paradigm demuestra el ciclo completo: **describir → predecir → evaluar → prescribir**.
 
 ### Landing premium
 
@@ -118,12 +124,33 @@ make all        # pipeline completo: sintético → mart → quality → exports
 make demo       # levanta Streamlit en http://localhost:8501
 ```
 
+### Opción completa (Fases 1-4)
+
+```bash
+make install           # dependencias base
+make install-app       # dependencias app Streamlit
+make all               # datos + mart + calidad + BI + no-show ML
+make train-forecast    # forecasting de demanda
+make eval-gold         # evaluación sobre gold set conversacional
+make test-evaluation   # tests del evaluation framework
+make run-app           # alias de demo
+```
+
+### Pipeline extendido en un paso
+
+```bash
+make build-all         # all + forecast + eval-gold + test-evaluation
+```
+
 ### Manual
 
 ```bash
 pip install -r requirements-app.txt
 python scripts/build_sqlite_mart.py
-python scripts/train_no_show.py              # opcional — pestaña No-Show ML
+python scripts/train_no_show.py              # no-show prediction + SHAP
+python scripts/train_forecast.py             # forecasting layer (opcional recomendado)
+python scripts/run_evaluation_test.py        # evaluation framework (gold report)
+python -m unittest tests/test_evaluation.py  # tests de evaluación
 streamlit run streamlit_app.py
 ```
 
@@ -182,7 +209,7 @@ Flujo detallado: [`docs/conversational_insights_flow.md`](docs/conversational_in
 
 > **Docker:** el contenedor no incluye Ollama. Para LLM en Docker usá un proveedor cloud o apuntá `OLLAMA_BASE_URL` al host (`http://host.docker.internal:11434` en Windows/macOS).
 
-**Recorrido sugerido en la app:** Landing → **Entrar al Asistente Analítico** → cargar dataset → wizard → pestañas **Análisis Guiado · SQL Explorer · Data Explorer** → sidebar **No-Show ML** para SHAP.
+**Recorrido sugerido en la app:** Landing → **Entrar al Asistente Analítico** → cargar dataset → wizard → pestañas **Análisis Guiado · SQL Explorer · Data Explorer** → sidebar **No-Show ML** para SHAP + **Prescriptive AI What-if Simulator**.
 
 > En Windows, `make` requiere [GNU Make](https://www.gnu.org/software/make/) (Git Bash, WSL o `choco install make`).
 
@@ -190,21 +217,25 @@ Flujo detallado: [`docs/conversational_insights_flow.md`](docs/conversational_in
 
 ## Por qué este proyecto
 
-Paradigm demuestra en un solo repositorio lo que recruiters y hiring managers buscan en perfiles de datos:
+Paradigm Intelligence muestra una evolución concreta desde analytics tradicional hacia una práctica híbrida de datos y AI.
 
-1. **Gobierno de métricas** — diccionario, vistas SQL, validación Python vs mart.
-2. **Dos lentes BI** — Power BI (ejecutivo) y Tableau (diagnóstico) sobre la misma fuente.
-3. **ML transparente** — split temporal, anti-leakage, SHAP, sin claims de producción.
-4. **Producto analítico** — demo Streamlit con SQL ad-hoc, exploración filtrada y analista guiado.
-5. **Reproducibilidad** — Makefile, Docker, scripts y datos regenerables.
+Paradigm Intelligence demonstrates a practical progression from traditional analytics toward a hybrid data + AI practice.
 
-Ideal para **Analytics Engineer**, **Data Analyst senior** o **BI Developer** que quieran evidencia tangible en LinkedIn y entrevistas técnicas.
+1. **Analytics Engineering sólido** — modelo dimensional, métricas gobernadas, calidad auditable y trazabilidad end-to-end.
+2. **Data Science aplicada al negocio** — No-Show ML interpretable (SHAP) + forecasting con backtesting temporal.
+3. **AI evaluation by design** — framework de evaluación conversacional sobre gold set con métricas comparables y tests.
+4. **Prescriptive AI accionable** — recomendaciones priorizadas + simulador what-if con impacto esperado en slots y revenue.
+5. **Packaging profesional de portfolio** — Streamlit productizado, exportes ejecutivos (CSV/MD/ZIP), Make targets y Docker.
+
+Ideal para roles híbridos como **Analytics Engineer with AI focus**, **Applied Data Scientist** o **Data Scientist en healthtech** que necesiten demostrar pensamiento de producto, rigor técnico y orientación a decisión.
+
+Strong fit for hybrid roles where business impact matters: **Analytics Engineer with AI focus**, **Applied Data Scientist**, and **Healthtech Data Scientist** profiles.
 
 ---
 
-## Paradigm — Analytics Engineering Portfolio
+## Paradigm Intelligence — Analytics Engineering + Data Science + Prescriptive AI Portfolio
 
-**Caso de estudio completo para operaciones ambulatorias** — del dato sintético gobernado al insight accionable con trazabilidad y calidad auditable.
+**Caso de estudio completo para operaciones ambulatorias** — del dato sintético gobernado a decisiones accionables con predicción, evaluación y simulación prescriptiva.
 
 ### Números clave (datos sintéticos)
 
@@ -229,13 +260,13 @@ Ideal para **Analytics Engineer**, **Data Analyst senior** o **BI Developer** qu
 | [Key Results](#key-results) | [Architecture](#architecture) |
 | [Tech Stack](#tech-stack) | [Project Layers](#project-layers) |
 | [Live Demo](#live-demo) | [How to Run](#how-to-run) |
-| [ML Experiment](#ml-experiment) | [Limitations](#limitations) · [Footer](#footer) |
+| [ML Experiment](#ml-experiment) | [Limitations](#limitations) · [Próximos pasos / Roadmap](#próximos-pasos--roadmap) · [Footer](#footer) |
 
 ---
 
 ## About
 
-**Paradigm** is an end-to-end **analytics engineering** case study for outpatient clinic operations. It demonstrates how to move from raw (synthetic) data to a governed SQLite mart, validated KPIs, BI-ready exports, and a transparent ML prioritization experiment — with full lineage and reproducibility.
+**Paradigm Intelligence** is an end-to-end case study for outpatient operations that combines **analytics engineering, data science, and prescriptive AI**. It demonstrates how to move from raw (synthetic) data to a governed SQLite mart, validated KPIs, demand forecasting, conversational evaluation, and actionable what-if simulation.
 
 The focus is **analytical reliability**: governed metric definitions, automated quality checks, SQL contracts, and auditable outputs — not charts as an end in themselves.
 
@@ -245,7 +276,7 @@ Deep dives: [`docs/architecture.md`](docs/architecture.md) · [`docs/portfolio.m
 
 ## Sobre el Proyecto
 
-**Paradigm** es un caso de estudio de **analytics engineering** para operaciones ambulatorias: dato sintético → mart SQLite → KPIs validados → BI y ML reproducibles.
+**Paradigm Intelligence** es un caso de estudio end-to-end que integra **analytics engineering + data science + prescriptive AI** para operaciones ambulatorias: dato sintético → mart SQLite gobernado → KPIs validados → forecasting + evaluación → simulación what-if.
 
 El foco es **confiabilidad analítica** — definiciones gobernadas, calidad automatizada y evidencia auditable — no gráficos aislados.
 
@@ -267,7 +298,7 @@ Outpatient centers lose efficiency and revenue through **no-shows**, **late canc
 | **Quality** | Automated checks with auditable Markdown report |
 | **Governance** | Executive KPI validation against the mart |
 | **BI** | CSV exports + documented patterns for **Power BI** (executive) and **Tableau** (diagnostic) |
-| **ML** | Scoped **no-show prioritization** experiment (methodology, not production prediction) |
+| **AI/ML** | No-show prediction + forecasting + evaluation framework + prescriptive what-if (methodology-first, portfolio scope) |
 
 **El problema (resumen):** no-shows, cancelaciones tardías, huecos de agenda y desalineación atención–facturación. Sin KPIs gobernados y modelo dimensional trazable, cada equipo calcula distinto y los tableros no priorizan acciones.
 
@@ -300,7 +331,7 @@ Reference numbers from the full mart (`python scripts/validate_executive_kpis.py
 
 ## Architecture
 
-A single structured source feeds BI and ML from the same mart.
+A governed foundation now powers predictive, evaluative, and prescriptive layers in one consistent architecture.
 
 ```mermaid
 flowchart TB
@@ -319,7 +350,14 @@ flowchart TB
     subgraph consumption ["Consumption Layer"]
         PBI["Power BI<br/>Executive lens"]
         TAB["Tableau<br/>Diagnostic lens"]
-        ML["ML experiment<br/>No-show prioritization"]
+        APP["Streamlit App<br/>Paradigm Intelligence"]
+    end
+
+    subgraph intelligence ["Intelligence Layer"]
+        NS["No-Show ML<br/>Risk + SHAP"]
+        FC["Forecasting<br/>Demand prediction + backtesting"]
+        EV["Evaluation Framework<br/>Gold evaluation + tests"]
+        PR["Prescriptive AI<br/>Recommender + What-if Simulator"]
     end
 
     GEN --> BUILD --> MART
@@ -328,8 +366,20 @@ flowchart TB
     MART --> VAL
     MART --> PBI
     MART --> TAB
-    MART --> ML
+    MART --> APP
+    MART --> NS
+    MART --> FC
+    NS --> PR
+    FC --> PR
+    APP --> EV
+    APP --> PR
 ```
+
+### Architecture summary (ES/EN)
+
+- **Fase 1-2 / Data + BI:** base gobernada y reproducible para análisis confiable; governed and reproducible foundation for reliable analytics.
+- **Fase 3 / Predictive + Evaluation:** no-show prediction, forecasting y evaluación técnica trazable; predictive models plus measurable evaluation quality.
+- **Fase 4 / Prescriptive:** recomendaciones accionables y simulación what-if con export ejecutivo; action-oriented guidance with scenario-based impact simulation.
 
 Full model, analytic lenses, and implementation: [`docs/architecture.md`](docs/architecture.md)
 
@@ -432,20 +482,28 @@ No `.pbix` / `.twbx` binaries are versioned — evidence via CSV, docs, and scre
 
 ## How to Run
 
-**Requirements:** Python 3.10+ (local) · Docker + Docker Compose v2 (container) · GNU Make (optional, for `make all` / `make demo`)
+**Requirements:** Python 3.10+ (local) · Docker + Docker Compose v2 (container) · GNU Make (optional, for advanced local workflows)
 
 ### Make (recommended for local pipeline)
 
 ```bash
 make install        # pipeline dependencies (requirements.txt)
-make all            # full pipeline: synthetic → mart → quality → BI exports → ML
-make demo           # Streamlit v2 Live Demo at http://localhost:8501
+make install-app    # Streamlit app dependencies (requirements-app.txt)
+make all            # synthetic → mart → quality → BI exports → no-show ML
+make train-forecast # demand forecasting layer
+make eval-gold      # conversational evaluation over gold set
+make test-evaluation # evaluation framework tests
+make run-app        # Streamlit v2 Live Demo at http://localhost:8501
 ```
 
 | Target | Purpose |
 |--------|---------|
-| `make all` | Run all 7 pipeline scripts in order |
-| `make demo` | Install app deps + `streamlit run streamlit_app.py` |
+| `make all` | Core pipeline (data, mart, quality, BI, no-show ML) |
+| `make train-forecast` | Train demand forecasting models and register experiments |
+| `make eval-gold` | Generate evaluation report from conversational gold dataset |
+| `make test-evaluation` | Execute evaluation unit tests |
+| `make build-all` | End-to-end phases 1-4 in one command |
+| `make run-app` | Launch Streamlit app (alias of demo) |
 | `make help` | List all available targets |
 
 On Windows without Make, use the manual script sequence below or install GNU Make via Chocolatey, Git Bash, or WSL.
@@ -519,6 +577,9 @@ python scripts/export_powerbi_source.py
 python scripts/export_tableau_source.py
 python scripts/validate_executive_kpis.py
 python scripts/train_no_show.py
+python scripts/train_forecast.py
+python scripts/run_evaluation_test.py
+python -m unittest tests/test_evaluation.py
 ```
 
 | Script | Main output | What it does |
@@ -530,6 +591,9 @@ python scripts/train_no_show.py
 | `export_tableau_source.py` | `bi/tableau/source_csv/` | Exports CSVs for Tableau |
 | `validate_executive_kpis.py` | Console reference totals | Validates executive KPIs against mart |
 | `train_no_show.py` | `ml/experiments/metrics.json` | Trains no-show prioritization models |
+| `train_forecast.py` | `ml/experiments/*forecast*` | Trains forecasting models + backtesting outputs |
+| `run_evaluation_test.py` | `reports/evaluation_gold_report.json` | Runs conversational evaluation on gold data |
+| `tests/test_evaluation.py` | Test output | Validates evaluation framework behavior |
 
 ### 3. Live Demo — Streamlit v2 (recommended)
 
@@ -543,6 +607,7 @@ Or manually:
 pip install -r requirements-app.txt
 python scripts/build_sqlite_mart.py
 python scripts/train_no_show.py    # optional, for No-Show ML tab
+python scripts/train_forecast.py   # optional, for Forecasting context
 streamlit run streamlit_app.py
 ```
 
@@ -563,9 +628,9 @@ sqlite3 data/processed/paradigm_mart.db < sql/samples/01_no_show_by_specialty.sq
 
 **Docker (recomendado para demo):** `docker compose --profile init run --rm db` → `docker compose up --build` → `http://localhost:8501`.
 
-**Local (Make):** `make install` → `make all` → `make demo`.
+**Local (Make):** `make install` → `make install-app` → `make build-all` → `make run-app`.
 
-**Local (manual):** `venv` → `pip install -r requirements.txt` → ejecutar los 7 scripts en orden. Live Demo v2 con `make demo` o `requirements-app.txt` + `streamlit run streamlit_app.py`.
+**Local (manual):** `venv` → `pip install -r requirements.txt` → ejecutar pipeline + forecast + evaluación. Live Demo v2 con `make run-app` o `requirements-app.txt` + `streamlit run streamlit_app.py`.
 
 ---
 
@@ -672,6 +737,16 @@ Las recomendaciones del wizard usan badges coloreados inline:
 | Alto | Cyan muted `#5ec8d4` |
 | Medio | Ámbar muted `#d4a24a` |
 | Bajo | Verde muted `#34d399` |
+
+---
+
+## Próximos pasos / Roadmap
+
+- **MLOps lite:** versionado de modelos y experimentos con comparación de runs y checklist de promoción; lightweight model lifecycle with run comparison and promotion criteria.
+- **Serving de inferencia:** endpoint simple para scoring de no-show y recomendaciones prescriptivas online; simple inference endpoint for online scoring and recommendations.
+- **Forecasting en producción:** refresco automático de series y alertas por desvío de demanda; automated refresh and drift-aware demand alerts.
+- **Evaluación continua:** suite de regresión para AI Analyst en CI con benchmarks históricos; continuous evaluation in CI with historical baselines.
+- **Observabilidad de impacto:** seguimiento de intervención vs resultado para recalibrar efectividad y retorno operativo; intervention-outcome observability to improve effectiveness and ROI.
 
 ---
 

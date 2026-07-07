@@ -26,18 +26,28 @@ from app.export_report import build_ml_prediction_report_md
 from app.ui import render_workspace_header
 from app.plots import (
     business_impact_chart,
+    prescriptive_before_after_chart,
     shap_force_bar_chart,
     shap_global_importance_chart,
     shap_local_waterfall_chart,
 )
+from ml.prescriptive.recommender import DEFAULT_INTERVENTIONS, InterventionProfile, recommend_interventions
+from ml.prescriptive.exporting import (
+    export_prescriptive_package_zip,
+    export_recommendations_to_csv,
+    generate_executive_report_md,
+)
+from ml.prescriptive.simulator import SimulationConfig, simulate_what_if
 from paradigm.io.paths import (
     ML_EXPERIMENTS_DIR,
+    REPORTS_DIR,
     SHAP_BUNDLE_PATH,
     SHAP_SUMMARY_PNG,
 )
 from paradigm.ml.business_impact import simulate_from_shap_bundle
 from paradigm.ml.explain import compute_shap_values, mean_abs_importance
 from paradigm.ml.features import CATEGORICAL_FEATURES, NUMERIC_FEATURES
+
 
 
 def _model_path(name: str) -> Path:
@@ -262,6 +272,249 @@ def render_business_impact_section(db_path_str: str) -> None:
     )
 
 
+def _latest_forecasting_context() -> pd.DataFrame | None:
+    """Build demand context from latest forecasting run, when available."""
+    try:
+        from app.forecasting import list_recent_forecast_runs, read_forecast_csv
+    except Exception:
+        return None
+
+    runs = list_recent_forecast_runs(limit=1)
+    if not runs:
+        return None
+
+    run = runs[0]
+    forecast = read_forecast_csv(run.run_dir)
+    if forecast.empty:
+        return None
+
+    frame = forecast.rename(columns={"ds": "appointment_date", "y_pred": "demand_pred"}).copy()
+    frame["appointment_date"] = pd.to_datetime(frame["appointment_date"]).dt.date
+    mean_capacity = float(frame["demand_pred"].mean()) if not frame.empty else 1.0
+    frame["capacity"] = max(mean_capacity, 1.0)
+    if run.specialty_id is not None:
+        frame["specialty_id"] = int(run.specialty_id)
+    return frame
+
+
+def _high_risk_population(bundle: dict, min_risk: float, max_rows: int) -> pd.DataFrame:
+    """Select high-risk hold-out appointments from no-show model output."""
+    meta = _prepare_test_meta(bundle["test_meta"])
+    frame = meta[
+        [
+            "appointment_id",
+            "display_id",
+            "appointment_date",
+            "provider_id",
+            "specialty_id",
+            "predicted_proba",
+            "y_true",
+        ]
+    ].copy()
+    frame["appointment_date"] = pd.to_datetime(frame["appointment_date"]).dt.date
+    frame["predicted_proba"] = pd.to_numeric(frame["predicted_proba"], errors="coerce").fillna(0.0)
+    high_risk = frame[frame["predicted_proba"] >= min_risk].sort_values(
+        "predicted_proba",
+        ascending=False,
+    )
+    return high_risk.head(max(max_rows, 1)).reset_index(drop=True)
+
+
+def _selected_profiles(selected_keys: list[str]) -> list[InterventionProfile]:
+    profiles = {policy.key: policy for policy in DEFAULT_INTERVENTIONS}
+    return [profiles[key] for key in selected_keys if key in profiles]
+
+
+def render_prescriptive_section(model_name: str) -> None:
+    st.subheader("Prescriptive AI + What-if Simulator")
+    st.caption(
+        "Capa prescriptiva sobre no-show: priorización por riesgo, selección de intervención "
+        "y simulación Monte Carlo con registro opcional en ExperimentTracker."
+    )
+
+    bundle = load_shap_bundle()
+    if not bundle:
+        st.info(f"Requiere artefactos SHAP del modelo no-show. Ejecutá: `{TRAIN_COMMAND}`")
+        return
+
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        min_risk = st.slider("Umbral de alto riesgo", min_value=0.10, max_value=0.90, value=0.30, step=0.05)
+        max_candidates = st.slider("Citas a priorizar", min_value=20, max_value=300, value=120, step=10)
+    with c2:
+        options = [policy.key for policy in DEFAULT_INTERVENTIONS]
+        selected = st.multiselect(
+            "Intervenciones habilitadas",
+            options=options,
+            default=options,
+            format_func=lambda key: next(p.label for p in DEFAULT_INTERVENTIONS if p.key == key),
+        )
+        include_forecast = st.checkbox("Incorporar contexto de demanda (forecast)", value=True)
+    with c3:
+        iterations = st.slider("Iteraciones Monte Carlo", min_value=200, max_value=5000, value=1000, step=200)
+        overbooking_fill = st.slider("Fill rate overbooking", min_value=0.30, max_value=0.95, value=0.65, step=0.05)
+        register_tracker = st.checkbox("Registrar simulación en ExperimentTracker", value=True)
+
+    candidates = _high_risk_population(bundle, min_risk=min_risk, max_rows=max_candidates)
+    if candidates.empty:
+        st.warning("No hay citas de alto riesgo para el umbral seleccionado.")
+        return
+
+    forecast_context = _latest_forecasting_context() if include_forecast else None
+    if include_forecast and forecast_context is None:
+        st.caption("Sin runs de forecasting disponibles; se simula con presión de demanda neutral.")
+    elif include_forecast:
+        st.caption("Contexto de demanda cargado desde el último run de Forecasting.")
+
+    profiles = _selected_profiles(selected)
+    if not profiles:
+        st.warning("Seleccioná al menos una intervención para construir recomendaciones.")
+        return
+
+    recommendations = recommend_interventions(
+        risk_scores=candidates,
+        demand_forecast=forecast_context,
+        interventions=profiles,
+        top_k=max_candidates,
+    )
+    if recommendations.empty:
+        st.warning("No se pudieron generar recomendaciones con la configuración actual.")
+        return
+
+    top_table = recommendations[
+        [
+            "display_id",
+            "appointment_date",
+            "predicted_proba",
+            "recommended_intervention",
+            "expected_slots_recovered",
+            "expected_net_ars",
+            "priority_score",
+        ]
+    ].rename(
+        columns={
+            "display_id": "Cita",
+            "appointment_date": "Fecha",
+            "predicted_proba": "Riesgo no-show",
+            "recommended_intervention": "Intervención",
+            "expected_slots_recovered": "Slots recuperados est.",
+            "expected_net_ars": "Revenue neto est. (ARS)",
+            "priority_score": "Prioridad",
+        }
+    )
+
+    st.markdown("**Pacientes/citas de alto riesgo (modelo no-show)**")
+    st.dataframe(
+        top_table.head(50),
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    with st.expander("Tabla completa de recomendaciones priorizadas"):
+        st.dataframe(recommendations, use_container_width=True, hide_index=True)
+
+    if st.button("Simular impacto", type="primary", key="prescriptive_simulate_btn"):
+        sim_result = simulate_what_if(
+            recommendations=recommendations,
+            config=SimulationConfig(
+                iterations=iterations,
+                random_seed=42,
+                overbooking_fill_rate=overbooking_fill,
+            ),
+            tracker_base_dir=ML_EXPERIMENTS_DIR if register_tracker else None,
+            experiment_name=f"prescriptive_{model_name.lower().replace(' ', '_')}",
+        )
+        st.session_state["prescriptive_simulation_result"] = sim_result
+
+    sim_result = st.session_state.get("prescriptive_simulation_result")
+    if not sim_result:
+        return
+
+    summary = sim_result["summary"]
+    before_after = sim_result["before_after"]
+    breakdown = sim_result["intervention_breakdown"]
+
+    m1, m2, m3, m4 = st.columns(4)
+    m1.metric("Slots recuperados (media)", f"{float(summary['slots_recovered_mean']):,.1f}")
+    m2.metric("Revenue bruto (media)", f"${float(summary['revenue_impact_mean_ars']):,.0f} ARS")
+    m3.metric("Costo intervención (media)", f"${float(summary['cost_mean_ars']):,.0f} ARS")
+    m4.metric("Revenue neto (media)", f"${float(summary['net_impact_mean_ars']):,.0f} ARS")
+
+    st.caption(
+        "Intervalo slots recuperados (p05-p95): "
+        f"{float(summary['slots_recovered_p05']):,.1f} - {float(summary['slots_recovered_p95']):,.1f}"
+    )
+
+    st.plotly_chart(
+        prescriptive_before_after_chart(before_after),
+        use_container_width=True,
+    )
+
+    col_left, col_right = st.columns(2)
+    with col_left:
+        st.markdown("**Before/After (esperado)**")
+        st.dataframe(before_after, use_container_width=True, hide_index=True)
+    with col_right:
+        st.markdown("**Mix de intervenciones**")
+        st.dataframe(breakdown, use_container_width=True, hide_index=True)
+
+    tracker_run_dir = sim_result.get("tracker_run_dir")
+    if tracker_run_dir:
+        st.caption(f"Simulación registrada en ExperimentTracker: {tracker_run_dir}")
+
+    export_dir = REPORTS_DIR / "prescriptive"
+    export_settings = {
+        "iterations": iterations,
+        "overbooking_fill_rate": overbooking_fill,
+        "include_forecast": include_forecast,
+        "high_risk_threshold": min_risk,
+        "max_candidates": max_candidates,
+    }
+
+    exp1, exp2, exp3 = st.columns(3)
+    with exp1:
+        if st.button("Exportar recomendaciones a CSV", key="prescriptive_export_csv"):
+            csv_path = export_recommendations_to_csv(
+                recommendations,
+                out_dir=export_dir,
+                prefix="prescriptive_recommendations",
+            )
+            st.success(f"CSV exportado: {csv_path}")
+    with exp2:
+        if st.button("Exportar reporte ejecutivo a Markdown", key="prescriptive_export_md"):
+            report_md = generate_executive_report_md(
+                model_name=model_name,
+                summary=summary,
+                recommendations=recommendations,
+                before_after=before_after,
+                intervention_breakdown=breakdown,
+                simulation_settings=export_settings,
+            )
+            ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+            export_dir.mkdir(parents=True, exist_ok=True)
+            md_path = export_dir / f"prescriptive_executive_report_{ts}.md"
+            md_path.write_text(report_md, encoding="utf-8")
+            st.success(f"Reporte Markdown exportado: {md_path}")
+    with exp3:
+        if st.button("Exportar paquete completo (ZIP)", key="prescriptive_export_zip"):
+            report_md = generate_executive_report_md(
+                model_name=model_name,
+                summary=summary,
+                recommendations=recommendations,
+                before_after=before_after,
+                intervention_breakdown=breakdown,
+                simulation_settings=export_settings,
+            )
+            zip_path = export_prescriptive_package_zip(
+                out_dir=export_dir,
+                recommendations=recommendations,
+                executive_report_md=report_md,
+                summary=summary,
+                before_after=before_after,
+            )
+            st.success(f"Paquete ZIP exportado: {zip_path}")
+
+
 def no_show_ml_available(tables: dict[str, pd.DataFrame]) -> bool:
     """True si hay citas elegibles ATTENDED/NO_SHOW para el tab ML."""
     apt = tables.get("appointments")
@@ -442,6 +695,9 @@ def render_prediction_tab(
 
     st.divider()
     render_business_impact_section(db_path_str)
+
+    st.divider()
+    render_prescriptive_section(model_name)
 
     st.caption(
         f"Features esperadas: {len(CATEGORICAL_FEATURES)} categóricas + "
