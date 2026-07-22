@@ -1,6 +1,9 @@
 # Paradigm — Portfolio evidence and presentation
 
-What to show on GitHub or in an interview, aligned with **analytics engineering** positioning (not “charts only”). The **executive** screenshot lives under **`assets/dashboards/`** (canonical). Optional Tableau captures under `assets/bi/` remain optional until exported; the repo stays coherent without new binary images.
+What to show on GitHub or in an interview, aligned with **Decision Intelligence Laboratory**
+positioning (evidence → decisions — not “charts only”). Full narrative:
+[`PORTFOLIO_CASE_STUDY.md`](PORTFOLIO_CASE_STUDY.md). The **executive** screenshot lives under
+**`assets/dashboards/`** (canonical).
 
 ---
 

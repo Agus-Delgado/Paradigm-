@@ -13,15 +13,33 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores import FAISS
-from langchain_core.documents import Document
-from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_groq import ChatGroq
-from langchain_openai import ChatOpenAI
-from langchain_ollama import ChatOllama, OllamaEmbeddings
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+try:
+    from langchain_community.embeddings import HuggingFaceEmbeddings
+    from langchain_community.vectorstores import FAISS
+    from langchain_core.documents import Document
+    from langchain_core.language_models.chat_models import BaseChatModel
+    from langchain_core.messages import HumanMessage, SystemMessage
+    from langchain_groq import ChatGroq
+    from langchain_openai import ChatOpenAI
+    from langchain_ollama import ChatOllama, OllamaEmbeddings
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+    _LANGCHAIN_AVAILABLE = True
+except ImportError:  # dependencias opcionales (requirements-llm.txt)
+    HuggingFaceEmbeddings = None  # type: ignore[assignment, misc]
+    FAISS = None  # type: ignore[assignment, misc]
+    Document = None  # type: ignore[assignment, misc]
+    BaseChatModel = None  # type: ignore[assignment, misc]
+    HumanMessage = None  # type: ignore[assignment, misc]
+    SystemMessage = None  # type: ignore[assignment, misc]
+    ChatGroq = None  # type: ignore[assignment, misc]
+    ChatOpenAI = None  # type: ignore[assignment, misc]
+    ChatOllama = None  # type: ignore[assignment, misc]
+    OllamaEmbeddings = None  # type: ignore[assignment, misc]
+    RecursiveCharacterTextSplitter = None  # type: ignore[assignment, misc]
+
+    _LANGCHAIN_AVAILABLE = False
 
 from app.config.llm_config import LLMSettings, get_llm_settings, is_llm_available
 from app.conversational.llm_logging import log_llm_interaction
@@ -124,9 +142,28 @@ class AnalystResult:
     raw_response: str | None = None
 
 
+def analyst_result_to_dict(result: AnalystResult) -> dict[str, Any]:
+    """Serializa AnalystResult a dict JSON-safe (usado por UI y logging)."""
+    return {
+        "sql": result.sql,
+        "insight": result.insight,
+        "recommendation": result.recommendation,
+        "business_impact": result.business_impact,
+        "confidence": result.confidence,
+        "sources": list(result.sources),
+        "used_llm": result.used_llm,
+        "fallback_reason": result.fallback_reason,
+        "explanation": result.explanation,
+    }
+
+
 def get_llm(settings: LLMSettings | None = None) -> BaseChatModel:
     """Retorna el chat model configurado según el proveedor activo."""
     cfg = settings or get_llm_settings()
+    if not _LANGCHAIN_AVAILABLE:
+        raise LLMNotAvailableError(
+            "Dependencias LLM no instaladas (pip install -r requirements-llm.txt)."
+        )
     if cfg.provider == "disabled":
         raise LLMNotAvailableError("LLM deshabilitado (PARADIGM_LLM_PROVIDER=disabled).")
     if not is_llm_available(cfg):
@@ -340,6 +377,9 @@ class LLMService:
     def _ensure_vectorstore(self) -> FAISS | None:
         if self._vectorstore is not None:
             return self._vectorstore
+        if not _LANGCHAIN_AVAILABLE:
+            logger.warning("RAG deshabilitado: dependencias LLM no instaladas.")
+            return None
         if not self._settings.rag_enabled:
             return None
 
@@ -617,8 +657,40 @@ def generate_insights(
     sql_result: pd.DataFrame | None = None,
     settings: LLMSettings | None = None,
 ) -> AnalystResult:
-    """Orquesta RAG + LLM (función de conveniencia)."""
+    """Orquesta RAG + LLM (función de conveniencia).
+
+    Las consultas Decide (`paradigm.prescriptive`) se resuelven primero de forma
+    determinística (sin LLM) y se registran con evidencia estructurada.
+    """
     service = LLMService(settings) if settings else _get_service()
+
+    # ── Capa Decide (sin UI): ranking / política / sensibilidad / explicación ──
+    try:
+        from app.conversational.decision_layer import (
+            answer_decision_query,
+            decision_answer_to_analyst_fields,
+        )
+
+        decision = answer_decision_query(query)
+    except Exception as exc:  # pragma: no cover - no tumbar el chat si faltan runs
+        logger.warning("decision_layer falló (%s); continuo con insights normales.", exc)
+        decision = None
+
+    if decision is not None:
+        fields = decision_answer_to_analyst_fields(decision)
+        result = AnalystResult(**fields)
+        _log_interaction(
+            service.settings,
+            operation="decision_prescriptive",
+            query=query,
+            success=True,
+            used_llm=False,
+            response=result,
+            raw_response=result.raw_response,
+            sources=result.sources,
+        )
+        return result
+
     if not is_llm_available(service.settings):
         result = _heuristic_insight_fallback(query, context_df, logical_types)
         _log_interaction(

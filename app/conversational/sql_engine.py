@@ -8,7 +8,6 @@ from contextlib import contextmanager
 from typing import Iterator
 
 import pandas as pd
-import streamlit as st
 
 TABLE_NAME = "data"
 
@@ -71,7 +70,9 @@ def cache_key(dataset_key: str) -> str:
 
 
 def invalidate_cache(dataset_key: str | None = None) -> None:
-    """Limpia flags de caché SQL en session_state."""
+    """Limpia flags de caché SQL en session_state (solo contexto Streamlit)."""
+    import streamlit as st
+
     for k in list(st.session_state.keys()):
         if not k.startswith("sql_"):
             continue
@@ -80,7 +81,9 @@ def invalidate_cache(dataset_key: str | None = None) -> None:
 
 
 def ensure_engine_ready(dataset_key: str, df: pd.DataFrame) -> None:
-    """Marca el engine como listo para este dataset (validación ligera)."""
+    """Marca el engine como listo para este dataset (solo contexto Streamlit)."""
+    import streamlit as st
+
     st.session_state[cache_key(dataset_key)] = {
         "rows": len(df),
         "cols": len(df.columns),

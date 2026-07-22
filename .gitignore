@@ -79,8 +79,28 @@ data/processed/*.sqlite
 # Local ML artifacts (regenerable)
 ml/experiments/*.joblib
 ml/experiments/*.pkl
+ml/experiments/**/*.joblib
+ml/experiments/**/*.pkl
+ml/experiments/runs/*
+!ml/experiments/runs/.gitkeep
+ml/experiments/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_*
+ml/experiments/*predictions*.csv
+ml/experiments/*_report.json
+ml/experiments/*_analysis.json
+ml/experiments/*_policy*.json
+ml/experiments/*_benchmark.json
+ml/experiments/forecast_baseline_benchmark.json
+ml/experiments/prescriptive_engine_report.json
+ml/experiments/segmentation_drift_report.json
+ml/experiments/uplift_*.json
+ml/experiments/no_show_v2_*.json
+ml/experiments/no_show_test_predictions.csv
 data/processed/shap_bundle.joblib
-ml/figures/*.png
+data/processed/*.jsonl
+data/processed/rag_index/
+data/synthetic_v2/
+ml/figures/**
+!ml/figures/.gitkeep
 
 # Optional editor projects
 *.sublime-project

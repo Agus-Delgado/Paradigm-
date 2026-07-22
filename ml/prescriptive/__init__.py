@@ -1,4 +1,8 @@
-"""Prescriptive AI utilities for intervention recommendations and what-if simulation."""
+"""Decide (UI what-if): recomendaciones + simulación Monte Carlo para Streamlit.
+
+Distinto del motor headless `paradigm.prescriptive` (política riesgo/uplift/ENV).
+Ver `docs/FINAL_ARCHITECTURE.md`.
+"""
 
 from .exporting import (
     export_prescriptive_package_zip,

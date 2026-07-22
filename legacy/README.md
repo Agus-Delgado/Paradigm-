@@ -1,13 +1,21 @@
-# Paradigm v1 (legacy)
+# Paradigm v1 (LEGACY)
 
-This folder contains the **previous v1** materials for Paradigm. They are kept for reference and optional local exploration; **they are not the main v2 portfolio path** (dimensional mart, SQL, BI exports, and ML live at the repository root).
+Materiales de la **versión anterior**. Se conservan por compatibilidad y exploración
+opcional. **No** son el camino portfolio (mart dimensional + Live Demo + lab v2).
+
+Estado: **aislado** bajo `legacy/`. El Live Demo v2 aún importa lógica de
+`legacy/app/core` vía [`app/conversational/legacy_bridge.py`](../app/conversational/legacy_bridge.py)
+(profiling / findings / ingestion). No borrar este árbol mientras exista ese puente.
+
+Mapa: [`docs/FINAL_ARCHITECTURE.md`](../docs/FINAL_ARCHITECTURE.md).
 
 ## Contents
 
 | Path | Description |
 |------|-------------|
-| [`app/`](app/) | Streamlit-based CSV/XLSX explorer and optional clinic-style demo (flat tables). |
-| [`data/sample/medical_clinic/`](data/sample/medical_clinic/) | Sample CSV files used by the legacy demo and by [`scripts/generate_medical_clinic_data.py`](../scripts/generate_medical_clinic_data.py) output. |
+| [`app/`](app/) | Streamlit CSV/XLSX explorer (flat tables). |
+| [`data/sample/medical_clinic/`](data/sample/medical_clinic/) | Sample CSVs for the legacy demo. |
+| [`scripts/`](scripts/) | `generate_medical_clinic_data.py`, `verify_dynamic_questions.py` (ad-hoc; fuera de Make/CI). |
 
 ## Running the legacy app (optional)
 
@@ -18,8 +26,15 @@ pip install -r requirements-app.txt
 streamlit run legacy/app/main.py
 ```
 
-The default demo CSV path is `legacy/data/sample/medical_clinic/medical_clinic_flat.csv`.
+Default demo CSV: `legacy/data/sample/medical_clinic/medical_clinic_flat.csv`.
+
+Regenerate samples:
+
+```bash
+python legacy/scripts/generate_medical_clinic_data.py
+```
 
 ## Note on language
 
-Legacy UI strings and some comments may remain in Spanish; the **current** project documentation (root `README.md`, `docs/`, and folder READMEs outside `legacy/`) is **English**.
+Legacy UI strings may remain in Spanish; current project docs outside `legacy/`
+prefer English or bilingual portfolio README.

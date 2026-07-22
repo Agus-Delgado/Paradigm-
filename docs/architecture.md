@@ -1,5 +1,7 @@
 # Paradigm — Architecture
 
+> **Estado consolidado (capas + mapa + rutas v1/v2):** [`FINAL_ARCHITECTURE.md`](FINAL_ARCHITECTURE.md).
+
 ## Overview
 
 Technical flow:

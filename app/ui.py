@@ -68,12 +68,12 @@ def render_header() -> None:
           <span style="font-size:1.8rem;font-weight:800;color:{COLOR_PRIMARY_SOFT};
                        letter-spacing:-0.02em;">Paradigm</span>
           <span style="font-size:1.8rem;font-weight:400;color:{COLOR_TEXT};
-                       letter-spacing:-0.02em;"> Live Demo</span>
+                       letter-spacing:-0.02em;"> Decision Lab</span>
           <span style="font-size:0.75rem;font-weight:500;color:{COLOR_MUTED};
                        margin-left:0.6rem;vertical-align:middle;">v{APP_VERSION}</span>
         </div>
         <p class="paradigm-subtitle">
-          Analytics engineering · operaciones ambulatorias · mart SQLite · actualizado {LAST_UPDATE}
+          Decision Intelligence Laboratory · Observe → Decide · actualizado {LAST_UPDATE}
         </p>
         """,
         unsafe_allow_html=True,
@@ -98,7 +98,7 @@ def render_app_footer() -> None:
         f"""
         <div class="paradigm-footer">
           <strong>Paradigm</strong> v{APP_VERSION} · última actualización {LAST_UPDATE}<br/>
-          Demo con datos sintéticos · portfolio analytics engineering
+          Decision Intelligence Laboratory · datos sintéticos · portfolio
         </div>
         """,
         unsafe_allow_html=True,
@@ -116,21 +116,22 @@ def render_landing_page() -> None:
         """
         <div class="paradigm-landing-hero"
              style="text-align:center;width:100%;display:flex;flex-direction:column;align-items:center;">
-          <div class="hero-badge" style="text-align:center;">DATA ANALYTICS PLATFORM</div>
+          <div class="hero-badge" style="text-align:center;">DECISION INTELLIGENCE LABORATORY</div>
           <h1 class="hero-title" style="text-align:center;width:100%;margin-left:auto;margin-right:auto;">
             Paradigm
           </h1>
           <p class="hero-subtitle" style="text-align:center;width:100%;">
-            Tu Asistente Analítico Inteligente
+            De la evidencia a la decisión operativa
           </p>
           <p class="hero-description"
              style="text-align:center;max-width:680px;margin:0 auto 0.7rem;">
-            Del dato crudo a insights accionables mediante preguntas precisas
-            y análisis orientado a causas raíz.
+            Observá el mart, predicí riesgo, explicá con evidencia y decidí a quién priorizar —
+            sin inventar causalidad.
           </p>
           <p class="hero-description-small"
              style="text-align:center;max-width:560px;margin:0 auto 2.5rem;">
-            Conectá tus datos, respondé 3 preguntas clave y obtené recomendaciones con evidencia.
+            Laboratorio reproducible sobre operaciones ambulatorias sintéticas:
+            Observe → Predict → Explain → Decide → Learn.
           </p>
         </div>
         """,
@@ -145,27 +146,26 @@ def render_landing_page() -> None:
             <div class="feature-icon">01</div>
             <div class="feature-card-title">Cómo funciona</div>
             <div class="feature-card-body">
-              Cargás tu dataset → respondés 3 preguntas clave sobre tu
-              objetivo → obtenés análisis estructurado + recomendaciones
-              priorizadas por impacto.
+              Mart gobernado → predicción y explicación → motor Decide
+              (riesgo, uplift, capacidad) → chat y BI que consumen los mismos
+              artefactos auditables.
             </div>
           </div>
           <div class="feature-card">
             <div class="feature-icon">02</div>
             <div class="feature-card-title">Objetivo</div>
             <div class="feature-card-body">
-              Demostrar análisis profesional de datos con IA y explicabilidad
-              total. Sin cajas negras: cada hallazgo tiene su evidencia
-              estadística y su contexto de negocio.
+              Convertir evidencia en opciones de decisión comparables:
+              a quién contactar, bajo qué política, con qué incertidumbre —
+              sin automatizar campañas reales.
             </div>
           </div>
           <div class="feature-card">
             <div class="feature-icon">03</div>
             <div class="feature-card-title">Valor diferencial</div>
             <div class="feature-card-body">
-              Enfoque en root-cause, no en síntomas. Lenguaje de negocio,
-              no jerga técnica. Listo para presentar ante equipos directivos
-              o inversores.
+              Metodología honesta: dato, predicción, simulación y recomendación
+              etiquetados. Asociación ≠ causalidad. Listo para portfolio y demo.
             </div>
           </div>
         </div>
@@ -182,18 +182,18 @@ def render_landing_page() -> None:
     img_cards = [
         (
             "hero_data_universe",
-            "Universo de Datos",
-            "Detecta estructura, patrones y oportunidades ocultas en cualquier dataset en segundos.",
+            "Observe & Predict",
+            "Mart SQLite, KPIs gobernados y ranking de riesgo/demanda con split temporal.",
         ),
         (
             "hero_data_flow",
-            "Flujo Inteligente",
-            "Hace las preguntas correctas como un analista senior antes de sacar conclusiones.",
+            "Explain & Decide",
+            "SHAP, analista conversacional y motor prescriptivo: a quién priorizar bajo capacidad.",
         ),
         (
             "hero_business_impact",
-            "Impacto en Negocio",
-            "Recomendaciones accionables priorizadas por impacto, con evidencia clara y lenguaje de negocio.",
+            "Learn",
+            "Experimentos registrados, calidad, eval gold y honestidad sobre límites del sintético.",
         ),
     ]
 
@@ -235,7 +235,7 @@ def render_landing_page() -> None:
     _, cta_col, _ = st.columns([1, 2, 1])
     with cta_col:
         if st.button(
-            "Entrar al Asistente Analítico",
+            "Entrar al laboratorio",
             type="primary",
             use_container_width=True,
             key="landing_enter_btn",
@@ -246,7 +246,7 @@ def render_landing_page() -> None:
     st.markdown(
         f"""
         <div class="paradigm-footer" style="margin-top:1.5rem;border-top:none;">
-          <strong>Paradigm</strong> v{APP_VERSION} · datos 100 % sintéticos · {LAST_UPDATE}
+          <strong>Paradigm</strong> v{APP_VERSION} · Decision Intelligence Laboratory · {LAST_UPDATE}
         </div>
         """,
         unsafe_allow_html=True,

@@ -27,186 +27,188 @@
       "model_name": "logistic_regression_baseline"
     },
     "random_forest": {
-      "roc_auc": 0.42272727272727273,
-      "average_precision": 0.11370106077427788,
-      "brier": 0.138363292910764,
-      "accuracy": 0.8791208791208791,
+      "roc_auc": 0.4102272727272727,
+      "average_precision": 0.10695676244458252,
+      "brier": 0.17667075687531514,
+      "accuracy": 0.8241758241758241,
       "top_decile": {
         "n": 91.0,
         "k_top": 10.0,
         "positives_total": 11.0,
-        "positives_in_top_fraction": 1.0,
-        "capture_rate": 0.09090909090909091,
+        "positives_in_top_fraction": 0.0,
+        "capture_rate": 0.0,
         "baseline_positive_rate": 0.12087912087912088,
-        "rate_in_top_fraction": 0.1
+        "rate_in_top_fraction": 0.0
       },
       "model_name": "random_forest",
       "feature_importances_top": [
         {
-          "feature": "provider_prior_appt_count",
-          "importance": 0.09412022288158156
-        },
-        {
           "feature": "provider_prior_no_show_rate",
-          "importance": 0.092043354951886
+          "importance": 0.0968261334843445
         },
         {
-          "feature": "lead_time_days",
-          "importance": 0.08148001149253058
+          "feature": "provider_prior_appt_count",
+          "importance": 0.08727684849044584
         },
         {
           "feature": "appointment_month",
-          "importance": 0.07311786087917298
+          "importance": 0.08515778221757654
+        },
+        {
+          "feature": "lead_time_days",
+          "importance": 0.0791231708111562
         },
         {
           "feature": "booking_hour",
-          "importance": 0.06941298108652989
-        },
-        {
-          "feature": "appointment_hour",
-          "importance": 0.0661728259743316
+          "importance": 0.06141443025994199
         },
         {
           "feature": "appointment_dow",
-          "importance": 0.06495554814322904
+          "importance": 0.05881524299346121
         },
         {
           "feature": "provider_prior_no_show_count",
-          "importance": 0.06081902451373519
+          "importance": 0.05844614625755452
+        },
+        {
+          "feature": "appointment_hour",
+          "importance": 0.05730327706618866
         },
         {
           "feature": "patient_prior_appt_count",
-          "importance": 0.039382517601101695
-        },
-        {
-          "feature": "age_band_55-69",
-          "importance": 0.02326871555790935
-        },
-        {
-          "feature": "provider_id_3",
-          "importance": 0.02178383694270353
-        },
-        {
-          "feature": "patient_prior_no_show_rate",
-          "importance": 0.01900109053676374
-        },
-        {
-          "feature": "booking_channel_id_3",
-          "importance": 0.017891636712061437
-        },
-        {
-          "feature": "specialty_id_2",
-          "importance": 0.01780618576469489
-        },
-        {
-          "feature": "age_band_35-54",
-          "importance": 0.017329125714677544
+          "importance": 0.05327534659343121
         },
         {
           "feature": "provider_id_1",
-          "importance": 0.017256596505281174
+          "importance": 0.02600414490619943
         },
         {
-          "feature": "coverage_id_3",
-          "importance": 0.015622688997177218
+          "feature": "patient_prior_no_show_rate",
+          "importance": 0.02420358217813186
         },
         {
-          "feature": "sex_F",
-          "importance": 0.015130512060541246
+          "feature": "provider_id_3",
+          "importance": 0.023602299900430047
         },
         {
-          "feature": "booking_channel_id_2",
-          "importance": 0.014247610871387423
+          "feature": "age_band_55-69",
+          "importance": 0.020916327444557122
         },
         {
           "feature": "booking_channel_id_1",
-          "importance": 0.012792373628464583
+          "importance": 0.019971185876725486
         },
         {
-          "feature": "coverage_id_1",
-          "importance": 0.012295010515089468
+          "feature": "age_band_35-54",
+          "importance": 0.018943120399295733
+        },
+        {
+          "feature": "booking_channel_id_2",
+          "importance": 0.014990248522107136
         },
         {
           "feature": "sex_M",
-          "importance": 0.01189314338907177
+          "importance": 0.014529202264326576
         },
         {
-          "feature": "specialty_id_4",
-          "importance": 0.011546563755726854
+          "feature": "specialty_id_2",
+          "importance": 0.014393762231184253
         },
         {
-          "feature": "patient_prior_no_show_count",
-          "importance": 0.010450412066399312
+          "feature": "coverage_id_3",
+          "importance": 0.01407678764683475
+        },
+        {
+          "feature": "booking_channel_id_3",
+          "importance": 0.013941201101538745
         },
         {
           "feature": "coverage_id_5",
-          "importance": 0.010332969077531961
+          "importance": 0.013827881983173513
+        },
+        {
+          "feature": "provider_id_7",
+          "importance": 0.013661721739195425
+        },
+        {
+          "feature": "specialty_id_1",
+          "importance": 0.013410136120931159
+        },
+        {
+          "feature": "sex_F",
+          "importance": 0.011339327682238566
+        },
+        {
+          "feature": "provider_id_5",
+          "importance": 0.009303982086367006
         }
       ],
       "shap_importance_top": [
         {
           "feature": "provider_prior_appt_count",
-          "mean_abs_shap": 0.04642798036893162
+          "mean_abs_shap": 0.034592869366016715
         },
         {
           "feature": "appointment_month",
-          "mean_abs_shap": 0.02454595584246635
+          "mean_abs_shap": 0.031200993542131954
         },
         {
           "feature": "provider_prior_no_show_rate",
-          "mean_abs_shap": 0.023270485123816832
-        },
-        {
-          "feature": "provider_prior_no_show_count",
-          "mean_abs_shap": 0.021308353667513238
-        },
-        {
-          "feature": "lead_time_days",
-          "mean_abs_shap": 0.0201571819899366
-        },
-        {
-          "feature": "provider_id_3",
-          "mean_abs_shap": 0.017706517944457868
-        },
-        {
-          "feature": "booking_hour",
-          "mean_abs_shap": 0.01674411922658374
-        },
-        {
-          "feature": "appointment_hour",
-          "mean_abs_shap": 0.016556916524031618
-        },
-        {
-          "feature": "age_band_55-69",
-          "mean_abs_shap": 0.016348276334913207
+          "mean_abs_shap": 0.022978456093288625
         },
         {
           "feature": "appointment_dow",
-          "mean_abs_shap": 0.01576125118390973
+          "mean_abs_shap": 0.01843702924659396
+        },
+        {
+          "feature": "lead_time_days",
+          "mean_abs_shap": 0.01769064857003211
+        },
+        {
+          "feature": "provider_id_3",
+          "mean_abs_shap": 0.015125066731512241
+        },
+        {
+          "feature": "provider_prior_no_show_count",
+          "mean_abs_shap": 0.014933951090432575
         },
         {
           "feature": "provider_id_1",
-          "mean_abs_shap": 0.011078483668660323
+          "mean_abs_shap": 0.014818075742500799
         },
         {
-          "feature": "provider_id_2",
-          "mean_abs_shap": 0.008998802466601584
+          "feature": "booking_hour",
+          "mean_abs_shap": 0.012963672668762204
         },
         {
-          "feature": "specialty_id_4",
-          "mean_abs_shap": 0.008409615651881485
+          "feature": "age_band_55-69",
+          "mean_abs_shap": 0.011879541402558801
         },
         {
           "feature": "patient_prior_appt_count",
-          "mean_abs_shap": 0.006948956932998661
+          "mean_abs_shap": 0.011106318907547518
         },
         {
           "feature": "specialty_id_2",
-          "mean_abs_shap": 0.006012206437157523
+          "mean_abs_shap": 0.009426738433195806
+        },
+        {
+          "feature": "appointment_hour",
+          "mean_abs_shap": 0.009084556100442377
+        },
+        {
+          "feature": "booking_channel_id_1",
+          "mean_abs_shap": 0.00818118251130689
+        },
+        {
+          "feature": "provider_id_5",
+          "mean_abs_shap": 0.005675707123942824
         }
       ]
     }
   },
+  "predictions_path": "C:\\Proyectos\\Paradigm\\ml\\experiments\\no_show_test_predictions.csv",
+  "selected_model": "random_forest",
   "shap": {
     "shap_available": true,
     "bundle_path": "C:\\Proyectos\\Paradigm\\data\\processed\\shap_bundle.joblib",
@@ -214,76 +216,76 @@
     "shap_importance_top": [
       {
         "feature": "provider_prior_appt_count",
-        "mean_abs_shap": 0.04642798036893162
+        "mean_abs_shap": 0.034592869366016715
       },
       {
         "feature": "appointment_month",
-        "mean_abs_shap": 0.02454595584246635
+        "mean_abs_shap": 0.031200993542131954
       },
       {
         "feature": "provider_prior_no_show_rate",
-        "mean_abs_shap": 0.023270485123816832
-      },
-      {
-        "feature": "provider_prior_no_show_count",
-        "mean_abs_shap": 0.021308353667513238
-      },
-      {
-        "feature": "lead_time_days",
-        "mean_abs_shap": 0.0201571819899366
-      },
-      {
-        "feature": "provider_id_3",
-        "mean_abs_shap": 0.017706517944457868
-      },
-      {
-        "feature": "booking_hour",
-        "mean_abs_shap": 0.01674411922658374
-      },
-      {
-        "feature": "appointment_hour",
-        "mean_abs_shap": 0.016556916524031618
-      },
-      {
-        "feature": "age_band_55-69",
-        "mean_abs_shap": 0.016348276334913207
+        "mean_abs_shap": 0.022978456093288625
       },
       {
         "feature": "appointment_dow",
-        "mean_abs_shap": 0.01576125118390973
+        "mean_abs_shap": 0.01843702924659396
+      },
+      {
+        "feature": "lead_time_days",
+        "mean_abs_shap": 0.01769064857003211
+      },
+      {
+        "feature": "provider_id_3",
+        "mean_abs_shap": 0.015125066731512241
+      },
+      {
+        "feature": "provider_prior_no_show_count",
+        "mean_abs_shap": 0.014933951090432575
       },
       {
         "feature": "provider_id_1",
-        "mean_abs_shap": 0.011078483668660323
+        "mean_abs_shap": 0.014818075742500799
       },
       {
-        "feature": "provider_id_2",
-        "mean_abs_shap": 0.008998802466601584
+        "feature": "booking_hour",
+        "mean_abs_shap": 0.012963672668762204
       },
       {
-        "feature": "specialty_id_4",
-        "mean_abs_shap": 0.008409615651881485
+        "feature": "age_band_55-69",
+        "mean_abs_shap": 0.011879541402558801
       },
       {
         "feature": "patient_prior_appt_count",
-        "mean_abs_shap": 0.006948956932998661
+        "mean_abs_shap": 0.011106318907547518
       },
       {
         "feature": "specialty_id_2",
-        "mean_abs_shap": 0.006012206437157523
+        "mean_abs_shap": 0.009426738433195806
+      },
+      {
+        "feature": "appointment_hour",
+        "mean_abs_shap": 0.009084556100442377
+      },
+      {
+        "feature": "booking_channel_id_1",
+        "mean_abs_shap": 0.00818118251130689
+      },
+      {
+        "feature": "provider_id_5",
+        "mean_abs_shap": 0.005675707123942824
       }
     ],
-    "expected_value": 0.49904512700536047
+    "expected_value": 0.4986696787148596
   },
   "business_impact_top10pct": {
     "top_fraction": 0.1,
     "appointments_prioritized": 10,
-    "no_shows_in_prioritized": 1,
-    "slots_liberated_est": 1.0,
-    "revenue_recovered_ars": 20012.328927536233,
+    "no_shows_in_prioritized": 0,
+    "slots_liberated_est": 0.0,
+    "revenue_recovered_ars": 0.0,
     "baseline_no_shows": 11,
     "baseline_revenue_at_risk_ars": 220135.61820289856,
-    "capture_rate": 0.09090909090909091,
+    "capture_rate": 0.0,
     "avg_revenue_ars": 20012.328927536233,
     "reassignment_rate": 1.0,
     "avg_revenue_source": "fact_billing_line"

@@ -1,4 +1,8 @@
-"""Utilities for lightweight experiment tracking in the ML layer."""
+"""LEGACY flat experiment tracker (timestamped folders under ``ml/experiments/``).
+
+Prefer the structured registry in ``ml.experiments`` (``runs/<run_id>/``).
+Kept for forecast / older training scripts — not migrated yet.
+"""
 
 from __future__ import annotations
 

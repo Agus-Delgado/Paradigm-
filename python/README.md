@@ -1,11 +1,20 @@
-# Python — Paradigm v2
+# Python — Paradigm core
 
 ## Role in the project
 
-- **`src/paradigm/io/`** — Repository paths and SQLite mart paths (`paths.py`).
-- **`src/paradigm/quality/`** — Quality checks on the loaded database and Markdown report generation.
+| Package | Layer | Role |
+|---------|-------|------|
+| `paradigm.io` | Observe | Paths / mart location |
+| `paradigm.quality` | Observe | Checks + Markdown report |
+| `paradigm.ml` | Predict | No-show sobre mart portfolio |
+| `paradigm.synthetic_v2` | Observe/Predict (lab) | Generador con señal controlable (no reemplaza `data/synthetic/`) |
+| `paradigm.ml_v2` | Predict (lab) | No-show + uplift sobre synthetic_v2 |
+| `paradigm.prescriptive` | Decide | Motor headless de política / ranking |
+| `paradigm.monitoring` | Learn | Segmentación + drift |
 
-There is no heavy **raw → processed** transform in this phase: the **analytic source** for BI is SQLite built from `data/synthetic/`. Quality validates that mart before visualization tools connect.
+Mapa completo: [`docs/FINAL_ARCHITECTURE.md`](../docs/FINAL_ARCHITECTURE.md).
+
+There is no heavy **raw → processed** transform in the portfolio path: the **analytic source** for BI is SQLite built from `data/synthetic/`. Quality validates that mart before visualization tools connect.
 
 ## Recommended flow (reproducible)
 

@@ -108,13 +108,36 @@ def _fit_report(
     y_test: pd.Series,
 ) -> dict[str, Any]:
     pipe.fit(X_train, y_train)
-    proba = pipe.predict_proba(X_test)[:, 1]
-    pred = pipe.predict(X_test)
+    proba, pred = _predict_deterministically(pipe, X_test)
     metrics = classification_metrics(y_test, proba)
     metrics["accuracy"] = float(accuracy_score(y_test, pred))
     metrics["top_decile"] = top_fraction_capture(y_test, proba, fraction=0.1)
     metrics["model_name"] = name
     return metrics
+
+
+def _predict_deterministically(
+    pipe: Pipeline,
+    X: pd.DataFrame,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Predict with stable tree aggregation without changing model hyperparameters.
+
+    ``RandomForestClassifier.predict_proba`` aggregates tree outputs in parallel.
+    With ``n_jobs=-1`` the accumulation order can vary and produce differences of
+    1e-16 between equivalent calls. Temporarily using one inference worker makes
+    the reduction order stable; the configured value is restored immediately, so
+    fitting and serialized model hyperparameters remain unchanged.
+    """
+    classifier = pipe.named_steps["clf"]
+    configured_n_jobs = getattr(classifier, "n_jobs", None)
+    if configured_n_jobs is None:
+        return pipe.predict_proba(X)[:, 1], pipe.predict(X)
+
+    classifier.n_jobs = 1
+    try:
+        return pipe.predict_proba(X)[:, 1], pipe.predict(X)
+    finally:
+        classifier.n_jobs = configured_n_jobs
 
 
 def _rf_importances(pipe: Pipeline) -> list[dict[str, float]]:
@@ -173,7 +196,24 @@ def run_training(
     joblib.dump(lr, out_dir / "no_show_logistic.joblib")
     joblib.dump(rf, out_dir / "no_show_random_forest.joblib")
 
-    rf_proba = rf.predict_proba(X_test)[:, 1]
+    lr_proba, _ = _predict_deterministically(lr, X_test)
+    rf_proba, _ = _predict_deterministically(rf, X_test)
+
+    # Export hold-out predictions (artifact only; does not alter metrics/models).
+    predictions = pd.DataFrame(
+        {
+            "appointment_id": test_df["appointment_id"].to_numpy(),
+            "appointment_date": pd.to_datetime(test_df["appointment_date"]).dt.strftime("%Y-%m-%d"),
+            "y_true": y_test.to_numpy().astype(int),
+            "proba_baseline_logistic": lr_proba,
+            "proba_random_forest": rf_proba,
+        }
+    )
+    predictions_path = out_dir / "no_show_test_predictions.csv"
+    predictions.to_csv(predictions_path, index=False)
+    summary["predictions_path"] = str(predictions_path)
+    summary["selected_model"] = "random_forest"
+
     shap_info = compute_and_persist_shap(
         pipe=rf,
         X_test=X_test,

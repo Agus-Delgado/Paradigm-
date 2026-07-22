@@ -11,7 +11,11 @@ import streamlit as st
 from app.config import COLOR_MUTED, COLOR_PRIMARY_SOFT, COLOR_SUCCESS, COLOR_WARNING
 from app.config.llm_config import get_llm_settings, is_llm_available
 from app.conversational.llm_logging import get_log_path, read_log_entries
-from app.conversational.llm_service import AnalystResult, generate_insights
+from app.conversational.llm_service import (
+    AnalystResult,
+    analyst_result_to_dict,
+    generate_insights,
+)
 from app.conversational.plots import build_sql_result_chart
 from app.conversational.sql_engine import execute_sql_on_dataframe
 from app.conversational.types import DatasetContext
@@ -50,20 +54,6 @@ def panel_open_key(dataset_key: str) -> str:
 
 def chat_history_key(dataset_key: str) -> str:
     return _CHAT_KEY.format(dk=dataset_key)
-
-
-def analyst_result_to_dict(result: AnalystResult) -> dict[str, Any]:
-    return {
-        "sql": result.sql,
-        "insight": result.insight,
-        "recommendation": result.recommendation,
-        "business_impact": result.business_impact,
-        "confidence": result.confidence,
-        "sources": list(result.sources),
-        "used_llm": result.used_llm,
-        "fallback_reason": result.fallback_reason,
-        "explanation": result.explanation,
-    }
 
 
 def build_wizard_llm_query(answers: dict[str, str | float]) -> str:

@@ -16,10 +16,14 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from app.conversational.ai_analyst_ui import analyst_result_to_dict
 from app.conversational.llm_logging import analyst_result_response_payload, estimate_tokens
 from app.conversational.llm_security import reset_rate_limit, validate_llm_sql
-from app.conversational.llm_service import AnalystResult, generate_insights, generate_sql_llm
+from app.conversational.llm_service import (
+    AnalystResult,
+    analyst_result_to_dict,
+    generate_insights,
+    generate_sql_llm,
+)
 from app.conversational.nl_to_sql import _generate_sql_heuristic, generate_sql, generate_sql_llm_enhanced
 from app.config.llm_config import LLMSettings
 

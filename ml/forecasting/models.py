@@ -20,6 +20,14 @@ except Exception:  # pragma: no cover - optional dependency
     ExponentialSmoothing = None  # type: ignore[assignment]
 
 
+def exp_smoothing_available() -> bool:
+    return ExponentialSmoothing is not None
+
+
+def prophet_available() -> bool:
+    return Prophet is not None
+
+
 class BaseForecaster(ABC):
     """Common interface for all forecasting models in this package."""
 
@@ -77,6 +85,32 @@ class SeasonalNaiveForecaster(BaseForecaster):
         values = [self.tail_values_[i % self.season_length] for i in range(horizon)]
         idx = index if index is not None else pd.RangeIndex(start=0, stop=horizon)
         return pd.Series(values, index=idx, dtype=float)
+
+
+@dataclass
+class MovingAverageForecaster(BaseForecaster):
+    """Simple moving average of the last ``window`` observations, repeated forward."""
+
+    window: int = 7
+    fitted_: bool = False
+    mean_value_: float | None = None
+
+    def fit(self, series: pd.Series) -> "MovingAverageForecaster":
+        clean = _validate_series(series)
+        w = int(self.window)
+        if w <= 0:
+            raise ValueError("window must be > 0")
+        if len(clean) < w:
+            raise ValueError(f"Need at least {w} samples for moving average.")
+        self.mean_value_ = float(clean.iloc[-w:].mean())
+        self.fitted_ = True
+        return self
+
+    def predict(self, horizon: int, index: pd.DatetimeIndex | None = None) -> pd.Series:
+        _ensure_fitted(self.fitted_)
+        horizon = _validate_horizon(horizon)
+        idx = index if index is not None else pd.RangeIndex(start=0, stop=horizon)
+        return pd.Series(self.mean_value_, index=idx, dtype=float)
 
 
 @dataclass
@@ -169,7 +203,15 @@ class ExponentialSmoothingForecaster(BaseForecaster):
 AVAILABLE_MODELS: tuple[str, ...] = (
     "naive_last",
     "seasonal_naive",
+    "moving_average",
     "prophet",
+    "exp_smoothing",
+)
+
+BENCHMARK_BASELINE_MODELS: tuple[str, ...] = (
+    "naive_last",
+    "seasonal_naive",
+    "moving_average",
     "exp_smoothing",
 )
 
@@ -181,6 +223,8 @@ def build_forecaster(model_name: str, **kwargs: Any) -> BaseForecaster:
         return NaiveLastValueForecaster(**kwargs)
     if normalized == "seasonal_naive":
         return SeasonalNaiveForecaster(**kwargs)
+    if normalized == "moving_average":
+        return MovingAverageForecaster(**kwargs)
     if normalized == "prophet":
         return ProphetForecaster(**kwargs)
     if normalized == "exp_smoothing":

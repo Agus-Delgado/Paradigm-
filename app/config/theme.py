@@ -7,8 +7,8 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
 # ── Versión demo (footer / README) ─────────────────────────────────────────
-APP_VERSION = "2.1.0"
-LAST_UPDATE = "2025-06-11"
+APP_VERSION = "2.2.0"
+LAST_UPDATE = "2026-07-22"
 
 # ── Paleta premium dark — tonos profesionales (menos fluorescencia) ────────
 COLOR_PRIMARY   = "#00f5ff"   # cyan marca — acentos y CTA (usar con moderación)

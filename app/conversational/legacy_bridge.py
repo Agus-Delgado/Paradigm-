@@ -1,4 +1,8 @@
-"""Puente hacia módulos core del explorador legacy v1."""
+"""LEGACY — puente hacia módulos core del explorador v1 (`legacy/app/core`).
+
+Aún usado por el analista conversacional (profiling, findings, ingestion).
+No eliminar `legacy/` mientras existan estos imports. Ver `docs/FINAL_ARCHITECTURE.md`.
+"""
 
 from __future__ import annotations
 

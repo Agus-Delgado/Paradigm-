@@ -1,5 +1,5 @@
 """
-Paradigm Live Demo — app Streamlit v2 conectada al mart SQLite.
+Paradigm — Decision Intelligence Laboratory (Streamlit).
 
 Uso:
     pip install -r requirements-app.txt
@@ -175,8 +175,8 @@ def _prepare_analyst_context(
 
 def main() -> None:
     st.set_page_config(
-        page_title="Paradigm Live Demo",
-        page_icon="🏥",
+        page_title="Paradigm — Decision Intelligence Laboratory",
+        page_icon="◈",
         layout="wide",
         initial_sidebar_state="expanded",
     )

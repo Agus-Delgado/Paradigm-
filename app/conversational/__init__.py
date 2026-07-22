@@ -1,19 +1,31 @@
-"""Capa de analista conversacional — Paradigm."""
+"""Capa de analista conversacional — Paradigm.
 
-from app.conversational.analysis import run_contextual_analysis
-from app.conversational.dataset_snapshot import DatasetSnapshot, build_dataset_snapshot
-from app.conversational.domain import detect_domain, domain_label_es, extract_column_vocabulary
-from app.conversational.plan import build_analysis_plan
-from app.conversational.plots import build_contextual_plots
-from app.conversational.questions import generate_guided_questions
-from app.conversational.session_utils import make_dataset_key
-from app.conversational.types import (
-    AnalysisPlan,
-    ContextualAnalysisResult,
-    DatasetContext,
-    Domain,
-    GuidedQuestion,
-)
+Los símbolos públicos se resuelven de forma perezosa (PEP 562) para que
+importar submódulos de lógica (evaluation, nl_to_sql, llm_service, etc.)
+no arrastre dependencias de UI/visualización como plotly o streamlit.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+_LAZY_EXPORTS: dict[str, str] = {
+    "run_contextual_analysis": "app.conversational.analysis",
+    "DatasetSnapshot": "app.conversational.dataset_snapshot",
+    "build_dataset_snapshot": "app.conversational.dataset_snapshot",
+    "detect_domain": "app.conversational.domain",
+    "domain_label_es": "app.conversational.domain",
+    "extract_column_vocabulary": "app.conversational.domain",
+    "build_analysis_plan": "app.conversational.plan",
+    "build_contextual_plots": "app.conversational.plots",
+    "generate_guided_questions": "app.conversational.questions",
+    "make_dataset_key": "app.conversational.session_utils",
+    "AnalysisPlan": "app.conversational.types",
+    "ContextualAnalysisResult": "app.conversational.types",
+    "DatasetContext": "app.conversational.types",
+    "Domain": "app.conversational.types",
+    "GuidedQuestion": "app.conversational.types",
+}
 
 __all__ = [
     "AnalysisPlan",
@@ -32,3 +44,19 @@ __all__ = [
     "make_dataset_key",
     "run_contextual_analysis",
 ]
+
+
+def __getattr__(name: str) -> Any:
+    module_path = _LAZY_EXPORTS.get(name)
+    if module_path is None:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    import importlib
+
+    module = importlib.import_module(module_path)
+    value = getattr(module, name)
+    globals()[name] = value
+    return value
+
+
+def __dir__() -> list[str]:
+    return sorted(set(globals()) | set(__all__))

@@ -1,0 +1,7 @@
+# Dependencias de desarrollo y tests (suite base, sin Streamlit ni LLM)
+# Uso:
+#   pip install -r requirements.txt -r requirements-dev.txt
+#   pytest tests/
+
+-r requirements.txt
+pytest>=8.0.0

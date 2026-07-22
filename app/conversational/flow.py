@@ -506,10 +506,10 @@ def render_notebook_flow(parsed: ParsedNotebook) -> None:
 
 def render_analyst_landing(*, on_prepare, show_change_dataset: bool = True) -> DatasetContext | None:
     """Pantalla inicial: elegir fuente y cargar con un solo botón."""
-    st.markdown("## Asistente Analítico Paradigm")
+    st.markdown("## Paradigm — Decision Lab")
     st.markdown("### Análisis Basado en Datos")
     st.caption(
-        "Paradigm actúa como un analista senior: primero entiende tu problema de negocio, "
+        "Paradigm actúa como un laboratorio de decisión: primero entiende el problema de negocio, "
         "luego busca causas raíz en los datos."
     )
 

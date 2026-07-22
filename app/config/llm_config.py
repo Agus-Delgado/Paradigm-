@@ -9,7 +9,14 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal
 
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+except ImportError:  # dependencia opcional (requirements-llm.txt)
+
+    def load_dotenv(*_args: object, **_kwargs: object) -> bool:
+        """Fallback neutro: sin python-dotenv se usan solo variables de entorno."""
+        return False
+
 
 from app.config.theme import REPO_ROOT
 

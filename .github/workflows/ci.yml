@@ -20,10 +20,58 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-          cache-dependency-path: requirements.txt
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+      - name: Install core + dev dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Validate core imports (without Streamlit)
+        run: |
+          python - <<'EOF'
+          import importlib
+
+          modules = [
+              "paradigm.io.paths",
+              "paradigm.quality.checks",
+              "paradigm.quality.runner",
+              "paradigm.ml.train",
+              "paradigm.ml.evaluate",
+              "paradigm.ml_v2.train",
+              "paradigm.synthetic_v2",
+              "paradigm.prescriptive",
+              "paradigm.monitoring",
+              "ml.experiments.tracker",
+              "ml.experiments.contract",
+              "ml.forecasting",
+              "ml.prescriptive",
+              "app.config.llm_config",
+              "app.conversational.types",
+              "app.conversational.sql_engine",
+              "app.conversational.llm_security",
+              "app.conversational.llm_logging",
+              "app.conversational.llm_service",
+              "app.conversational.decision_layer",
+              "app.conversational.nl_to_sql",
+              "app.conversational.notebook_parser",
+              "app.conversational.notebook_analyzer",
+              "app.conversational.evaluation",
+          ]
+          for name in modules:
+              importlib.import_module(name)
+              print(f"ok: {name}")
+
+          try:
+              import streamlit  # noqa: F401
+          except ImportError:
+              print("ok: streamlit no instalado (imports core independientes)")
+          else:
+              raise SystemExit("streamlit no debería estar instalado en el job core")
+          EOF
+
+      - name: Run test suite (pytest)
+        run: pytest tests/ -v
 
       - name: Build SQLite mart
         run: python scripts/build_sqlite_mart.py
