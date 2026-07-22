@@ -34,6 +34,7 @@ from app.data import (
     reconciliation_summary,
     specialty_breakdown,
 )
+from app.conversational.copilot_ui import render_copilot_page
 from app.conversational.flow import render_conversational_page_v2
 from app.conversational.types import DatasetContext
 from app.forecasting import render_forecasting_tab
@@ -144,6 +145,95 @@ def render_reconciliation(tables: dict, filters) -> None:
         )
 
 
+def render_governance_improvement() -> None:
+    st.header("Governance & Improvement")
+    st.info(
+        "Centraliza riesgos, limitaciones, evaluaciones, decisiones y mejoras de Paradigm."
+    )
+
+    st.subheader("Risks")
+    st.markdown(
+        "- duplicacion entre componentes legacy y actuales;\n"
+        "- documentacion historica acumulada;\n"
+        "- dependencia de archivos y rutas locales;\n"
+        "- respuestas generativas no siempre verificables."
+    )
+
+    st.subheader("Limitations")
+    st.markdown(
+        "- uso personal y local;\n"
+        "- sin colaboracion multiusuario;\n"
+        "- sin persistencia remota;\n"
+        "- modulos futuros todavia no implementados."
+    )
+
+    st.subheader("Improvement Backlog")
+    st.markdown(
+        "- [ ] Paradigm Copilot;\n"
+        "- [ ] Automation Lab;\n"
+        "- [ ] consolidacion de componentes legacy;\n"
+        "- [ ] trazabilidad de experimentos;\n"
+        "- [ ] evaluacion de respuestas generativas."
+    )
+
+    st.subheader("Principles")
+    st.markdown(
+        "- aprobacion humana;\n"
+        "- ejecucion local cuando sea posible;\n"
+        "- bajo costo;\n"
+        "- trazabilidad;\n"
+        "- modularidad."
+    )
+    st.caption("Primera vista estatica para gobierno, riesgos e improvement planning.")
+
+
+def render_automation_lab() -> None:
+    st.header("Automation Lab")
+    st.info(
+        "Este espacio concentrara automatizaciones reproducibles, controles y trazabilidad."
+    )
+
+    st.subheader("Automation Lifecycle")
+    st.markdown(
+        "- Trigger\n"
+        "- Input\n"
+        "- Validation\n"
+        "- Action\n"
+        "- Approval\n"
+        "- Result\n"
+        "- History"
+    )
+
+    st.subheader("Potential Automations")
+    st.markdown(
+        "- actualizar datasets locales;\n"
+        "- ejecutar controles de calidad;\n"
+        "- regenerar reportes;\n"
+        "- ejecutar experimentos;\n"
+        "- comparar metricas;\n"
+        "- detectar fallos en pipelines."
+    )
+
+    st.subheader("Safety Controls")
+    st.markdown(
+        "- aprobacion antes de acciones sensibles;\n"
+        "- modo simulacion;\n"
+        "- registro de errores;\n"
+        "- ejecucion idempotente;\n"
+        "- posibilidad de cancelar o revertir."
+    )
+
+    st.subheader("Current Status")
+    st.markdown(
+        "- modulo estructural inicial;\n"
+        "- sin automatizaciones activas;\n"
+        "- sin scheduler;\n"
+        "- sin ejecucion automatica;\n"
+        "- sin persistencia propia."
+    )
+    st.caption("Vista base para futuras automatizaciones, controles y trazabilidad.")
+
+
 def _prepare_analyst_context(
     mode: str,
     tables: dict | None = None,
@@ -201,19 +291,28 @@ def main() -> None:
     render_header()
     render_regenerate_section()
 
-    page = st.sidebar.radio(
+    pages = {
+        "overview": "Overview · Executive Overview",
+        "data_quality": "Data & Quality · Conciliación",
+        "no_show": "Intelligence · No-Show ML",
+        "forecasting": "Intelligence · Forecasting",
+        "conversational": "Language & Decisions · AI Conversational Insights",
+        "governance": "Governance · Risks & Improvement",
+        "automations": "Automation · Automation Lab",
+        "copilot": "Copilot · SQL, Python & Data Science",
+    }
+    page_labels = list(pages.values())
+    selected_page_label = st.sidebar.radio(
         "Navegación",
-        [
-            "Executive Overview",
-            "Conciliación",
-            "No-Show ML",
-            "Forecasting",
-            "AI Conversational Insights",
-        ],
+        page_labels,
         label_visibility="collapsed",
     )
+    page = next(
+        (page_id for page_id, label in pages.items() if label == selected_page_label),
+        None,
+    )
 
-    if page in ("Executive Overview", "Conciliación"):
+    if page in ("overview", "data_quality"):
         filters = render_sidebar_filters(tables["appointments"])
     else:
         filters = None
@@ -221,15 +320,15 @@ def main() -> None:
     st.sidebar.markdown("---")
     st.sidebar.caption(f"Mart: `{DB_PATH.name}` · {len(tables['appointments'])} citas")
 
-    if page == "Executive Overview":
+    if page == "overview":
         render_executive_overview(tables, filters)
-    elif page == "Conciliación":
+    elif page == "data_quality":
         render_reconciliation(tables, filters)
-    elif page == "No-Show ML":
+    elif page == "no_show":
         render_prediction_tab(tables, str(DB_PATH), db_mtime)
-    elif page == "Forecasting":
+    elif page == "forecasting":
         render_forecasting_tab(tables, str(DB_PATH), db_mtime)
-    else:
+    elif page == "conversational":
         analyst_ctx: DatasetContext | None = st.session_state.get("analyst_v2_ctx")
 
         def on_prepare(mode: str, uploaded=None, synthetic_domain: str = "healthcare"):
@@ -246,6 +345,14 @@ def main() -> None:
         from app.conversational.ai_analyst_ui import render_ai_analyst_sidebar_controls
 
         render_ai_analyst_sidebar_controls()
+    elif page == "governance":
+        render_governance_improvement()
+    elif page == "automations":
+        render_automation_lab()
+    elif page == "copilot":
+        render_copilot_page()
+    else:
+        st.error("La página seleccionada no es válida.")
 
     render_app_footer()
 
