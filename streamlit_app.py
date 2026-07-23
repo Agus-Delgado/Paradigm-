@@ -8,6 +8,7 @@ Uso:
 
 from __future__ import annotations
 
+import html
 import sys
 from pathlib import Path
 
@@ -35,7 +36,7 @@ from app.data import (
     specialty_breakdown,
 )
 from app.conversational.copilot_ui import render_copilot_page
-from app.conversational.flow import render_conversational_page_v2
+from app.conversational.flow import render_conversational_page_v2, route_paradigm_task
 from app.conversational.types import DatasetContext
 from app.forecasting import render_forecasting_tab
 from app.ml_predict import render_prediction_tab
@@ -45,43 +46,282 @@ from app.plots import (
     specialty_bar_chart,
     trend_chart,
 )
+from app.config import SYNTHETIC_BANNER, get_llm_settings
 from app.ui import (
     inject_theme,
+    get_recent_tasks,
+    navigate_to,
+    push_recent_task,
     render_app_footer,
-    render_gap_card,
-    render_header,
-    render_kpi_grid,
+    render_cognitive_sequence,
+    render_data_quality_process,
+    render_global_topbar,
+    render_home_core_and_context,
+    render_home_launcher,
+    render_home_mark_bar,
+    render_home_results,
+    render_home_surface_styles,
     render_landing_page,
+    render_module_context,
+    render_page_header,
     render_regenerate_section,
     render_sidebar_filters,
     render_theme_toggle,
 )
+
+# ── Observatory navigation (4 spaces → 8 page ids) ───────────────────────────
+
+_SPACE_KEY = "paradigm_active_space"
+_VIEW_KEY = "paradigm_active_view"
+
+_SPACES = ("Home", "Assistant", "Workspaces", "System")
+
+_SPACE_VIEWS: dict[str, tuple[str, ...]] = {
+    "Home": (),
+    "Assistant": ("Paradigm Assistant", "Copilot"),
+    "Workspaces": ("Data & Quality", "No-Show Intelligence", "Forecasting"),
+    "System": ("Automation Lab", "Governance & Improvement"),
+}
+
+_VIEW_TO_PAGE: dict[str, str] = {
+    "Paradigm Assistant": "conversational",
+    "Copilot": "copilot",
+    "Data & Quality": "data_quality",
+    "No-Show Intelligence": "no_show",
+    "Forecasting": "forecasting",
+    "Automation Lab": "automations",
+    "Governance & Improvement": "governance",
+}
+
+_PAGE_META: dict[str, dict[str, str]] = {
+    "overview": {
+        "eyebrow": "Home",
+        "title": "Paradigm Home",
+        "description": "Cognitive laboratory: discover a task, follow the sequence, act on real mart signals.",
+        "stage": "Signal",
+    },
+    "data_quality": {
+        "eyebrow": "Workspaces",
+        "title": "Data & Quality",
+        "description": "Conciliación atención–facturación y detalle de brechas auditables.",
+        "stage": "Structure",
+    },
+    "no_show": {
+        "eyebrow": "Workspaces",
+        "title": "No-Show Intelligence",
+        "description": "Priorización de riesgo, explicación y opciones de intervención.",
+        "stage": "Interpretation",
+    },
+    "forecasting": {
+        "eyebrow": "Workspaces",
+        "title": "Forecasting",
+        "description": "Demanda futura, backtesting y horizonte planificado.",
+        "stage": "Interpretation",
+    },
+    "conversational": {
+        "eyebrow": "Assistant",
+        "title": "Paradigm Assistant",
+        "description": "De evidencia a interpretación y decisión con contexto de negocio.",
+        "stage": "Decision",
+    },
+    "copilot": {
+        "eyebrow": "Assistant",
+        "title": "Copilot",
+        "description": "Revisión técnica de SQL, Python y errores — sin ejecución automática.",
+        "stage": "Action",
+    },
+    "automations": {
+        "eyebrow": "System",
+        "title": "Automation Lab",
+        "description": "Espacio estructural para automatizaciones reproducibles y controles.",
+        "stage": "Action",
+    },
+    "governance": {
+        "eyebrow": "System",
+        "title": "Governance & Improvement",
+        "description": "Riesgos, límites, principios y backlog de mejora del laboratorio.",
+        "stage": "System",
+    },
+}
+
+
+def _resolve_page_id(space: str, view: str | None) -> str:
+    """Map space + optional secondary view to an existing page id."""
+    if space == "Home":
+        return "overview"
+    if view and view in _VIEW_TO_PAGE:
+        return _VIEW_TO_PAGE[view]
+    views = _SPACE_VIEWS.get(space, ())
+    if views:
+        return _VIEW_TO_PAGE.get(views[0], "overview")
+    return "overview"
+
+
+def _ensure_nav_state() -> tuple[str, str | None]:
+    """Inicializa space/view sin radios; corrige vistas inválidas."""
+    if _SPACE_KEY not in st.session_state:
+        st.session_state[_SPACE_KEY] = "Home"
+    space = str(st.session_state.get(_SPACE_KEY) or "Home")
+    if space not in _SPACES:
+        space = "Home"
+        st.session_state[_SPACE_KEY] = space
+
+    views = _SPACE_VIEWS.get(space, ())
+    raw_view = st.session_state.get(_VIEW_KEY)
+    view: str | None = str(raw_view).strip() if raw_view else None
+    if space == "Home":
+        view = None
+    elif views:
+        if view not in views:
+            view = views[0]
+            st.session_state[_VIEW_KEY] = view
+    else:
+        view = None
+    return space, view
+
+
+def _section_label(space: str) -> str:
+    """Etiqueta de sección en chrome (Workspaces → Work)."""
+    return "Work" if space == "Workspaces" else space
+
+
+def _render_secondary_sidebar(*, db_name: str, appointment_count: int) -> str:
+    """Sidebar de contexto: dataset, vistas del espacio, recientes."""
+    space, view = _ensure_nav_state()
+    provider = get_llm_settings().provider
+    dataset_label = f"SQLite · {db_name} · {appointment_count:,} citas"
+
+    st.sidebar.markdown(
+        f"""
+        <div class="pd-side-context">
+          <div class="pd-side-context__label">Dataset activo</div>
+          <div class="pd-side-context__value">{dataset_label}</div>
+          <div class="pd-side-context__meta">Local · LLM {provider}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    views = _SPACE_VIEWS.get(space, ())
+    if views:
+        st.sidebar.markdown(
+            '<div class="pd-nav-label">Vistas</div>',
+            unsafe_allow_html=True,
+        )
+        for v in views:
+            is_on = view == v
+            key = f"pd_side_view_{space}_{v}".replace(" ", "_").replace("&", "and")
+            if st.sidebar.button(
+                v,
+                key=key,
+                use_container_width=True,
+                type="primary" if is_on else "secondary",
+            ):
+                navigate_to(space, v)
+
+    recent = get_recent_tasks()
+    st.sidebar.markdown(
+        '<div class="pd-nav-label">Recientes</div>',
+        unsafe_allow_html=True,
+    )
+    if not recent:
+        st.sidebar.caption("Sin tareas en esta sesión.")
+    else:
+        for i, task in enumerate(recent):
+            preview = task if len(task) <= 42 else task[:39] + "…"
+            if st.sidebar.button(
+                preview,
+                key=f"pd_recent_task_{i}",
+                use_container_width=True,
+                help=task,
+            ):
+                st.session_state["paradigm_pending_task"] = task
+                push_recent_task(task)
+                navigate_to("Assistant", "Paradigm Assistant")
+
+    return _resolve_page_id(space, view)
+
+
+def _render_page_chrome(page_id: str, *, status: str = "Active") -> None:
+    """Header mineral compartido; reemplaza el chrome Observatory."""
+    meta = _PAGE_META.get(
+        page_id,
+        {
+            "eyebrow": "Paradigm",
+            "title": "Vista",
+            "description": "",
+            "stage": "System",
+        },
+    )
+    section = _section_label(meta["eyebrow"])
+    render_page_header(
+        section=section,
+        title=meta["title"],
+        purpose=meta["description"],
+        stage=meta["stage"],
+        status=status,
+    )
+    st.caption(SYNTHETIC_BANNER)
 
 
 def render_executive_overview(
     tables: dict,
     filters,
 ) -> None:
+    """Home: composición del prototipo neural con datos y navegación reales."""
     filtered = apply_filters(tables, filters)
-    if filtered.empty:
-        st.warning("No hay citas para los filtros seleccionados.")
-        return
+    kpis = None if filtered.empty else compute_kpis(filtered, tables)
+    llm_provider = get_llm_settings().provider
+    pending = str(st.session_state.get("paradigm_pending_task") or "").strip()
+    lit = bool(st.session_state.get("paradigm_home_sequence_lit") or pending)
 
-    kpis = compute_kpis(filtered, tables)
-    render_kpi_grid(kpis)
-    render_gap_card(kpis)
+    render_home_surface_styles()
+    render_home_mark_bar()
+    render_home_core_and_context(
+        filters=filters,
+        db_name=DB_PATH.name,
+        llm_provider=llm_provider,
+        appointment_count=len(tables["appointments"]),
+        filtered_rows=len(filtered),
+    )
+    render_cognitive_sequence(lit=lit)
+    render_home_launcher()
+    render_home_results(kpis=kpis, task=pending)
 
-    col_l, col_r = st.columns([3, 2])
-    with col_l:
-        st.plotly_chart(trend_chart(daily_trend(filtered)), use_container_width=True)
-    with col_r:
-        st.plotly_chart(
-            specialty_bar_chart(specialty_breakdown(filtered)),
-            use_container_width=True,
+    if kpis is not None:
+        st.markdown(
+            '<div class="pd-home-flow-eyebrow">Evidence charts</div>',
+            unsafe_allow_html=True,
         )
+        col_l, col_r = st.columns([3, 2])
+        with col_l:
+            st.plotly_chart(trend_chart(daily_trend(filtered)), use_container_width=True)
+        with col_r:
+            st.plotly_chart(
+                specialty_bar_chart(specialty_breakdown(filtered)),
+                use_container_width=True,
+            )
 
 
 def render_reconciliation(tables: dict, filters) -> None:
+    render_module_context(
+        name="Data & Quality",
+        stage="Structure",
+        purpose="Conciliar atención y facturación del mart, con detalle auditable de brechas.",
+        status="Active",
+        capabilities=(
+            "Filtros por fecha, especialidad, proveedor y canal",
+            "Métricas de conciliación ATTENDED_*",
+            "Donut y serie atendidas vs facturadas",
+            "Tabla de detalle ATTENDED_NO_BILLING",
+        ),
+        limitations=(
+            "Depende del mart SQLite local filtrado",
+            "No corrige datos ni escribe de vuelta al origen",
+            "Brechas ilustrativas sobre datos sintéticos",
+        ),
+    )
+
     filtered = apply_filters(tables, filters)
     if filtered.empty:
         st.warning("No hay citas para los filtros seleccionados.")
@@ -95,9 +335,6 @@ def render_reconciliation(tables: dict, filters) -> None:
         else 0
     )
 
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Citas atendidas (filtro)", attended)
-    c2.metric("ATTENDED_NO_BILLING", gap_n)
     if not summary.empty:
         with_billing = int(
             summary.loc[
@@ -111,8 +348,37 @@ def render_reconciliation(tables: dict, filters) -> None:
         )
     else:
         with_billing = pending = 0
-    c3.metric("Con facturación", with_billing)
-    c4.metric("Con pendiente", pending)
+
+    render_data_quality_process(
+        attended=attended,
+        gap_n=gap_n,
+        with_billing=with_billing,
+        pending=pending,
+    )
+
+    st.markdown(
+        f"""
+        <div class="pd-dq-metrics">
+          <div class="pd-dq-metric">
+            <span class="pd-dq-metric__label">Atendidas</span>
+            <span class="pd-dq-metric__value">{attended:,}</span>
+          </div>
+          <div class="pd-dq-metric pd-dq-metric--risk">
+            <span class="pd-dq-metric__label">ATTENDED_NO_BILLING</span>
+            <span class="pd-dq-metric__value">{gap_n:,}</span>
+          </div>
+          <div class="pd-dq-metric">
+            <span class="pd-dq-metric__label">Con facturación</span>
+            <span class="pd-dq-metric__value">{with_billing:,}</span>
+          </div>
+          <div class="pd-dq-metric">
+            <span class="pd-dq-metric__label">Con pendiente</span>
+            <span class="pd-dq-metric__value">{pending:,}</span>
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     col_a, col_b = st.columns(2)
     with col_a:
@@ -146,92 +412,200 @@ def render_reconciliation(tables: dict, filters) -> None:
 
 
 def render_governance_improvement() -> None:
-    st.header("Governance & Improvement")
-    st.info(
-        "Centraliza riesgos, limitaciones, evaluaciones, decisiones y mejoras de Paradigm."
+    render_module_context(
+        name="Governance & Improvement",
+        stage="System",
+        purpose="Centralizar riesgos, límites, principios y backlog de mejora del laboratorio.",
+        status="Structural",
+        capabilities=(
+            "Inventario estático de risks y limitations",
+            "Backlog de improvement planning",
+            "Principios operativos (aprobación humana, local-first)",
+        ),
+        limitations=(
+            "Sin ejecución de controles",
+            "Sin persistencia propia ni workflow",
+            "Contenido documental, no operativo",
+        ),
     )
+    st.caption("Módulo estructural: no ejecuta auditorías ni guarda estado.")
 
-    st.subheader("Risks")
-    st.markdown(
-        "- duplicacion entre componentes legacy y actuales;\n"
-        "- documentacion historica acumulada;\n"
-        "- dependencia de archivos y rutas locales;\n"
-        "- respuestas generativas no siempre verificables."
-    )
+    risks = [
+        "duplicacion entre componentes legacy y actuales",
+        "documentacion historica acumulada",
+        "dependencia de archivos y rutas locales",
+        "respuestas generativas no siempre verificables",
+    ]
+    decisions = [
+        "aprobacion humana antes de acciones sensibles",
+        "ejecucion local cuando sea posible",
+        "salidas generativas con revision humana",
+    ]
+    improvements = [
+        "madurar Copilot sin ejecucion automatica",
+        "preparar Automation Lab sin scheduler activo",
+        "consolidar componentes legacy",
+        "mejorar trazabilidad de experimentos",
+        "evaluar respuestas generativas",
+    ]
+    principles = [
+        "aprobacion humana",
+        "ejecucion local cuando sea posible",
+        "bajo costo",
+        "trazabilidad",
+        "modularidad",
+    ]
+    backlog = [
+        "Paradigm Copilot",
+        "Automation Lab",
+        "consolidacion de componentes legacy",
+        "trazabilidad de experimentos",
+        "evaluacion de respuestas generativas",
+    ]
+    limitations = [
+        "uso personal y local",
+        "sin colaboracion multiusuario",
+        "sin persistencia remota",
+        "modulos futuros todavia no implementados",
+    ]
 
-    st.subheader("Limitations")
-    st.markdown(
-        "- uso personal y local;\n"
-        "- sin colaboracion multiusuario;\n"
-        "- sin persistencia remota;\n"
-        "- modulos futuros todavia no implementados."
-    )
+    def _items(rows: list[str]) -> str:
+        return "".join(f"<li>{html.escape(r)}</li>" for r in rows)
 
-    st.subheader("Improvement Backlog")
-    st.markdown(
-        "- [ ] Paradigm Copilot;\n"
-        "- [ ] Automation Lab;\n"
-        "- [ ] consolidacion de componentes legacy;\n"
-        "- [ ] trazabilidad de experimentos;\n"
-        "- [ ] evaluacion de respuestas generativas."
+    flow_html = (
+        '<div class="pd-gov-flow">'
+        '<div class="pd-gov-flow__eyebrow">Governance sequence</div>'
+        '<div class="pd-gov-rail" role="list">'
+        f'<section class="pd-gov-node pd-gov-node--risk" role="listitem">'
+        f'<span class="pd-gov-node__tone">Risks</span>'
+        f'<span class="pd-gov-node__count">{len(risks)}</span>'
+        f'<ul class="pd-gov-node__list">{_items(risks)}</ul>'
+        "</section>"
+        '<div class="pd-gov-rail__link" aria-hidden="true"></div>'
+        f'<section class="pd-gov-node pd-gov-node--decision" role="listitem">'
+        f'<span class="pd-gov-node__tone">Decisions</span>'
+        f'<span class="pd-gov-node__count">{len(decisions)}</span>'
+        f'<ul class="pd-gov-node__list">{_items(decisions)}</ul>'
+        "</section>"
+        '<div class="pd-gov-rail__link" aria-hidden="true"></div>'
+        f'<section class="pd-gov-node pd-gov-node--improve" role="listitem">'
+        f'<span class="pd-gov-node__tone">Improvements</span>'
+        f'<span class="pd-gov-node__count">{len(improvements)}</span>'
+        f'<ul class="pd-gov-node__list">{_items(improvements)}</ul>'
+        "</section>"
+        "</div>"
+        "</div>"
     )
+    st.markdown(flow_html, unsafe_allow_html=True)
 
-    st.subheader("Principles")
-    st.markdown(
-        "- aprobacion humana;\n"
-        "- ejecucion local cuando sea posible;\n"
-        "- bajo costo;\n"
-        "- trazabilidad;\n"
-        "- modularidad."
+    secondary = (
+        '<div class="pd-gov-secondary">'
+        '<section class="pd-gov-block">'
+        '<div class="pd-gov-block__label">Principles</div>'
+        f'<ul class="pd-gov-block__list">{_items(principles)}</ul>'
+        "</section>"
+        '<section class="pd-gov-block pd-gov-block--backlog">'
+        '<div class="pd-gov-block__label">Backlog</div>'
+        '<div class="pd-gov-backlog">'
+        + "".join(
+            '<div class="pd-gov-backlog__item">'
+            '<span class="pd-gov-backlog__mark" aria-hidden="true">[ ]</span>'
+            f"<span>{html.escape(item)}</span></div>"
+            for item in backlog
+        )
+        + "</div>"
+        "</section>"
+        '<section class="pd-gov-block pd-gov-block--limits">'
+        '<div class="pd-gov-block__label">Limitations</div>'
+        f'<ul class="pd-gov-block__list">{_items(limitations)}</ul>'
+        "</section>"
+        "</div>"
     )
-    st.caption("Primera vista estatica para gobierno, riesgos e improvement planning.")
+    st.markdown(secondary, unsafe_allow_html=True)
 
 
 def render_automation_lab() -> None:
-    st.header("Automation Lab")
-    st.info(
-        "Este espacio concentrara automatizaciones reproducibles, controles y trazabilidad."
+    render_module_context(
+        name="Automation Lab",
+        stage="Action",
+        purpose="Espacio para automatizaciones reproducibles, controles y trazabilidad futura.",
+        status="Structural",
+        capabilities=(
+            "Ciclo de vida propuesto (trigger → approval → history)",
+            "Catálogo de automatizaciones potenciales",
+            "Controles de seguridad previstos",
+        ),
+        limitations=(
+            "Sin scheduler ni ejecución automática",
+            "Sin persistencia de runs",
+            "Sin acciones reales sobre datos o sistemas",
+        ),
     )
+    st.caption("Módulo estructural: no ejecuta jobs ni persiste historial.")
 
-    st.subheader("Automation Lifecycle")
-    st.markdown(
-        "- Trigger\n"
-        "- Input\n"
-        "- Validation\n"
-        "- Action\n"
-        "- Approval\n"
-        "- Result\n"
-        "- History"
+    stages = (
+        ("Trigger", "structure", "planned", "Evento o schedule futuro"),
+        ("Validate", "structure", "structural", "Controles previstos"),
+        ("Approve", "decision", "structural", "Aprobación humana requerida"),
+        ("Execute", "structure", "inactive", "Sin scheduler ni runs activos"),
+        ("Observe", "interpretation", "planned", "Historial aún no persistido"),
     )
+    nodes: list[str] = []
+    for i, (label, tone, status, detail) in enumerate(stages):
+        if i:
+            nodes.append('<div class="pd-auto-link" aria-hidden="true"></div>')
+        nodes.append(
+            f'<div class="pd-auto-step pd-auto-step--{tone} pd-auto-step--{status}" '
+            f'style="--i:{i}">'
+            f'<span class="pd-auto-step__label">{html.escape(label)}</span>'
+            f'<span class="pd-auto-step__status">{html.escape(status)}</span>'
+            f'<span class="pd-auto-step__detail">{html.escape(detail)}</span>'
+            "</div>"
+        )
+    pipeline_html = (
+        '<div class="pd-auto-flow">'
+        '<div class="pd-auto-flow__eyebrow">Automation pipeline</div>'
+        f'<div class="pd-auto-rail" role="list">{"".join(nodes)}</div>'
+        "</div>"
+    )
+    st.markdown(pipeline_html, unsafe_allow_html=True)
 
-    st.subheader("Potential Automations")
-    st.markdown(
-        "- actualizar datasets locales;\n"
-        "- ejecutar controles de calidad;\n"
-        "- regenerar reportes;\n"
-        "- ejecutar experimentos;\n"
-        "- comparar metricas;\n"
-        "- detectar fallos en pipelines."
+    catalog = (
+        '<div class="pd-auto-catalog">'
+        '<section class="pd-auto-block">'
+        '<div class="pd-auto-block__label">Potential Automations</div>'
+        '<ul class="pd-auto-block__list">'
+        "<li>actualizar datasets locales</li>"
+        "<li>ejecutar controles de calidad</li>"
+        "<li>regenerar reportes</li>"
+        "<li>ejecutar experimentos</li>"
+        "<li>comparar metricas</li>"
+        "<li>detectar fallos en pipelines</li>"
+        "</ul>"
+        "</section>"
+        '<section class="pd-auto-block pd-auto-block--safety">'
+        '<div class="pd-auto-block__label">Safety Controls</div>'
+        '<ul class="pd-auto-block__list">'
+        "<li>aprobacion antes de acciones sensibles</li>"
+        "<li>modo simulacion</li>"
+        "<li>registro de errores</li>"
+        "<li>ejecucion idempotente</li>"
+        "<li>posibilidad de cancelar o revertir</li>"
+        "</ul>"
+        "</section>"
+        '<section class="pd-auto-block pd-auto-block--status">'
+        '<div class="pd-auto-block__label">Current Status</div>'
+        '<ul class="pd-auto-block__list">'
+        "<li>modulo estructural inicial</li>"
+        "<li>sin automatizaciones activas</li>"
+        "<li>sin scheduler</li>"
+        "<li>sin ejecucion automatica</li>"
+        "<li>sin persistencia propia</li>"
+        "</ul>"
+        "</section>"
+        "</div>"
     )
-
-    st.subheader("Safety Controls")
-    st.markdown(
-        "- aprobacion antes de acciones sensibles;\n"
-        "- modo simulacion;\n"
-        "- registro de errores;\n"
-        "- ejecucion idempotente;\n"
-        "- posibilidad de cancelar o revertir."
-    )
-
-    st.subheader("Current Status")
-    st.markdown(
-        "- modulo estructural inicial;\n"
-        "- sin automatizaciones activas;\n"
-        "- sin scheduler;\n"
-        "- sin ejecucion automatica;\n"
-        "- sin persistencia propia."
-    )
-    st.caption("Vista base para futuras automatizaciones, controles y trazabilidad.")
+    st.markdown(catalog, unsafe_allow_html=True)
 
 
 def _prepare_analyst_context(
@@ -268,7 +642,7 @@ def main() -> None:
         page_title="Paradigm — Decision Intelligence Laboratory",
         page_icon="◈",
         layout="wide",
-        initial_sidebar_state="expanded",
+        initial_sidebar_state="collapsed",
     )
 
     dark_mode = render_theme_toggle()
@@ -288,47 +662,75 @@ def main() -> None:
     db_mtime = get_db_mtime(DB_PATH)
     tables = load_mart_tables(str(DB_PATH), db_mtime)
 
-    render_header()
-    render_regenerate_section()
-
-    pages = {
-        "overview": "Overview · Executive Overview",
-        "data_quality": "Data & Quality · Conciliación",
-        "no_show": "Intelligence · No-Show ML",
-        "forecasting": "Intelligence · Forecasting",
-        "conversational": "Language & Decisions · AI Conversational Insights",
-        "governance": "Governance · Risks & Improvement",
-        "automations": "Automation · Automation Lab",
-        "copilot": "Copilot · SQL, Python & Data Science",
-    }
-    page_labels = list(pages.values())
-    selected_page_label = st.sidebar.radio(
-        "Navegación",
-        page_labels,
-        label_visibility="collapsed",
-    )
-    page = next(
-        (page_id for page_id, label in pages.items() if label == selected_page_label),
-        None,
+    space, _view = _ensure_nav_state()
+    render_global_topbar(space)
+    page = _render_secondary_sidebar(
+        db_name=DB_PATH.name,
+        appointment_count=len(tables["appointments"]),
     )
 
     if page in ("overview", "data_quality"):
-        filters = render_sidebar_filters(tables["appointments"])
+        with st.sidebar.expander("Filtros", expanded=(page == "data_quality")):
+            filters = render_sidebar_filters(tables["appointments"])
     else:
         filters = None
 
-    st.sidebar.markdown("---")
-    st.sidebar.caption(f"Mart: `{DB_PATH.name}` · {len(tables['appointments'])} citas")
+    with st.sidebar.expander("Mantenimiento", expanded=False):
+        render_regenerate_section()
 
     if page == "overview":
+        st.caption(SYNTHETIC_BANNER)
         render_executive_overview(tables, filters)
     elif page == "data_quality":
+        _render_page_chrome(page)
         render_reconciliation(tables, filters)
     elif page == "no_show":
+        _render_page_chrome(page)
+        render_module_context(
+            name="No-Show Intelligence",
+            stage="Interpretation",
+            purpose="Priorizar riesgo de ausentismo, explicar predicciones y explorar impacto.",
+            status="Active",
+            capabilities=(
+                "Modelos no-show entrenados sobre mart sintético",
+                "Explicabilidad SHAP local/global",
+                "Simulación de impacto y motor prescriptivo",
+            ),
+            limitations=(
+                "No es producción clínica",
+                "Métricas pueden ser débiles en sintético",
+                "Requiere artefactos ML previos en disco",
+            ),
+        )
         render_prediction_tab(tables, str(DB_PATH), db_mtime)
     elif page == "forecasting":
+        _render_page_chrome(page)
+        render_module_context(
+            name="Forecasting",
+            stage="Interpretation",
+            purpose="Proyectar demanda de citas con backtesting y registro de experimentos.",
+            status="Active",
+            capabilities=(
+                "Entrenamiento de modelos de demanda",
+                "Selección y resumen de runs recientes",
+                "Charts de historia, horizonte y backtest",
+            ),
+            limitations=(
+                "Depende de runs locales en ml/experiments",
+                "No despliega forecast a producción",
+                "Especialidades/horizontes acotados al experimento",
+            ),
+        )
         render_forecasting_tab(tables, str(DB_PATH), db_mtime)
     elif page == "conversational":
+        _render_page_chrome(page)
+        pending_task = st.session_state.get("paradigm_pending_task")
+        if isinstance(pending_task, str) and pending_task.strip():
+            preview = route_paradigm_task(pending_task)
+            st.caption(
+                f"Pending route · **{preview['destination']}** · confidence `{preview['confidence']}`"
+            )
+
         analyst_ctx: DatasetContext | None = st.session_state.get("analyst_v2_ctx")
 
         def on_prepare(mode: str, uploaded=None, synthetic_domain: str = "healthcare"):
@@ -346,12 +748,16 @@ def main() -> None:
 
         render_ai_analyst_sidebar_controls()
     elif page == "governance":
+        _render_page_chrome(page)
         render_governance_improvement()
     elif page == "automations":
+        _render_page_chrome(page)
         render_automation_lab()
     elif page == "copilot":
+        _render_page_chrome(page)
         render_copilot_page()
     else:
+        _render_page_chrome(page)
         st.error("La página seleccionada no es válida.")
 
     render_app_footer()

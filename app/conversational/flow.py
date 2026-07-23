@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import html
+import unicodedata
 from datetime import datetime, timezone
 
 import streamlit as st
@@ -45,6 +47,7 @@ from app.ui import (
     render_analyst_wizard_banner,
     render_contextual_results,
     render_guided_questionnaire,
+    render_module_context,
     render_schema_brief,
     render_schema_columns_preview,
     render_workspace_header,
@@ -57,6 +60,245 @@ TAB_EXPLORER = "Data Explorer"
 TAB_EVAL = "Evaluation"
 TAB_OPTIONS = (TAB_GUIDED, TAB_SQL, TAB_EXPLORER, TAB_EVAL)
 NOTEBOOK_RESULT_KEY = "analyst_v2_notebook_result"
+
+_PENDING_TASK_KEY = "paradigm_pending_task"
+_SPACE_KEY = "paradigm_active_space"
+_VIEW_KEY = "paradigm_active_view"
+
+# Deterministic task router (priority order).
+_ROUTE_RULES: tuple[dict[str, object], ...] = (
+    {
+        "destination": "Copilot",
+        "space": "Assistant",
+        "view": "Copilot",
+        "terms": (
+            "sql",
+            "python",
+            "error",
+            "traceback",
+            "query",
+            "pandas",
+            "codigo",
+            "code",
+            "snippet",
+        ),
+        "reason": "La tarea menciona código, SQL/Python o errores técnicos.",
+    },
+    {
+        "destination": "Forecasting",
+        "space": "Workspaces",
+        "view": "Forecasting",
+        "terms": (
+            "forecast",
+            "proyeccion",
+            "demanda",
+            "serie temporal",
+            "proximos meses",
+            "horizonte",
+        ),
+        "reason": "La tarea apunta a proyección o demanda futura.",
+    },
+    {
+        "destination": "No-Show Intelligence",
+        "space": "Workspaces",
+        "view": "No-Show Intelligence",
+        "terms": (
+            "no-show",
+            "noshow",
+            "no show",
+            "ausentismo",
+            "cancelacion",
+            "citas",
+        ),
+        "reason": "La tarea se centra en ausentismo, cancelaciones o citas.",
+    },
+    {
+        "destination": "Data & Quality",
+        "space": "Workspaces",
+        "view": "Data & Quality",
+        "terms": (
+            "calidad",
+            "nulos",
+            "duplicados",
+            "join",
+            "conciliacion",
+            "brecha",
+            "facturacion",
+        ),
+        "reason": "La tarea sugiere calidad de datos, joins o conciliación.",
+    },
+    {
+        "destination": "Automation Lab",
+        "space": "System",
+        "view": "Automation Lab",
+        "terms": (
+            "automatizar",
+            "automatizacion",
+            "scheduler",
+            "recurrente",
+            "workflow",
+            "pipeline",
+        ),
+        "reason": "La tarea describe automatización o ejecución recurrente.",
+    },
+    {
+        "destination": "Governance & Improvement",
+        "space": "System",
+        "view": "Governance & Improvement",
+        "terms": (
+            "riesgo",
+            "auditoria",
+            "gobernanza",
+            "trazabilidad",
+            "mejora",
+            "governance",
+        ),
+        "reason": "La tarea habla de riesgo, auditoría, gobierno o mejora.",
+    },
+    {
+        "destination": "Paradigm Assistant",
+        "space": "Assistant",
+        "view": "Paradigm Assistant",
+        "terms": (
+            "analizar datos",
+            "explorar dataset",
+            "insights",
+            "metricas",
+            "analisis",
+            "dataset",
+        ),
+        "reason": "La tarea encaja con exploración o insights en el Assistant.",
+    },
+)
+
+
+def _normalize_task_text(task: str) -> str:
+    text = (task or "").strip().lower()
+    decomposed = unicodedata.normalize("NFD", text)
+    return "".join(ch for ch in decomposed if unicodedata.category(ch) != "Mn")
+
+
+def route_paradigm_task(task: str) -> dict:
+    """Router determinista de tareas → módulo Paradigm (sin LLM)."""
+    normalized = _normalize_task_text(task)
+    if not normalized:
+        return {
+            "destination": "Paradigm Assistant",
+            "space": "Assistant",
+            "view": "Paradigm Assistant",
+            "reason": "Tarea vacía; se recomienda el Assistant general.",
+            "confidence": "low",
+            "matched_terms": [],
+        }
+
+    for rule in _ROUTE_RULES:
+        terms = rule["terms"]
+        assert isinstance(terms, tuple)
+        matched = [term for term in terms if term in normalized]
+        if not matched:
+            continue
+        confidence = "high" if len(matched) >= 2 else "medium"
+        return {
+            "destination": rule["destination"],
+            "space": rule["space"],
+            "view": rule["view"],
+            "reason": rule["reason"],
+            "confidence": confidence,
+            "matched_terms": matched,
+        }
+
+    return {
+        "destination": "Paradigm Assistant",
+        "space": "Assistant",
+        "view": "Paradigm Assistant",
+        "reason": "Sin coincidencias específicas; se recomienda el Assistant general.",
+        "confidence": "low",
+        "matched_terms": [],
+    }
+
+
+def render_paradigm_task_router() -> None:
+    """Panel compacto de routing en la vista conversational (no altera el wizard)."""
+    st.markdown(
+        '<div class="pd-assistant-route">'
+        '<div class="pd-assistant-route__label">Task router</div>'
+        '<p class="pd-assistant-route__note">'
+        "Recomendación determinista de módulo a partir de tu objetivo. "
+        "No ejecuta análisis ni llama LLM."
+        "</p>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+
+    recommend_col, _ = st.columns([3, 1])
+    with recommend_col:
+        st.text_input(
+            "Nueva tarea",
+            placeholder="Ej.: revisar traceback de pandas / proyección de demanda",
+            key="paradigm_router_input",
+            label_visibility="collapsed",
+        )
+    if st.button("Recommend", key="paradigm_router_recommend"):
+        typed = str(st.session_state.get("paradigm_router_input") or "").strip()
+        if not typed:
+            st.warning("Escribí una tarea breve para recomendar un módulo.")
+        else:
+            st.session_state[_PENDING_TASK_KEY] = typed
+            st.rerun()
+
+    pending = st.session_state.get(_PENDING_TASK_KEY)
+    if not pending:
+        return
+
+    route = route_paradigm_task(str(pending))
+    conf = str(route["confidence"])
+    terms = route.get("matched_terms") or []
+    terms_txt = ", ".join(str(t) for t in terms) if terms else "—"
+    pending_safe = html.escape(str(pending))
+    reason_safe = html.escape(str(route["reason"]))
+    dest_safe = html.escape(str(route["destination"]))
+    space_safe = html.escape(f'{route["space"]} · {route["view"]}')
+    terms_safe = html.escape(terms_txt)
+    conf_safe = html.escape(conf)
+
+    st.markdown(
+        '<div class="pd-assistant-route-result">'
+        f'<div class="pd-assistant-route-result__row">'
+        f'<span class="pd-assistant-route-result__k">Task</span>'
+        f'<strong class="pd-assistant-route-result__v">{pending_safe}</strong>'
+        "</div>"
+        f'<div class="pd-assistant-route-result__row">'
+        f'<span class="pd-assistant-route-result__k">Destination</span>'
+        f'<strong class="pd-assistant-route-result__v pd-assistant-route-result__v--accent">'
+        f"{dest_safe}</strong>"
+        "</div>"
+        f'<div class="pd-assistant-route-result__meta">'
+        f'<span class="pd-assistant-route-conf pd-assistant-route-conf--{conf_safe}">'
+        f"{conf_safe}</span>"
+        f'<span class="pd-assistant-route-result__space">{space_safe}</span>'
+        "</div>"
+        f'<p class="pd-assistant-route-result__reason">{reason_safe}</p>'
+        f'<p class="pd-assistant-route-result__terms">Matched: {terms_safe}</p>'
+        "</div>",
+        unsafe_allow_html=True,
+    )
+
+    open_col, dismiss_col, _ = st.columns([2, 1, 2])
+    with open_col:
+        if st.button(
+            "Open recommended module",
+            type="primary",
+            key="paradigm_router_open",
+            use_container_width=True,
+        ):
+            st.session_state[_SPACE_KEY] = route["space"]
+            st.session_state[_VIEW_KEY] = route["view"]
+            st.session_state.pop(_PENDING_TASK_KEY, None)
+            st.rerun()
+    with dismiss_col:
+        if st.button("Dismiss", key="paradigm_router_dismiss", use_container_width=True):
+            st.session_state.pop(_PENDING_TASK_KEY, None)
+            st.rerun()
 
 
 def _answers_key(prefix: str, dataset_key: str) -> str:
@@ -506,11 +748,15 @@ def render_notebook_flow(parsed: ParsedNotebook) -> None:
 
 def render_analyst_landing(*, on_prepare, show_change_dataset: bool = True) -> DatasetContext | None:
     """Pantalla inicial: elegir fuente y cargar con un solo botón."""
-    st.markdown("## Paradigm — Decision Lab")
-    st.markdown("### Análisis Basado en Datos")
-    st.caption(
-        "Paradigm actúa como un laboratorio de decisión: primero entiende el problema de negocio, "
-        "luego busca causas raíz en los datos."
+    st.markdown(
+        '<div class="pd-assistant-dataset">'
+        '<div class="pd-assistant-dataset__label">Dataset</div>'
+        '<p class="pd-assistant-dataset__note">'
+        "Elegí una fuente para continuar el recorrido. "
+        "Primero el problema de negocio; después las causas en los datos."
+        "</p>"
+        "</div>",
+        unsafe_allow_html=True,
     )
 
     if show_change_dataset and (
@@ -617,7 +863,10 @@ def render_analyst_flow(ctx: DatasetContext, *, show_ml_cta: bool = False) -> No
         return
 
     render_analyst_progress("detecting")
-    st.subheader("Vista previa del dataset")
+    st.markdown(
+        '<div class="pd-assistant-dataset__label">Dataset preview</div>',
+        unsafe_allow_html=True,
+    )
     render_schema_brief(ctx)
     render_schema_columns_preview(ctx)
 
@@ -643,7 +892,13 @@ def render_analyst_flow(ctx: DatasetContext, *, show_ml_cta: bool = False) -> No
         findings=ctx.findings,
     )
     with st.form(f"analyst_wizard_form_{dk}"):
-        st.markdown("**Contexto de negocio** — 2 a 3 preguntas (~1 min)")
+        st.markdown(
+            '<div class="pd-assistant-wizard">'
+            '<div class="pd-assistant-wizard__label">Business context</div>'
+            '<p class="pd-assistant-wizard__note">2 a 3 preguntas · ~1 min</p>'
+            "</div>",
+            unsafe_allow_html=True,
+        )
         answers = render_guided_questionnaire(questions, key_prefix=f"wizard_{dk}")
         col_a, col_b = st.columns([2, 1])
         with col_a:
@@ -677,7 +932,43 @@ def render_conversational_page_v2(
     *,
     on_prepare,
 ) -> None:
-    """Página v2: landing limpia + flujo analista o notebook."""
+    """Página v2: flujo mineral común + landing / analista / notebook."""
+    st.markdown(
+        '<div class="pd-assistant-flow">'
+        '<div class="pd-assistant-flow__eyebrow">Assistant sequence</div>'
+        '<div class="pd-assistant-flow__rail" role="list">'
+        '<span class="pd-assistant-flow__node pd-assistant-flow__node--decision">Route</span>'
+        '<span class="pd-assistant-flow__link" aria-hidden="true"></span>'
+        '<span class="pd-assistant-flow__node pd-assistant-flow__node--structure">Dataset</span>'
+        '<span class="pd-assistant-flow__link" aria-hidden="true"></span>'
+        '<span class="pd-assistant-flow__node pd-assistant-flow__node--interpretation">Understand</span>'
+        '<span class="pd-assistant-flow__link" aria-hidden="true"></span>'
+        '<span class="pd-assistant-flow__node pd-assistant-flow__node--decision">Decide</span>'
+        "</div>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+    render_module_context(
+        name="Paradigm Assistant",
+        stage="Decision",
+        purpose=(
+            "Convertir preguntas de negocio en recorridos de análisis con evidencia, "
+            "SQL de lectura y decisión etiquetada."
+        ),
+        status="Active",
+        capabilities=(
+            "Task router determinista",
+            "Wizard de contexto + análisis guiado",
+            "SQL Explorer y Data Explorer",
+            "AI Analyst opcional (LLM/RAG) con fallback heurístico",
+        ),
+        limitations=(
+            "No ejecuta escrituras ni acciones externas",
+            "Calidad depende del dataset cargado",
+            "LLM opcional; sin proveedor usa heurísticas",
+        ),
+    )
+    render_paradigm_task_router()
     notebook = st.session_state.get("analyst_v2_notebook")
     if notebook is not None:
         render_notebook_flow(notebook)

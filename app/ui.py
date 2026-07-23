@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import html
 from datetime import date
 from pathlib import Path
 
@@ -12,7 +13,6 @@ import streamlit as st
 from app.config import (
     APP_VERSION,
     COLOR_MUTED,
-    COLOR_PRIMARY,
     COLOR_PRIMARY_SOFT,
     COLOR_TEXT,
     LAST_UPDATE,
@@ -82,12 +82,40 @@ def render_header() -> None:
 
 
 def render_workspace_header(title: str, meta: str) -> None:
-    """Cabecera consistente para pestañas del workspace analítico."""
+    """Meta compacta bajo el contexto Observatory del módulo (sin título duplicado)."""
     st.markdown(
-        f'<div class="explorer-nav-card">'
-        f'<span class="explorer-nav-label">{title}</span>'
-        f'<span class="explorer-nav-meta">{meta}</span>'
+        f'<div class="pd-module-workspace-meta">'
+        f'<span class="pd-module-workspace-meta__title">{title}</span>'
+        f'<span class="pd-module-workspace-meta__detail">{meta}</span>'
         f"</div>",
+        unsafe_allow_html=True,
+    )
+
+
+def render_module_context(
+    *,
+    name: str,
+    stage: str,
+    purpose: str,
+    status: str,
+    capabilities: list[str] | tuple[str, ...],
+    limitations: list[str] | tuple[str, ...],
+) -> None:
+    """Notas del módulo; título/etapa/propósito viven en render_page_header."""
+    del name, stage, purpose, status
+    caps = "".join(f"<li>{html.escape(item)}</li>" for item in capabilities)
+    lims = "".join(f"<li>{html.escape(item)}</li>" for item in limitations)
+    st.markdown(
+        '<div class="pd-page-notes">'
+        '<div class="pd-page-notes__col">'
+        '<div class="pd-page-notes__label">Capabilities</div>'
+        f'<ul class="pd-page-notes__list">{caps}</ul>'
+        "</div>"
+        '<div class="pd-page-notes__col">'
+        '<div class="pd-page-notes__label">Limitations</div>'
+        f'<ul class="pd-page-notes__list">{lims}</ul>'
+        "</div>"
+        "</div>",
         unsafe_allow_html=True,
     )
 
@@ -102,6 +130,396 @@ def render_app_footer() -> None:
         </div>
         """,
         unsafe_allow_html=True,
+    )
+
+
+# ── Global chrome (mineral) ──────────────────────────────────────────────────
+
+_TOP_NAV: tuple[tuple[str, str], ...] = (
+    ("Home", "Home"),
+    ("Work", "Workspaces"),
+    ("Assistant", "Assistant"),
+    ("System", "System"),
+)
+
+
+def render_global_topbar(active_space: str) -> None:
+    """Barra mínima: marca P · Home · Work · Assistant · System."""
+    st.markdown(
+        '<div class="pd-topbar">'
+        '<div class="pd-topbar__brand">'
+        '<div class="pd-topbar__mark">P</div>'
+        '<span class="pd-topbar__meta">Paradigm</span>'
+        "</div>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+    cols = st.columns(len(_TOP_NAV))
+    for col, (label, space) in zip(cols, _TOP_NAV):
+        with col:
+            is_on = active_space == space
+            if st.button(
+                label,
+                key=f"pd_top_{label}",
+                type="primary" if is_on else "secondary",
+                use_container_width=True,
+            ):
+                if space == "Home":
+                    navigate_to("Home")
+                elif space == "Workspaces":
+                    navigate_to("Workspaces", "Data & Quality")
+                elif space == "Assistant":
+                    navigate_to("Assistant", "Paradigm Assistant")
+                else:
+                    navigate_to("System", "Automation Lab")
+
+
+def render_page_header(
+    *,
+    section: str,
+    title: str,
+    purpose: str,
+    stage: str,
+    status: str = "",
+) -> None:
+    """Header compacto compartido por páginas internas."""
+    status_html = (
+        f'<span class="pd-page-header__status">{html.escape(status)}</span>'
+        if status
+        else ""
+    )
+    st.markdown(
+        '<div class="pd-page-header">'
+        '<div class="pd-page-header__row">'
+        f'<span class="pd-page-header__section">{html.escape(section)}</span>'
+        f'<span class="pd-page-header__stage">{html.escape(stage)}</span>'
+        f"{status_html}"
+        "</div>"
+        f'<h1 class="pd-page-header__title">{html.escape(title)}</h1>'
+        f'<p class="pd-page-header__purpose">{html.escape(purpose)}</p>'
+        "</div>",
+        unsafe_allow_html=True,
+    )
+
+
+# ── Home (prototype composition · real data) ─────────────────────────────────
+
+_SPACE_KEY = "paradigm_active_space"
+_VIEW_KEY = "paradigm_active_view"
+_PENDING_TASK_KEY = "paradigm_pending_task"
+_RECENT_TASKS_KEY = "paradigm_recent_tasks"
+_RECENT_TASKS_MAX = 3
+_HOME_LIT_KEY = "paradigm_home_sequence_lit"
+
+_COGNITIVE_STAGES: tuple[tuple[str, str], ...] = (
+    ("Capture", "Ingest the question as a raw signal"),
+    ("Understand", "Shape context and constraints"),
+    ("Model", "Form a working hypothesis"),
+    ("Evaluate", "Weigh evidence and uncertainty"),
+    ("Decide", "Name the next deliberate step"),
+)
+
+_HOME_LAUNCHER: tuple[dict[str, str], ...] = (
+    {"title": "Data & Quality", "space": "Workspaces", "view": "Data & Quality"},
+    {"title": "No-Show", "space": "Workspaces", "view": "No-Show Intelligence"},
+    {"title": "Forecasting", "space": "Workspaces", "view": "Forecasting"},
+    {"title": "Assistant", "space": "Assistant", "view": "Paradigm Assistant"},
+    {"title": "Copilot", "space": "Assistant", "view": "Copilot"},
+    {"title": "Automation", "space": "System", "view": "Automation Lab"},
+    {"title": "Governance", "space": "System", "view": "Governance & Improvement"},
+)
+_HOME_CAPABILITIES = _HOME_LAUNCHER
+
+
+def push_recent_task(text: str) -> None:
+    cleaned = text.strip()
+    if not cleaned:
+        return
+    recent = list(st.session_state.get(_RECENT_TASKS_KEY) or [])
+    if recent and recent[0] == cleaned:
+        return
+    recent = [cleaned, *[t for t in recent if t != cleaned]]
+    st.session_state[_RECENT_TASKS_KEY] = recent[:_RECENT_TASKS_MAX]
+
+
+def get_recent_tasks() -> list[str]:
+    raw = st.session_state.get(_RECENT_TASKS_KEY) or []
+    if not isinstance(raw, list):
+        return []
+    return [str(t) for t in raw if str(t).strip()][:_RECENT_TASKS_MAX]
+
+
+def navigate_to(space: str, view: str | None = None) -> None:
+    st.session_state[_SPACE_KEY] = space
+    if view:
+        st.session_state[_VIEW_KEY] = view
+    elif space == "Home":
+        st.session_state[_VIEW_KEY] = ""
+    st.rerun()
+
+
+def render_home_surface_styles() -> None:
+    """Home shares the global mineral shell; no scoped :has() marker."""
+    return
+
+
+def render_home_mark_bar() -> None:
+    """Mark lives in the global topbar."""
+    return
+
+
+def render_home_core_and_context(
+    *,
+    filters: FilterState | None,
+    db_name: str,
+    llm_provider: str,
+    appointment_count: int,
+    filtered_rows: int,
+    input_key: str = "paradigm_home_command_input",
+    button_key: str = "paradigm_home_find_path",
+) -> None:
+    lit = bool(st.session_state.get(_HOME_LIT_KEY) or st.session_state.get(_PENDING_TASK_KEY))
+    mode = "Discovery" if lit else "Observe"
+    if filters is not None:
+        dataset = (
+            f"mart filtrado · {filters.date_start.date()} → {filters.date_end.date()}"
+        )
+    else:
+        dataset = "mart SQLite local"
+    left, right = st.columns([1.55, 0.7])
+    with left:
+        st.markdown('<div class="pd-home-core">', unsafe_allow_html=True)
+        st.markdown(
+            '<h1 class="pd-home-brand">PARADIGM</h1>'
+            '<p class="pd-home-ask">What do you want to discover?</p>',
+            unsafe_allow_html=True,
+        )
+        st.text_input(
+            "Discovery question",
+            placeholder="e.g. Where does billing diverge from attended visits?",
+            key=input_key,
+            label_visibility="collapsed",
+        )
+        if st.button("Begin discovery", type="primary", key=button_key):
+            text = str(st.session_state.get(input_key) or "").strip()
+            if not text:
+                st.warning("Escribí una pregunta u objetivo breve.")
+            else:
+                st.session_state[_PENDING_TASK_KEY] = text
+                push_recent_task(text)
+                st.session_state[_HOME_LIT_KEY] = True
+                st.session_state[_SPACE_KEY] = "Assistant"
+                st.session_state[_VIEW_KEY] = "Paradigm Assistant"
+                st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
+    with right:
+        context_html = (
+            '<aside class="pd-home-context">'
+            '<div class="pd-home-context__label">Context</div>'
+            '<div class="pd-home-context__row">'
+            '<span class="pd-home-context__k">Dataset</span>'
+            f'<span class="pd-home-context__v">{html.escape(dataset)}</span>'
+            "</div>"
+            '<div class="pd-home-context__row">'
+            '<span class="pd-home-context__k">Rows</span>'
+            f'<span class="pd-home-context__v">{filtered_rows:,} · mart {appointment_count:,}</span>'
+            "</div>"
+            '<div class="pd-home-context__row">'
+            '<span class="pd-home-context__k">SQLite</span>'
+            f'<span class="pd-home-context__v">{html.escape(db_name)}</span>'
+            "</div>"
+            '<div class="pd-home-context__row">'
+            '<span class="pd-home-context__k">LLM</span>'
+            f'<span class="pd-home-context__v">{html.escape(str(llm_provider))}</span>'
+            "</div>"
+            '<div class="pd-home-context__row">'
+            '<span class="pd-home-context__k">Mode</span>'
+            f'<span class="pd-home-context__v pd-home-context__v--accent">{html.escape(mode)}</span>'
+            "</div>"
+            '<div class="pd-home-context__row">'
+            '<span class="pd-home-context__k">Runtime</span>'
+            '<span class="pd-home-context__v">Local</span>'
+            "</div>"
+            "</aside>"
+        )
+        st.markdown(context_html, unsafe_allow_html=True)
+
+
+def render_cognitive_sequence(*, lit: bool) -> None:
+    nodes: list[str] = []
+    for i, (name, hint) in enumerate(_COGNITIVE_STAGES):
+        cls = "pd-home-node is-lit" if lit else "pd-home-node"
+        nodes.append(
+            f'<div class="{cls}" style="--i:{i}">'
+            f'<div class="pd-home-node__dot" aria-hidden="true"></div>'
+            f'<span class="pd-home-node__idx">{i + 1:02d}</span>'
+            f'<span class="pd-home-node__name">{html.escape(name)}</span>'
+            f'<span class="pd-home-node__hint">{html.escape(hint)}</span>'
+            f"</div>"
+        )
+    sequence_html = (
+        '<div class="pd-home-flow-wrap">'
+        '<div class="pd-home-flow-eyebrow">Cognitive sequence</div>'
+        f'<div class="pd-home-flow" role="list">{"".join(nodes)}</div>'
+        "</div>"
+    )
+    st.markdown(sequence_html, unsafe_allow_html=True)
+
+
+def render_home_launcher() -> None:
+    st.markdown(
+        '<div class="pd-home-launcher">'
+        '<div class="pd-home-flow-eyebrow">Open a workspace</div>'
+        "</div>",
+        unsafe_allow_html=True,
+    )
+    cols = st.columns(4)
+    for idx, item in enumerate(_HOME_LAUNCHER):
+        with cols[idx % 4]:
+            btn_key = (
+                f"pd_home_nav_{item['space']}_{item['view']}"
+                .replace(" ", "_")
+                .replace("&", "and")
+            )
+            if st.button(item["title"], key=btn_key, use_container_width=True):
+                navigate_to(item["space"], item["view"])
+
+
+def render_home_results(*, kpis: ExecutiveKpis | None, task: str) -> None:
+    safe_task = html.escape(task.strip()) if task else ""
+    if kpis is None:
+        signal = "No appointments in filter"
+        evidence = "Adjust sidebar filters to restore mart signals."
+        nxt = "Widen the date range or clear specialty filters."
+        empty_cls = " is-empty"
+    else:
+        ns = (
+            f"{kpis.no_show_rate * 100:.1f}%"
+            if kpis.no_show_rate is not None
+            else "n/a"
+        )
+        signal = f"{kpis.citas_total:,} visits"
+        evidence = (
+            f"{kpis.attended:,} attended · no-show {ns} · "
+            f"billing gap {kpis.billing_gap_count:,} "
+            f"(${kpis.billing_gap_amount:,.0f} ARS)"
+        )
+        if kpis.billing_gap_count > 0:
+            nxt = "Open Data & Quality to inspect ATTENDED_NO_BILLING."
+        elif kpis.no_show_rate is not None and kpis.no_show_rate >= 0.1:
+            nxt = "Open No-Show Intelligence to prioritize risk."
+        else:
+            nxt = "Ask Assistant a question, or open Forecasting for demand."
+        empty_cls = ""
+    if safe_task:
+        st.markdown(
+            f'<p class="pd-home-task-echo">Active task · <strong>{safe_task}</strong></p>',
+            unsafe_allow_html=True,
+        )
+    results_html = (
+        f'<div class="pd-home-results{empty_cls}">'
+        '<div class="pd-home-block pd-home-block--signal">'
+        '<span class="pd-home-block__tone">Main Signal</span>'
+        f'<h2 class="pd-home-block__title">{html.escape(signal)}</h2>'
+        '<p class="pd-home-block__body">Dominant volume under current filters.</p>'
+        "</div>"
+        '<div class="pd-home-block pd-home-block--evidence">'
+        '<span class="pd-home-block__tone">Evidence</span>'
+        '<h2 class="pd-home-block__title">Supporting thread</h2>'
+        f'<p class="pd-home-block__body">{html.escape(evidence)}</p>'
+        "</div>"
+        '<div class="pd-home-block pd-home-block--action">'
+        '<span class="pd-home-block__tone">Next Action</span>'
+        '<h2 class="pd-home-block__title">Deliberate step</h2>'
+        f'<p class="pd-home-block__body">{html.escape(nxt)}</p>'
+        "</div>"
+        "</div>"
+    )
+    st.markdown(results_html, unsafe_allow_html=True)
+
+
+def render_process_rail(
+    stages: list[dict[str, str]],
+    *,
+    rail_class: str = "pd-process-rail",
+) -> None:
+    """Secuencia visual de proceso (nodos + enlaces), HTML compacto."""
+    parts: list[str] = []
+    for i, stage in enumerate(stages):
+        if i:
+            parts.append('<div class="pd-process-link" aria-hidden="true"></div>')
+        tone = html.escape(stage.get("tone", "structure"))
+        status = html.escape(stage.get("status", ""))
+        label = html.escape(stage.get("label", ""))
+        detail = html.escape(stage.get("detail", ""))
+        count = stage.get("count", "")
+        count_html = (
+            f'<span class="pd-process-step__count">{html.escape(str(count))}</span>'
+            if count != "" and count is not None
+            else ""
+        )
+        status_html = (
+            f'<span class="pd-process-step__status">{status}</span>' if status else ""
+        )
+        status_cls = f" pd-process-step--{status}" if status else ""
+        live_cls = " pd-process-step--live" if status == "active" else ""
+        parts.append(
+            f'<div class="pd-process-step pd-process-step--{tone}{status_cls}{live_cls}" '
+            f'style="--pd-step-i:{i}">'
+            f'<span class="pd-process-step__label">{label}</span>'
+            f"{status_html}{count_html}"
+            f'<span class="pd-process-step__detail">{detail}</span>'
+            "</div>"
+        )
+    st.markdown(
+        f'<div class="{html.escape(rail_class)}">{"".join(parts)}</div>',
+        unsafe_allow_html=True,
+    )
+
+
+def render_data_quality_process(
+    *,
+    attended: int,
+    gap_n: int,
+    with_billing: int,
+    pending: int,
+) -> None:
+    """Resumen visual Source → Validation → Reconciliation → Evidence."""
+    st.markdown(
+        '<div class="pd-section-heading">Quality sequence</div>',
+        unsafe_allow_html=True,
+    )
+    render_process_rail(
+        [
+            {
+                "label": "Source",
+                "tone": "signal",
+                "status": "active",
+                "detail": "Mart filtrado · citas atendidas",
+                "count": f"{attended:,}",
+            },
+            {
+                "label": "Validation",
+                "tone": "structure",
+                "status": "active",
+                "detail": "Buckets ATTENDED_*",
+                "count": f"{with_billing + pending + gap_n:,}",
+            },
+            {
+                "label": "Reconciliation",
+                "tone": "interpretation",
+                "status": "active",
+                "detail": "Con billing / pendiente",
+                "count": f"{with_billing:,} / {pending:,}",
+            },
+            {
+                "label": "Evidence",
+                "tone": "risk" if gap_n else "signal",
+                "status": "active",
+                "detail": "ATTENDED_NO_BILLING",
+                "count": f"{gap_n:,}",
+            },
+        ]
     )
 
 
@@ -219,7 +637,7 @@ def render_landing_page() -> None:
                 st.markdown(
                     f"""
                     <div class="landing-image-card"
-                         style="background:linear-gradient(135deg,#0a2540,#1e3a8a);
+                         style="background:linear-gradient(135deg,#0B1622,#1C2E40);
                                 display:flex;align-items:flex-end;">
                       <div class="landing-image-overlay">
                         <h3>{title}</h3>
@@ -265,51 +683,14 @@ def _kpi_card_html(label: str, value: str, delta: str = "") -> str:
     )
 
 
-def render_kpi_grid(kpis: ExecutiveKpis) -> None:
-    ns_pct  = f"{kpis.no_show_rate * 100:.1f}%"  if kpis.no_show_rate  is not None else "n/a"
-    can_pct = f"{kpis.cancellation_rate * 100:.1f}%" if kpis.cancellation_rate is not None else "n/a"
-    revenue_fmt = f"${kpis.revenue:,.0f}"
-
-    row1 = [
-        _kpi_card_html("Citas total",    f"{kpis.citas_total:,}"),
-        _kpi_card_html("Atendidas",      f"{kpis.attended:,}"),
-        _kpi_card_html("No-show rate",   ns_pct, delta=f"{kpis.noshow} no-shows"),
-    ]
-    row2 = [
-        _kpi_card_html("Tasa cancelación", can_pct, delta=f"{kpis.cancelled} canceladas"),
-        _kpi_card_html("Ingreso facturado", revenue_fmt, delta="ARS · no VOID"),
-        _kpi_card_html("Brechas", f"{kpis.billing_gap_count}", delta="ATTENDED_NO_BILLING"),
-    ]
-    st.markdown(f'<div class="kpi-grid">{"".join(row1)}</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="kpi-grid">{"".join(row2)}</div>', unsafe_allow_html=True)
-
-
-def render_gap_card(kpis: ExecutiveKpis) -> None:
-    st.markdown(
-        f"""
-        <div class="gap-highlight">
-          <strong style="color:{COLOR_PRIMARY_SOFT};">Brecha de facturación</strong><br/>
-          <span style="font-size:1.2rem;font-weight:600;color:{COLOR_TEXT};">
-            {kpis.billing_gap_count} citas atendidas sin línea de facturación
-          </span><br/>
-          <span style="color:{COLOR_MUTED};">
-            Monto reconocido en puente: ${kpis.billing_gap_amount:,.0f} ARS ·
-            Revisá la pestaña Conciliación para el detalle.
-          </span>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-
 # ── Sidebar ─────────────────────────────────────────────────────────────────
 
 def render_sidebar_filters(appointments: pd.DataFrame) -> FilterState:
-    st.sidebar.markdown("### Filtros")
+    """Filtros del mart. Usar dentro de `st.sidebar` o un expander del sidebar."""
     min_d = appointments["appointment_date"].min().date()
     max_d = appointments["appointment_date"].max().date()
 
-    date_range = st.sidebar.date_input(
+    date_range = st.date_input(
         "Rango de fechas (cita)",
         value=(min_d, max_d),
         min_value=min_d,
@@ -320,15 +701,15 @@ def render_sidebar_filters(appointments: pd.DataFrame) -> FilterState:
     else:
         date_start = date_end = date_range if isinstance(date_range, date) else min_d
 
-    specialties = st.sidebar.multiselect(
+    specialties = st.multiselect(
         "Especialidad",
         options=sorted(appointments["specialty_name"].dropna().unique()),
     )
-    providers = st.sidebar.multiselect(
+    providers = st.multiselect(
         "Proveedor",
         options=sorted(appointments["provider_label"].dropna().unique()),
     )
-    channels = st.sidebar.multiselect(
+    channels = st.multiselect(
         "Canal",
         options=sorted(appointments["channel_code"].dropna().unique()),
     )
@@ -343,32 +724,32 @@ def render_sidebar_filters(appointments: pd.DataFrame) -> FilterState:
 
 
 def render_regenerate_section() -> None:
-    with st.sidebar.expander("Regenerar datos", expanded=False):
-        st.warning(
-            "Esta acción **sobrescribe** los CSV sintéticos y reconstruye "
-            "`paradigm_mart.db`. Puede tardar varios segundos."
-        )
-        confirm = st.checkbox(
-            "Entiendo y quiero regenerar los datos sintéticos",
-            key="regen_confirm",
-        )
-        include_train = st.checkbox(
-            "También re-entrenar modelo no-show",
-            value=False,
-            key="regen_train",
-        )
-        if st.button("Ejecutar regeneración", type="primary", disabled=not confirm):
-            with st.spinner("Ejecutando pipeline…"):
-                ok, log = run_regenerate_pipeline(include_train=include_train)
-            with st.expander("Log de ejecución", expanded=not ok):
-                st.code(log or "(sin salida)")
-            if ok:
-                st.cache_data.clear()
-                st.cache_resource.clear()
-                st.success("Datos regenerados. Recargando…")
-                st.rerun()
-            else:
-                st.error("Falló la regeneración. Revisá el log.")
+    """Controles de regeneración. Usar dentro de un expander de Mantenimiento."""
+    st.warning(
+        "Esta acción **sobrescribe** los CSV sintéticos y reconstruye "
+        "`paradigm_mart.db`. Puede tardar varios segundos."
+    )
+    confirm = st.checkbox(
+        "Entiendo y quiero regenerar los datos sintéticos",
+        key="regen_confirm",
+    )
+    include_train = st.checkbox(
+        "También re-entrenar modelo no-show",
+        value=False,
+        key="regen_train",
+    )
+    if st.button("Ejecutar regeneración", type="primary", disabled=not confirm):
+        with st.spinner("Ejecutando pipeline…"):
+            ok, log = run_regenerate_pipeline(include_train=include_train)
+        with st.expander("Log de ejecución", expanded=not ok):
+            st.code(log or "(sin salida)")
+        if ok:
+            st.cache_data.clear()
+            st.cache_resource.clear()
+            st.success("Datos regenerados. Recargando…")
+            st.rerun()
+        else:
+            st.error("Falló la regeneración. Revisá el log.")
 
 
 # ── Conversational analyst UI ────────────────────────────────────────────────
@@ -389,15 +770,13 @@ def render_analyst_progress(phase: str) -> None:
 
 def render_analyst_wizard_banner() -> None:
     st.markdown(
-        f"""
-        <div class="wizard-banner">
-          <strong style="color:{COLOR_PRIMARY_SOFT};">Analista Paradigm</strong><br/>
-          <span style="color:{COLOR_MUTED};">
-            Antes de sacar conclusiones, alineamos objetivo de negocio e hipótesis de causa raíz.
-            Son 2–3 preguntas breves (~1 min).
-          </span>
-        </div>
-        """,
+        '<div class="pd-wizard-banner">'
+        '<div class="pd-wizard-banner__label">Business alignment</div>'
+        '<p class="pd-wizard-banner__note">'
+        "Antes de interpretar señales, alineamos objetivo de negocio e hipótesis. "
+        "Son 2–3 preguntas breves (~1 min)."
+        "</p>"
+        "</div>",
         unsafe_allow_html=True,
     )
 
@@ -437,40 +816,46 @@ def render_guided_questionnaire(
 ) -> dict[str, str | float]:
     answers: dict[str, str | float] = {}
     for q in questions:
-        with st.container(border=True):
-            st.markdown(f"**{q.label}**")
-            if q.hint:
-                st.caption(q.hint)
-            widget_key = f"{key_prefix}_{q.id}"
-            if q.widget == "text":
-                answers[q.id] = st.text_input(
-                    "Tu respuesta",
-                    value=str(q.default or ""),
-                    key=widget_key,
-                    label_visibility="collapsed",
-                )
-            elif q.widget == "select":
-                opts = list(q.options) if q.options else ["—"]
-                default_idx = 0
-                if q.default and q.default in opts:
-                    default_idx = opts.index(q.default)
-                answers[q.id] = st.selectbox(
-                    "Opción",
-                    options=opts,
-                    index=default_idx,
-                    key=widget_key,
-                    label_visibility="collapsed",
-                )
-            elif q.widget == "number":
-                answers[q.id] = st.number_input(
-                    "Valor",
-                    min_value=0.0,
-                    max_value=100.0,
-                    value=float(q.default or 10.0),
-                    step=1.0,
-                    key=widget_key,
-                    label_visibility="collapsed",
-                )
+        hint_html = (
+            f'<p class="pd-wizard-q__hint">{html.escape(q.hint)}</p>' if q.hint else ""
+        )
+        st.markdown(
+            f'<div class="pd-wizard-q">'
+            f'<div class="pd-wizard-q__label">{html.escape(q.label)}</div>'
+            f"{hint_html}"
+            "</div>",
+            unsafe_allow_html=True,
+        )
+        widget_key = f"{key_prefix}_{q.id}"
+        if q.widget == "text":
+            answers[q.id] = st.text_input(
+                "Tu respuesta",
+                value=str(q.default or ""),
+                key=widget_key,
+                label_visibility="collapsed",
+            )
+        elif q.widget == "select":
+            opts = list(q.options) if q.options else ["—"]
+            default_idx = 0
+            if q.default and q.default in opts:
+                default_idx = opts.index(q.default)
+            answers[q.id] = st.selectbox(
+                "Opción",
+                options=opts,
+                index=default_idx,
+                key=widget_key,
+                label_visibility="collapsed",
+            )
+        elif q.widget == "number":
+            answers[q.id] = st.number_input(
+                "Valor",
+                min_value=0.0,
+                max_value=100.0,
+                value=float(q.default or 10.0),
+                step=1.0,
+                key=widget_key,
+                label_visibility="collapsed",
+            )
     return answers
 
 
@@ -510,8 +895,7 @@ def render_contextual_results(
         from app.conversational.ai_analyst_ui import render_llm_insight_card
 
         st.markdown(
-            f"<p style='font-weight:600;color:{COLOR_TEXT};margin:0.5rem 0 0.4rem;'>"
-            "Análisis del wizard — AI Analyst</p>",
+            '<div class="pd-results-label">Análisis del wizard — AI Analyst</div>',
             unsafe_allow_html=True,
         )
         render_llm_insight_card(
@@ -521,31 +905,28 @@ def render_contextual_results(
         )
         st.divider()
 
-    # Summary card
+    # Summary
     st.markdown(
-        f'<div class="insight-card" style="background:rgba(94,200,212,0.04);">'
-        f'{result.summary}</div>',
+        f'<div class="insight-card">{html.escape(str(result.summary))}</div>',
         unsafe_allow_html=True,
     )
 
     # Findings
     if result.findings:
         st.markdown(
-            f"<p style='font-weight:600;color:{COLOR_TEXT};margin:1rem 0 0.4rem;'>"
-            "Hallazgos clave</p>",
+            '<div class="pd-results-label">Hallazgos clave</div>',
             unsafe_allow_html=True,
         )
         for item in result.findings:
             st.markdown(
-                f'<div class="finding-item">→&nbsp;{item}</div>',
+                f'<div class="finding-item">→&nbsp;{html.escape(str(item))}</div>',
                 unsafe_allow_html=True,
             )
 
     # Visualisations
     if figures:
         st.markdown(
-            f"<p style='font-weight:600;color:{COLOR_TEXT};margin:1rem 0 0.4rem;'>"
-            "Visualizaciones</p>",
+            '<div class="pd-results-label">Visualizaciones</div>',
             unsafe_allow_html=True,
         )
         for i in range(0, len(figures), 2):
@@ -558,9 +939,8 @@ def render_contextual_results(
     # Recommendations with impact badges
     if result.recommendations:
         st.markdown(
-            f"<p style='font-weight:600;color:{COLOR_TEXT};margin:1rem 0 0.4rem;'>"
-            "Recomendaciones accionables <span style='color:{COLOR_MUTED};"
-            "font-weight:400;font-size:0.85rem;'>(priorizadas por impacto)</span></p>",
+            '<div class="pd-results-label">Recomendaciones accionables '
+            '<span class="pd-results-label__meta">(priorizadas por impacto)</span></div>',
             unsafe_allow_html=True,
         )
         _badge_map = {
@@ -575,8 +955,8 @@ def render_contextual_results(
             badge_cls = _badge_map.get(str(rec.impact), "badge-low")
             st.markdown(
                 f'<div class="insight-card">'
-                f'<span class="{badge_cls}">{rec.impact}</span>'
-                f'{rec.text}</div>',
+                f'<span class="{badge_cls}">{html.escape(str(rec.impact))}</span>'
+                f'{html.escape(str(rec.text))}</div>',
                 unsafe_allow_html=True,
             )
 

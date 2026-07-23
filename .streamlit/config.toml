@@ -1,9 +1,12 @@
 [theme]
 base = "dark"
-primaryColor = "#5ec8d4"
-backgroundColor = "#0a2540"
-secondaryBackgroundColor = "#13294b"
-textColor = "#e0f2fe"
+# primaryColor = action (CTA / interacción), not signal (datos)
+primaryColor = "#D97B5C"
+backgroundColor = "#0B1622"
+# Streamlit secondary ≈ widgets + sidebar base; CSS overrides sidebar to bg-secondary
+secondaryBackgroundColor = "#162433"
+textColor = "#E6EDF5"
+# Streamlit solo admite sans serif | serif | monospace (IBM Plex via CSS)
 font = "sans serif"
 
 [server]
